@@ -163,6 +163,10 @@ nnoremap k gk
 " visual shifting (does not exit Visual mode)
 vnoremap < <gv
 vnoremap > >gv
+
+" keep the yanked text on paste
+xnoremap <expr> p 'pgv"'.v:register.'y'
+
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
 map <C-S-n> :NERDTreeFind <CR>

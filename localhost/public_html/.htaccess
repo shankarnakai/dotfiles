@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} localhost [NC]
+RewriteCond %{SERVER_PORT} 80
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^adminer$ /adminer.php [L]
+</IfModule>
+
+#ErrorDocument 404 /errors/404.html
+#ErrorDocument 500 /errors/500.html
+
+#<FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+#Header set Cache-Control "max-age=28800"
+#</FilesMatch>

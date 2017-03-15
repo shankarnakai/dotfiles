@@ -2,7 +2,7 @@ export GO15VENDOREXPERIMENT=0
 export GOROOT=/usr/local/go
 export GOAPP=~/go_appengine
 export GOPATH=~/gowork
-export PATH=$PATH:$GOAPP:$GOROOT/bin:$GOPATH/bin
+export NPM_FOLDER=/home/shankar/.npm/
+export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin
 
 
-alias ben-site="cd $GOPATH/src/beneficiofacil.gopkg.net/site"

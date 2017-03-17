@@ -5,7 +5,7 @@ export GOPATH=~/gowork
 export NPM_FOLDER=/home/shankar/.npm/
 export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin
 
-if [ -f "~/.customrc" ]
+if [ -e ~/.customrc ]
 then
 	source ~/.customrc
 fi

@@ -1,0 +1,176 @@
+" enable plugin manager Vundle
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" basic plugins
+Plugin 'scrooloose/nerdtree'
+Plugin 'majutsushi/tagbar'
+Plugin 'buffet.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'jasoncodes/ctrlp-modified.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'tpope/vim-surround' " provides mappings to easily delete, change and add such surroundings in pairs
+Plugin 'yegappan/grep'
+Plugin 'Shougo/neocomplete.vim'
+
+" file ident
+Plugin 'maksimr/vim-jsbeautify'
+Plugin 'editorconfig/editorconfig-vim'
+
+" vsc
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-git'
+Plugin 'airblade/vim-gitgutter'
+
+" languages suports
+Plugin 'Blackrush/vim-gocode'
+Plugin 'fatih/vim-go'
+Plugin 'dgryski/vim-godef'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'python-mode/python-mode'
+"Plugin 'ternjs/tern_for_vim'
+Plugin 'burnettk/vim-angular'
+
+"snipmate
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+Plugin 'garbas/vim-snipmate'
+Plugin 'honza/vim-snippets' " Optional:
+
+" plugin from http://vim-scripts.org/vim/scripts.html
+
+" Allow to add custom plugins
+if filereadable(expand("~/.vimrc.plugins.local"))
+  source ~/.vimrc.plugins.local
+endif
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" Configurations to apply on pluins
+" All plugins configs are saved after here
+
+" nerdtree
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+
+" syntastic
+let g:syntastic_enable_signs=1
+let g:syntastic_quiet_messages = {'level': 'warnings'}
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_jump = 0
+let g:syntastic_full_redraws=1
+
+" syntastic Go
+let g:syntastic_auto_loc_list = 1
+" let g:syntastic_go_checkers = ['go', 'golint', 'errcheck']
+
+" vim-go
+let g:gofmt_command="goimports"
+let g:go_list_type = "quickfix"
+
+" tagbar
+let g:tagbar_type_go = {
+      \ 'ctagstype' : 'go',
+      \ 'kinds'     : [
+      \ 'p:package',
+      \ 'i:imports:1',
+      \ 'c:constants',
+      \ 'v:variables',
+      \ 't:types',
+      \ 'n:interfaces',
+      \ 'w:fields',
+      \ 'e:embedded',
+      \ 'm:methods',
+      \ 'r:constructor',
+      \ 'f:functions'
+      \ ],
+      \ 'sro' : '.',
+      \ 'kind2scope' : {
+      \ 't' : 'ctype',
+      \ 'n' : 'ntype'
+      \ },
+      \ 'scope2kind' : {
+      \ 'ctype' : 't',
+      \ 'ntype' : 'n'
+      \ },
+      \ 'ctagsbin'  : 'gotags',
+      \ 'ctagsargs' : '-sort -silent'
+      \ }
+
+
+map <Leader>m :CtrlPModified<CR>
+map <leader>t :CtrlPBufTag<CR>
+map <leader>b :CtrlPBuffer<CR>
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+      \ 'file': '\v\.(exe|so|dll)$',
+      \ }
+let g:ctrlp_extensions = ['buffertag'] " tag, buffertag, quickfix, dir, rtscript, undo, line, changes, mixed, bookmarkdir
+
+" godef
+let g:godef_split=1 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
+command! GoDefNewTab call ChangeGoDef(2)
+command! GoDefCurrent call ChangeGoDef(0)
+command! GoDefHorizontal call ChangeGoDef(1)
+command! GoDefVertical call ChangeGoDef(3)
+function! ChangeGoDef(v)
+  echo "changing godef split to" a:v
+  let g:godef_split=a:v
+endfunction
+
+" nerd commenter
+map <Leader>/ <plug>NERDCommenterToggle
+
+map <F2> :Bufferlist <CR>
+" map <C-n> :NERDTreeToggle <CR>
+map <C-n> :NERDTreeFind <CR>
+map <F8> :TagbarToggle <CR>
+map <Leader>f :Rgrep <CR>
+map <Leader>fb :Bgrep <CR>
+map <Leader>tg :GitGutterToggle <CR>
+map Tg :GitGutterToggle <CR>
+map <Leader>tgs :GitGutterSignsToggle <CR>
+map Tgs :GitGutterSignsToggle <CR>
+map <Leader>tgl :GitGutterLineHighlightsToggle <CR>
+map Tgl :GitGutterLineHighlightsToggle <CR>
+
+" neocomplete configs
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 1
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" normal mode for jsbeautify
+autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+" visual mode for js beautify
+autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>

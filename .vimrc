@@ -51,7 +51,6 @@ set foldlevel=99
 set pastetoggle=<F12>
 set clipboard=unnamedplus
 
-set t_Co=256
 
 if has('gui_running')
   set background=light
@@ -61,9 +60,6 @@ if has('gui_running')
   set guioptions-=r  "remove right-hand scroll bar
   set guioptions-=L  "remove left-hand scroll bar
   set guitablabel=%M\ %t
-else
-  set background=dark
-  set mouse=
 endif
 
 " The default leader is '\\', changed to ','

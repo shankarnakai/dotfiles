@@ -38,7 +38,6 @@ Plugin 'fatih/vim-go'
 Plugin 'dgryski/vim-godef'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'python-mode/python-mode'
-"Plugin 'ternjs/tern_for_vim'
 Plugin 'burnettk/vim-angular'
 
 "snipmate
@@ -71,13 +70,25 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_jump = 0
 let g:syntastic_full_redraws=1
 
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 " syntastic Go
 let g:syntastic_auto_loc_list = 1
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 " let g:syntastic_go_checkers = ['go', 'golint', 'errcheck']
 
 " vim-go
 let g:gofmt_command="goimports"
 let g:go_list_type = "quickfix"
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
 
 " tagbar
 let g:tagbar_type_go = {
@@ -120,7 +131,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_extensions = ['buffertag'] " tag, buffertag, quickfix, dir, rtscript, undo, line, changes, mixed, bookmarkdir
 
 " godef
-let g:godef_split=1 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
+let g:godef_split=0 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
 command! GoDefNewTab call ChangeGoDef(2)
 command! GoDefCurrent call ChangeGoDef(0)
 command! GoDefHorizontal call ChangeGoDef(1)

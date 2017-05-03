@@ -214,9 +214,6 @@ command! TrimWhiteSpace call TrimWhiteSpace()
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
-if filereadable(expand("~/.gvimrc.local"))
-  source ~/.gvimrc.local
-endif
 
 " key (re)mapppings
 
@@ -310,8 +307,7 @@ noremap <F5> <Esc>:syntax sync fromstart<CR>
 " ,v brings up my .vimrc
 " ,V reloads it -- making all changes active (have to save first)
 map ,v :sp ~/.vimrc<CR><C-W>_
-map <silent> ,V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
-
+map <silent> ,V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR> 
 " map macros
 let @n='iO'
 "map nl @k

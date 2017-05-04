@@ -22,3 +22,5 @@ then
 fi
 
 export DEFAULT_USER=shankar
+export SHOW_BATTERY=true
+export SHOW_CPU=true

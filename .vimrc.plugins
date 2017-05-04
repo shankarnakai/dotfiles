@@ -59,6 +59,9 @@ filetype plugin indent on    " required
 
 " Configurations to apply on pluins
 " All plugins configs are saved after here
+"airline 
+let g:airline_powerline_fonts = 1
+let g:airline_theme='kolor'
 
 " nerdtree
 let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
@@ -71,7 +74,6 @@ let g:syntastic_auto_jump = 0
 let g:syntastic_full_redraws=1
 
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 

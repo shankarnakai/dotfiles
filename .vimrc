@@ -228,10 +228,6 @@ nnoremap k gk
 map gb :bnext<CR>
 map gB :bprevious<CR>
 
-" Shortcuts to test
-map bn :bnext<CR>
-map bp :bprevious<CR>
-map bd :bdelete<CR>
 
 " visual shifting (does not exit Visual mode)
 vnoremap < <gv

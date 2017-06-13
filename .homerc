@@ -3,7 +3,7 @@ export GO15VENDOREXPERIMENT=0
 export GOROOT=/usr/local/go
 export GOAPP=~/go_appengine
 export GOPATH=~/gowork
-export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin
+export PATH="$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin"
 
 #JAVA
 JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
@@ -24,3 +24,10 @@ fi
 export DEFAULT_USER=shankar
 export SHOW_BATTERY=true
 export SHOW_CPU=true
+
+#export ZZOFF=""  # desligue funcoes indesejadas
+#export ZZPATH="/home/shankar/funcoeszz"
+#source "$ZZPATH"
+
+
+alias openv="awk -F: '{print $1 \"+\" $2}' | xargs bash -c '</dev/tty vim \"$@\"' ignoreme"

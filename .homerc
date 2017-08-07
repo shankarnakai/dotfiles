@@ -16,7 +16,6 @@ CATALINA_HOME=/opt/tomcat
 CATALINA_BASE=/opt/tomcat
 
 #PHP
-
 export PHP_PATH=~/phpwork
 export COMPOSER_PATH=~/.composer
 export COMPOSER_BIN="$COMPOSER_PATH/vendor/bin"
@@ -24,6 +23,10 @@ export COMPOSER_BIN="$COMPOSER_PATH/vendor/bin"
 
 #PATH ENVIROMENT
 export PATH="$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$COMPOSER_BIN"
+
+COMPOSER_PATH=~/.config/composer
+
+export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$COMPOSER_PATH/vendor/bin
 
 if [ -e ~/.customrc ]
 then
@@ -37,7 +40,6 @@ export SHOW_CPU=true
 #export ZZOFF=""  # desligue funcoes indesejadas
 #export ZZPATH="/home/shankar/funcoeszz"
 #source "$ZZPATH"
-
 
 #alias openv="awk -F: '{print $1 \"+\" $2}' | xargs bash -c '</dev/tty vim \"$@\"' ignoreme"
 alias cnpjF="sed -e 's!\.!!g;s!\(..\)!\1.!1;s!\(.\)!\1.!6;s!\(.\)!\1/!10;s!\(.\)!\1-!15'"

@@ -1,0 +1,44 @@
+root=true
+
+# Default conventions
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = false
+tab_size = 4
+
+# Makefiles must use tabs
+[Makefile]
+indent_style = tab
+
+[**.xml]
+indent_style = tab
+tab_size = 2
+
+[**/*.{js,html,css,scss,coffee}]
+indent_style = space
+indent_size = 4
+
+[**.py]
+indent_style = space
+indent_size = 4
+
+[**vimrc**]
+indent_style = space
+indent_size = 2
+
+[**rc]
+indent_style = space
+indent_size = 2
+
+[**.{yaml,yml}]
+indent_style = space
+indent_size = 2
+
+[*.go]
+indent_style = tab
+tab_width = 4
+
+[*.sh]
+indent_style = space
+indent_size = 2

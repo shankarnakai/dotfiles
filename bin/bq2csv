@@ -1,0 +1,108 @@
+#!/bin/bash
+set -e
+if [ x"$DEBUG" != x"" ] ; then set -x ; fi
+
+bq version  >/dev/null 2>&1 || {
+curl -h >/dev/null 2>&1 || {
+echo "INSTALLING CURL..."
+sudo apt-get install -y curl
+  }
+
+  echo "INSTALLING GOOGLE CLOUD SDK..."
+  export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+
+  #IF IS DEBIAN
+  echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  sudo apt-get update && sudo apt-get install google-cloud-sdk
+  gcloud init
+} 
+
+function help {
+	echo "usage $0 [-in -out]"
+	echo "    -q, --query        string with query to be executed in Big Query"
+	echo "    -in, --input       path of input sql file"
+	echo "    -out, --output     path when save output csv"
+	echo "    -v, --verbose      show the log messages in terminal" exit 1
+}
+
+input=
+query=
+output=
+verbose=0
+
+MAX_ROWS=1000000
+
+transform2csv() {
+	tr '|' ';' | grep -v '^+'  | grep -v "^$" | sed -e 's/^;//g' -e 's/;$//g'
+}
+
+log() {
+	if [ $verbose -eq 1 ]; then 
+		echo >&2 -e "\n$@"
+	fi
+}
+
+error() {
+	echo >&2 -e "\n$@"
+}
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-v | --verbose)
+			verbose=1
+			;;
+		-q | --query)
+			shift
+			query=$1
+			;;
+		-i | -in | --input)
+			shift
+			input=$1
+			;;
+		-o | -out | --output)
+			shift
+
+			output=$1
+			;;
+		*)
+			help
+			;;
+	esac
+	shift
+done
+if [[ -z "$query" && -z "$input" ]]; then
+	help
+elif [[ ! -z "$input"  &&  ! -s $input  ]]; then
+	error "file $input not found, please provide a valid file"
+	exit 1
+fi
+
+if [ -z "$output" ]; then
+	output="export-$(date +%Y%m%d%H%M%S).csv"
+fi
+
+log "exporting resulto to file : $output" ;
+
+log "Running this huge, big, mega, master query"
+
+treat=
+if ! [ -z "$input" ]; then
+treat=$(bq query --use_legacy_sql=false --max_rows=$MAX_ROWS < $input) || {
+	error "Error to execute query!"
+	echo $treat 
+	exit 1
+}  
+elif ! [ -z "$query" ]; then
+treat=$(bq query --use_legacy_sql=false --max_rows=$MAX_ROWS "${query}") || {
+	error "Error to execute query!"
+	echo $treat 
+	exit 1
+}  
+fi
+
+echo -e "$treat" | transform2csv > $output 
+LINES_IN_FILE="$(wc -l < $output)"
+LINES_IN_FILE=$((LINES_IN_FILE - 1))
+log "Query result ${LINES_IN_FILE} lines"
+log "DONE !!!"

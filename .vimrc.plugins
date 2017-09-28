@@ -37,12 +37,9 @@ Plugin 'Blackrush/vim-gocode'
 Plugin 'fatih/vim-go'
 Plugin 'dgryski/vim-godef'
 Plugin 'burnettk/vim-angular'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'quramy/tsuquyomi'
 
-"snipmate
-Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'tomtom/tlib_vim'
-Plugin 'garbas/vim-snipmate'
-Plugin 'honza/vim-snippets' " Optional:
 
 " plugin from http://vim-scripts.org/vim/scripts.html
 
@@ -89,6 +86,14 @@ let g:go_highlight_fields = 1
 let g:go_highlight_types = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
+
+" TypeScript
+let g:typescript_indent_disable = 0
+let g:typescript_opfirst='\%([<>=,?^%|*/&]\|\([-:+]\)\1\@!\|!=\|in\%(stanceof\)\=\>\)'
+let g:typescript_compiler_binary = 'tsc'
+let g:typescript_compiler_options = ''
+
+autocmd FileType typescript nmap <buffer> gd <Plug>(TsuquyomiDefinition)
 
 " tagbar
 let g:tagbar_type_go = {

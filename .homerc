@@ -22,7 +22,7 @@ export COMPOSER_BIN="$COMPOSER_PATH/vendor/bin"
 
 
 #PATH ENVIROMENT
-export PATH="$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$COMPOSER_BIN"
+export PATH="$HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$COMPOSER_BIN"
 
 COMPOSER_PATH=~/.config/composer
 

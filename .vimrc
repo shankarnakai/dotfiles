@@ -96,6 +96,12 @@ augroup filemapping
   " Map ,gb to add current branch on commit
   au Filetype gitcommit map ,gb :0r!git rev-parse --abbrev-ref HEAD<CR>A 
 
+
+  " Map ,sh to add current sh file 
+  "au BufRead,BufNewFile *.go setlocal makeprg=go\ test\ -c
+  "au Filetype bash map ,sh ggO#!/bin/bash<ESC>
+ 
+  
   " Posiciona a janela QuickFix sempre na parte inferior da tela
   au FileType qf wincmd J
 augroup END
@@ -292,6 +298,11 @@ nnoremap <C-F3> :if &go=~#'r'<Bar>set go-=r<Bar>else<Bar>set go+=r<Bar>endif<CR>
 noremap <F3> :noh<CR>
 noremap <F5> <Esc>:syntax sync fromstart<CR>
 
+" Open Browser
+nnoremap <F12>f :exe ':silent !firefox %'<CR><CR>
+nnoremap <F12>c :exe ':silent !google-chrome %'<CR><CR>
+nnoremap <F12>o :exe ':silent !opera %'<CR><CR>
+
 " Copy filename to clipboard
 "nmap ,cs :let @+=expand("%")<CR>
 " Copy full filename to clipboard
@@ -304,12 +315,9 @@ noremap <F5> <Esc>:syntax sync fromstart<CR>
 " ,V reloads it -- making all changes active (have to save first)
 map ,v :sp ~/.vimrc<CR><C-W>_
 map <silent> ,V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR> 
-" map macros
-let @n='iO'
-"map nl @k
-"map nl iO
 
-map nl i<CR><ESC>O
+map <Leader>nl i<CR><ESC>O
+map <Leader>nb T>i<CR><ESC>O
 
 " Links
 " https://www.ibm.com/developerworks/library/l-vim-script-1/

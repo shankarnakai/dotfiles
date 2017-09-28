@@ -30,7 +30,7 @@ export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$COMPOSER_PATH/
 
 if [ -e ~/.customrc ]
 then
-	source ~/.customrc
+source ~/.customrc
 fi
 
 export DEFAULT_USER=shankar
@@ -44,6 +44,23 @@ export SHOW_CPU=true
 #alias openv="awk -F: '{print $1 \"+\" $2}' | xargs bash -c '</dev/tty vim \"$@\"' ignoreme"
 alias cnpjF="sed -e 's!\.!!g;s!\(..\)!\1.!1;s!\(.\)!\1.!6;s!\(.\)!\1/!10;s!\(.\)!\1-!15'"
 alias fuck='sudo $(fc -nl -1)'
+alias packages='$(go list ./... | grep -v /vendor/)'
 
 
 #curl -sS https://getcomposer.org/installer | php
+getEmail() {
+  if [ -f "$1" ]; then
+    grep -o '[[:alnum:]+\.\_\-]*@[[:alnum:]+\.\_\-]*' "$1" | sort | uniq -i
+  else
+    echo "Expected a file at $1, but it doesn't exist." >&2
+    exit 1
+  fi
+}
+
+#grep -e "<td" ~/teste.html |  sed 's/^ *//;s/ *$//' | sed -e 's/<[^>]*>//g' | awk '{ printf "%s,", $0 } !(NR%6) { print "" }'
+# cat ~/page.txt | awk -F, '{print "\"" $1 "\": &types.Employee{\n CardNumber: \"\", \n Registry:\"" $1 "\",\n Recharges: []types.Recharge{\n types.Recharge{Order: \"48694\",\n Value: " $6 ",\n Status: 3, Date: time.Date(2017, time.June, 21, 0,0,0,0, time.UTC)},\n},\n}," }' | xclip -sel clipboard
+alias node8='nvm exec 8.0.0 node' 
+alias npm8='nvm exec 8.0.0 npm' 
+
+alias node6='nvm exec 6.0.0 node' 
+alias npm6='nvm exec 6.0.0 node' 

@@ -18,7 +18,7 @@ Plugin 'jasoncodes/ctrlp-modified.vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'tpope/vim-surround' " provides mappings to easily delete, change and add such surroundings in pairs
-Plugin 'Shougo/neocomplete.vim'
+"Plugin 'Shougo/neocomplete.vim'
 
 " theme
 Plugin 'vim-airline/vim-airline'
@@ -40,6 +40,11 @@ Plugin 'burnettk/vim-angular'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'quramy/tsuquyomi'
 
+"snipmate
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+"Plugin 'garbas/vim-snipmate'
+"Plugin 'honza/vim-snippets' " Optional:
 
 " plugin from http://vim-scripts.org/vim/scripts.html
 
@@ -76,6 +81,10 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 " let g:syntastic_go_checkers = ['go', 'golint', 'errcheck']
+"
+" typescript
+let g:typescript_indent_disable = 1
+let g:typescript_opfirst='\%([<>=,?^%|*/&]\|\([-:+]\)\1\@!\|!=\|in\%(stanceof\)\=\>\)'
 
 " vim-go
 let g:gofmt_command="goimports"

@@ -60,3 +60,6 @@ log "Downloading aeremote"
 go get -u -v ronoaldo.gopkg.net/aetools/aeremote
 log "Instaling aeremote"
 go install -v ronoaldo.gopkg.net/aetools/aeremote
+
+#ytdl CLI
+go get -u github.com/rylio/ytdl/...

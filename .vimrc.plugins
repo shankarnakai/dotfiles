@@ -11,11 +11,12 @@ Plugin 'VundleVim/Vundle.vim'
 
 " basic plugins
 Plugin 'scrooloose/nerdtree'
+Plugin 'tiagofumo/vim-nerdtree-syntax-highlight' " #NUTELLA
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'majutsushi/tagbar'
 Plugin 'buffet.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'jasoncodes/ctrlp-modified.vim'
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'tpope/vim-surround' " provides mappings to easily delete, change and add such surroundings in pairs
 "Plugin 'Shougo/neocomplete.vim'
@@ -26,25 +27,26 @@ Plugin 'vim-airline/vim-airline-themes'
 
 " file ident
 Plugin 'maksimr/vim-jsbeautify'
-Plugin 'editorconfig/editorconfig-vim'
+Plugin 'Chiel92/vim-autoformat'
 
 " vsc
 Plugin 'tpope/vim-git'
 Plugin 'airblade/vim-gitgutter'
 
 " languages suports
+" GO
 Plugin 'Blackrush/vim-gocode'
 Plugin 'fatih/vim-go'
 Plugin 'dgryski/vim-godef'
-Plugin 'burnettk/vim-angular'
+
+" Javascript
+Plugin 'pangloss/vim-javascript'
 Plugin 'leafgarland/typescript-vim'
-Plugin 'quramy/tsuquyomi'
+Plugin 'Quramy/tsuquyomi'
 
 "snipmate
 Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
-"Plugin 'garbas/vim-snipmate'
-"Plugin 'honza/vim-snippets' " Optional:
 
 " plugin from http://vim-scripts.org/vim/scripts.html
 
@@ -57,16 +59,67 @@ endif
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+"********************************************************************
+
 " Configurations to apply on pluins
 " All plugins configs are saved after here
-"airline 
+
+"AIRLINE THEME
 let g:airline_powerline_fonts = 1
 let g:airline_theme='kolor'
 
-" nerdtree
-let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+"********************************************************************
 
+" NERDTREE
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+map <C-n> :call CustomNERDTreeToggle() <CR>
+
+function! IsNerdTreeEnabled()
+    return exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
+endfunction
+
+function! CustomNERDTreeToggle()
+        if !IsNerdTreeEnabled() "The winnr('$')  Get the index of the last window
+                NERDTreeFind
+        else
+                NERDTreeToggle
+        endif
+endfunction
+
+" calls NERDTreeFind iff NERDTree is active, current window contains a modifiable file, and we're not in vimdiff
+function! s:syncTree()
+  let s:curwnum = winnr()
+  NERDTreeFind
+  exec s:curwnum . "wincmd w"
+endfunction
+
+function! s:syncTreeIf()
+        if winnr("$") > 1 && IsNerdTreeEnabled() "The winnr('$')  Get the index of the last window
+                call s:syncTree()
+        endif
+endfunction
+
+" Shows NERDTree on start and synchronizes the tree with opened file when switching between opened windows
+autocmd BufEnter * call s:syncTreeIf()
+
+" Automatically close vim if only NERDTree left
+autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" Focus on opened view after starting (instead of NERDTree)
+autocmd VimEnter * call s:syncTree()
+au VimEnter * :wincmd w
+
+" Auto refresh NERDTree files
+autocmd CursorHold,CursorHoldI * if (winnr("$") > 1) | call NERDTreeFocus() | call g:NERDTree.ForCurrentTab().getRoot().refresh() | call g:NERDTree.ForCurrentTab().render() | wincmd w | endif
+
+"********************************************************************
+
+" NERD COMMENTER
+map <Leader>/ <plug>NERDCommenterToggle
+
+"********************************************************************
 " syntastic
+
 let g:syntastic_enable_signs=1
 let g:syntastic_quiet_messages = {'level': 'warnings'}
 let g:syntastic_always_populate_loc_list = 1
@@ -77,16 +130,24 @@ let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-" syntastic Go
+"********************************************************************
+"GIT
+
+map <Leader>tg :GitGutterToggle <CR>
+map Tg :GitGutterToggle <CR>
+map <Leader>tgs :GitGutterSignsToggle <CR>
+map Tgs :GitGutterSignsToggle <CR>
+map <Leader>tgl :GitGutterLineHighlightsToggle <CR>
+map Tgl :GitGutterLineHighlightsToggle <CR>
+
+"********************************************************************
+"GO
+
+"syntastic Go
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-" let g:syntastic_go_checkers = ['go', 'golint', 'errcheck']
-"
-" typescript
-let g:typescript_indent_disable = 1
-let g:typescript_opfirst='\%([<>=,?^%|*/&]\|\([-:+]\)\1\@!\|!=\|in\%(stanceof\)\=\>\)'
 
-" vim-go
+"vim-go
 let g:gofmt_command="goimports"
 let g:go_list_type = "quickfix"
 let g:go_highlight_functions = 1
@@ -95,56 +156,6 @@ let g:go_highlight_fields = 1
 let g:go_highlight_types = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-
-" TypeScript
-let g:typescript_indent_disable = 0
-let g:typescript_opfirst='\%([<>=,?^%|*/&]\|\([-:+]\)\1\@!\|!=\|in\%(stanceof\)\=\>\)'
-let g:typescript_compiler_binary = 'tsc'
-let g:typescript_compiler_options = ''
-
-autocmd FileType typescript nmap <buffer> gd <Plug>(TsuquyomiDefinition)
-
-" tagbar
-let g:tagbar_type_go = {
-      \ 'ctagstype' : 'go',
-      \ 'kinds'     : [
-      \ 'p:package',
-      \ 'i:imports:1',
-      \ 'c:constants',
-      \ 'v:variables',
-      \ 't:types',
-      \ 'n:interfaces',
-      \ 'w:fields',
-      \ 'e:embedded',
-      \ 'm:methods',
-      \ 'r:constructor',
-      \ 'f:functions'
-      \ ],
-      \ 'sro' : '.',
-      \ 'kind2scope' : {
-      \ 't' : 'ctype',
-      \ 'n' : 'ntype'
-      \ },
-      \ 'scope2kind' : {
-      \ 'ctype' : 't',
-      \ 'ntype' : 'n'
-      \ },
-      \ 'ctagsbin'  : 'gotags',
-      \ 'ctagsargs' : '-sort -silent'
-      \ }
-
-
-map <Leader>m :CtrlPModified<CR>
-map <leader>t :CtrlPBufTag<CR>
-map <leader>b :CtrlPBuffer<CR>
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-      \ 'file': '\v\.(exe|so|dll)$',
-      \ }
-let g:ctrlp_extensions = ['buffertag'] " tag, buffertag, quickfix, dir, rtscript, undo, line, changes, mixed, bookmarkdir
-
-" godef
 let g:godef_split=0 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
 command! GoDefNewTab call ChangeGoDef(2)
 command! GoDefCurrent call ChangeGoDef(0)
@@ -155,47 +166,75 @@ function! ChangeGoDef(v)
   let g:godef_split=a:v
 endfunction
 
-" nerd commenter
-map <Leader>/ <plug>NERDCommenterToggle
+"********************************************************************
+"JAVASCRIPT
+
+let g:javascript_plugin_jsdoc = 1
+let g:typescript_indent_disable = 0
+let g:typescript_opfirst='\%([<>=,?^%|*/&]\|\([-:+]\)\1\@!\|!=\|in\%(stanceof\)\=\>\)'
+setlocal indentkeys+=0
+
+"********************************************************************
+"AutoFormat
+noremap <c-f> :Autoformat<cr>
+vnoremap <buffer>  <c-f> :Autoformat<cr>
+
+"********************************************************************
+
+" TAGBAR
+let g:tagbar_type_go = {
+      \ 'ctagstype' : 'go',
+      \ 'kinds'     : [
+              \ 'p:package',
+              \ 'i:imports:1',
+              \ 'c:constants',
+              \ 'v:variables',
+              \ 't:types',
+              \ 'n:interfaces',
+              \ 'w:fields',
+              \ 'e:embedded',
+              \ 'm:methods',
+              \ 'r:constructor',
+              \ 'f:functions'
+      \ ],
+      \ 'sro' : '.',
+      \ 'kind2scope' : {
+              \ 't' : 'ctype',
+              \ 'n' : 'ntype'
+      \ },
+      \ 'scope2kind' : {
+              \ 'ctype' : 't',
+              \ 'ntype' : 'n'
+      \ },
+      \ 'ctagsbin'  : 'gotags',
+      \ 'ctagsargs' : '-sort -silent'
+      \ }
+
+let g:tagbar_type_javascript = {
+    \ 'ctagstype' : 'JavaScript',
+    \ 'kinds'     : [
+        \ 'o:objects',
+        \ 'f:functions',
+        \ 'a:arrays',
+        \ 's:strings'
+    \ ]
+\ }
+
+map <F8> :TagbarToggle<CR>
+"********************************************************************
+"CrtlP
+map <Leader>m :CtrlPModified<CR>
+map <leader>t :CtrlPBufTag<CR>
+map <leader>b :CtrlPBuffer<CR>
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+      \ 'file': '\v\.(exe|so|dll)$',
+      \ }
+let g:ctrlp_extensions = ['buffertag'] " tag, buffertag, quickfix, dir, rtscript, undo, line, changes, mixed, bookmarkdir
+
+"********************************************************************
 
 map <F2> :Bufferlist <CR>
-" map <C-n> :NERDTreeToggle <CR>
-map <C-n> :NERDTreeFind <CR>
-map <F8> :TagbarToggle <CR>
 map <Leader>f :Rgrep <CR>
 map <Leader>fb :Bgrep <CR>
-map <Leader>tg :GitGutterToggle <CR>
-map Tg :GitGutterToggle <CR>
-map <Leader>tgs :GitGutterSignsToggle <CR>
-map Tgs :GitGutterSignsToggle <CR>
-map <Leader>tgl :GitGutterLineHighlightsToggle <CR>
-map Tgl :GitGutterLineHighlightsToggle <CR>
-
-" neocomplete configs
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 1
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-" normal mode for jsbeautify
-autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
-autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
-autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
-autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
-" visual mode for js beautify
-autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
-autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
-autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
-autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
-autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>

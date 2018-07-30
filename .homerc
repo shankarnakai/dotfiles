@@ -1,8 +1,10 @@
+export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+
 #GO
 export GO15VENDOREXPERIMENT=0
-export GOROOT=/usr/local/go
-export GOAPP=~/go_appengine
-export GOPATH=~/gowork
+export GOROOT=/usr/lib/go
+export GOAPP=$HOME/go_appengine
+export GOPATH=$HOME/go
 
 #JAVA
 JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
@@ -64,3 +66,12 @@ alias npm8='nvm exec 8.0.0 npm'
 
 alias node6='nvm exec 6.0.0 node' 
 alias npm6='nvm exec 6.0.0 node' 
+
+alias dralli='docker rmi $(docker images -a -q)'
+alias drallc='docker rm $(docker ps -a -q)'
+alias dstopall='docker stop $(docker ps -a -q)'
+
+#to find duplicates lines on file
+#https://stackoverflow.com/questions/6712437/find-duplicate-lines-in-a-file-and-count-how-many-time-each-line-was-duplicated?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+#cut -d';' -f1,2,3,4,5 < ref_historica.csv | sed -e 's/^[[:space:]]*//' | sort | uniq -cd
+# for file in periodo-tempo*; do mv "$file" "${file/periodo-tempo/grid-pack-month}"; done

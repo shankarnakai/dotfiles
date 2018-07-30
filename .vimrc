@@ -39,6 +39,7 @@ set ignorecase " ignore case when searching
 set autoindent      "Keep indentation from previous line
 set smartindent     "Automatically inserts indentation in some cases
 set cindent         "Like smartindent, but stricter and more customisable
+set expandtab       "Always that been pressed 
 
 " Enable folding
 set foldmethod=indent

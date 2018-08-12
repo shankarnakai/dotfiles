@@ -75,11 +75,11 @@ let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', 
 map <C-n> :call CustomNERDTreeToggle() <CR>
 
 function! IsNerdTreeEnabled()
-    return exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
+    return (exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1)
 endfunction
 
 function! CustomNERDTreeToggle()
-        if !IsNerdTreeEnabled() "The winnr('$')  Get the index of the last window
+        if !IsNerdTreeEnabled() && expand('%:t') != "" "The winnr('$')  Get the index of the last window
                 NERDTreeFind
         else
                 NERDTreeToggle
@@ -94,7 +94,7 @@ function! s:syncTree()
 endfunction
 
 function! s:syncTreeIf()
-        if winnr("$") > 1 && IsNerdTreeEnabled() "The winnr('$')  Get the index of the last window
+        if IsNerdTreeEnabled() "The winnr('$')  Get the index of the last window
                 call s:syncTree()
         endif
 endfunction
@@ -104,13 +104,6 @@ autocmd BufEnter * call s:syncTreeIf()
 
 " Automatically close vim if only NERDTree left
 autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-" Focus on opened view after starting (instead of NERDTree)
-autocmd VimEnter * call s:syncTree()
-au VimEnter * :wincmd w
-
-" Auto refresh NERDTree files
-autocmd CursorHold,CursorHoldI * if (winnr("$") > 1) | call NERDTreeFocus() | call g:NERDTree.ForCurrentTab().getRoot().refresh() | call g:NERDTree.ForCurrentTab().render() | wincmd w | endif
 
 "********************************************************************
 
@@ -168,6 +161,8 @@ endfunction
 
 "********************************************************************
 "JAVASCRIPT
+
+let g:syntastic_javascript_checkers = ['']
 
 let g:javascript_plugin_jsdoc = 1
 let g:typescript_indent_disable = 0

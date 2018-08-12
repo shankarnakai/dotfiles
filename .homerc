@@ -22,13 +22,17 @@ export PHP_PATH=~/phpwork
 export COMPOSER_PATH=~/.composer
 export COMPOSER_BIN="$COMPOSER_PATH/vendor/bin"
 
+#HASKELL
+export CABAL_PATH="$HOME/.cabal/bin:/opt/cabal/2.2/bin"
+export GHC_PATH="/opt/ghc/8.4.3/bin"
+
 
 #PATH ENVIROMENT
 export PATH="$HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$COMPOSER_BIN"
 
 COMPOSER_PATH=~/.config/composer
 
-export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$COMPOSER_PATH/vendor/bin
+export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$COMPOSER_PATH/vendor/bin:$CABAL_PATH:$GHC_PATH
 
 if [ -e ~/.customrc ]
 then

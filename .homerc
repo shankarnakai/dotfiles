@@ -1,10 +1,13 @@
+#AWS
+
+#GOOGLE APP ENGINE
 export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 
 #GO
 export GO15VENDOREXPERIMENT=0
 export GOROOT=/usr/lib/go
 export GOAPP=$HOME/go_appengine
-export GOPATH=$HOME/go
+export GOPATH=$HOME/gowork/
 
 #JAVA
 JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
@@ -21,6 +24,10 @@ CATALINA_BASE=/opt/tomcat
 export PHP_PATH=~/phpwork
 export COMPOSER_PATH=~/.composer
 export COMPOSER_BIN="$COMPOSER_PATH/vendor/bin"
+#COMPOSER_PATH=~/.config/composer
+
+#MYSQL
+MYSQL_HOME=/usr/local/Cellar/mysql/8.0.15
 
 #HASKELL
 export CABAL_PATH="$HOME/.cabal/bin:/opt/cabal/2.2/bin"
@@ -28,11 +35,7 @@ export GHC_PATH="/opt/ghc/8.4.3/bin"
 
 
 #PATH ENVIROMENT
-export PATH="$HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$COMPOSER_BIN"
-
-COMPOSER_PATH=~/.config/composer
-
-export PATH=$PATH:$NPM_FOLDER/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$COMPOSER_PATH/vendor/bin:$CABAL_PATH:$GHC_PATH
+export PATH=$PATH:$HOME/bin:$MYSQL_HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$CABAL_PATH:$GHC_PATH
 
 if [ -e ~/.customrc ]
 then
@@ -43,17 +46,8 @@ export DEFAULT_USER=shankar
 export SHOW_BATTERY=true
 export SHOW_CPU=true
 
-#export ZZOFF=""  # desligue funcoes indesejadas
-#export ZZPATH="/home/shankar/funcoeszz"
-#source "$ZZPATH"
 
-#alias openv="awk -F: '{print $1 \"+\" $2}' | xargs bash -c '</dev/tty vim \"$@\"' ignoreme"
-alias cnpjF="sed -e 's!\.!!g;s!\(..\)!\1.!1;s!\(.\)!\1.!6;s!\(.\)!\1/!10;s!\(.\)!\1-!15'"
-alias fuck='sudo $(fc -nl -1)'
-alias packages='$(go list ./... | grep -v /vendor/)'
-
-
-#curl -sS https://getcomposer.org/installer | php
+# FUNCTIONS
 getEmail() {
   if [ -f "$1" ]; then
     grep -o '[[:alnum:]+\.\_\-]*@[[:alnum:]+\.\_\-]*' "$1" | sort | uniq -i
@@ -63,19 +57,81 @@ getEmail() {
   fi
 }
 
-#grep -e "<td" ~/teste.html |  sed 's/^ *//;s/ *$//' | sed -e 's/<[^>]*>//g' | awk '{ printf "%s,", $0 } !(NR%6) { print "" }'
-# cat ~/page.txt | awk -F, '{print "\"" $1 "\": &types.Employee{\n CardNumber: \"\", \n Registry:\"" $1 "\",\n Recharges: []types.Recharge{\n types.Recharge{Order: \"48694\",\n Value: " $6 ",\n Status: 3, Date: time.Date(2017, time.June, 21, 0,0,0,0, time.UTC)},\n},\n}," }' | xclip -sel clipboard
-alias node8='nvm exec 8.0.0 node' 
-alias npm8='nvm exec 8.0.0 npm' 
+forever() {
+n=$1
+shift
+while true; do
+   "$@"
+   sleep $n
+   clear
+done
+}
 
-alias node6='nvm exec 6.0.0 node' 
-alias npm6='nvm exec 6.0.0 node' 
+replace() {
+ext=$1
+find=$2
+newStr=$3
+dry=$4
 
+files=
+
+if [ "$dry" != "true" ]; then 
+	files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
+else
+	files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -l "$find" {} \+;)
+fi
+
+if [ -z "$files" ]; then
+  echo "No results found"
+  return 0
+fi
+
+
+if [ "$dry" != "true" ]; then 
+	echo "$files"
+	return 0
+fi
+
+pattern="s/$find/$newStr/g"
+while IFS= read -r file; do
+  sed -i '' -e "$pattern"  $file 
+  truncate -s -1 $file
+  #sed -i '' -e '$d'  $file
+done <<< $files
+}
+
+#ALIAS
+# MYSQL SERVICE
+alias mysql_restart="$MYSQL_HOME/support-files/mysql.server restart"
+alias mysql_stop="$MYSQL_HOME/support-files/mysql.server stop"
+alias mysql_start="$MYSQL_HOME/support-files/mysql.server start"
+
+# DOCKER SERVICE
 alias dralli='docker rmi $(docker images -a -q)'
 alias drallc='docker rm $(docker ps -a -q)'
 alias dstopall='docker stop $(docker ps -a -q)'
+
+#alias openv="awk -F: '{print $1 \"+\" $2}' | xargs bash -c '</dev/tty vim \"$@\"' ignoreme"
+
+#CNPJ FORMATATION
+alias cnpjF="sed -e 's!\.!!g;s!\(..\)!\1.!1;s!\(.\)!\1.!6;s!\(.\)!\1/!10;s!\(.\)!\1-!15'"
+
+# UTILS
+alias fuck='sudo $(fc -nl -1)'
+alias packages='$(go list ./... | grep -v /vendor/)'
+
+
+# THINKING ABOUT THIS COMMANDS
+
+#grep -e "<td" ~/teste.html |  sed 's/^ *//;s/ *$//' | sed -e 's/<[^>]*>//g' | awk '{ printf "%s,", $0 } !(NR%6) { print "" }'
+# cat ~/page.txt | awk -F, '{print "\"" $1 "\": &types.Employee{\n CardNumber: \"\", \n Registry:\"" $1 "\",\n Recharges: []types.Recharge{\n types.Recharge{Order: \"48694\",\n Value: " $6 ",\n Status: 3, Date: time.Date(2017, time.June, 21, 0,0,0,0, time.UTC)},\n},\n}," }' | xclip -sel clipboard
 
 #to find duplicates lines on file
 #https://stackoverflow.com/questions/6712437/find-duplicate-lines-in-a-file-and-count-how-many-time-each-line-was-duplicated?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 #cut -d';' -f1,2,3,4,5 < ref_historica.csv | sed -e 's/^[[:space:]]*//' | sort | uniq -cd
 # for file in periodo-tempo*; do mv "$file" "${file/periodo-tempo/grid-pack-month}"; done
+#replace "[^a-zA-Z\.]Flags" 's/\([^a-zA-Z\.]\)Flags/\1Groups/g'
+#replace "*.ts" "[\" ]Flags[\" ]" 's/\([" ]\)Flags\([" ]\)/\1Groups\2/g'
+#mysqlimport -h 192.168.99.100 -P3306 -proot -u root --ignore-lines=1 --fields-terminated-by=, --verbose --local apiedzoneserver ~/Documents/assess_items.csv
+#csvsql --db mysql://root:root@192.168.99.100:3306/apiedzoneserver --tables assess_items --insert ~/Documents/assess_items.csv --no-create
+#curl -sS https://getcomposer.org/installer | php

@@ -1,16 +1,21 @@
+#GRADLE
+# Default is `"/(build|integTest|out)/"`
+export GRADLE_COMPLETION_EXCLUDE_PATTERN="/(build|integTest|samples|smokeTest|testFixtures|templates|out|features)/"
+# Essentially turn off checking for changed scripts
+export GRADLE_COMPLETION_EXCLUDE_PATTERN="gradle"
+export GRADLE_CACHE_TTL_MINUTES=$(echo "1440 * 3" | bc)
+
 #AWS
+AWS_PATH=/usr/local/aws/bin
 
 #GOOGLE APP ENGINE
-export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+#export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 
 #GO
 export GO15VENDOREXPERIMENT=0
-export GOROOT=/usr/lib/go
+export GOROOT=/usr/local/go
 export GOAPP=$HOME/go_appengine
 export GOPATH=$HOME/gowork/
-
-#JAVA
-JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
 
 #NODEJS
 export NPM_FOLDER=/home/shankar/.npm
@@ -33,19 +38,44 @@ MYSQL_HOME=/usr/local/Cellar/mysql/8.0.15
 export CABAL_PATH="$HOME/.cabal/bin:/opt/cabal/2.2/bin"
 export GHC_PATH="/opt/ghc/8.4.3/bin"
 
+#RACKET
+export RACKET_PATH="/Applications/Racket"
+export RACKET_LIB_PATH="$HOME/Library/Racket/7.4/bin"
+
+#RUST
+export RUST_HOME="$HOME/.cargo/bin"
+
+#JAVA
+export GRAALVM_PATH=/Library/Java/JavaVirtualMachines/graalvm-ce-java8-20.2.0/Contents/Home
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+echo $JAVA_HOME
+
+export GRAALVM_TOOLS_PATH=$JENV_PATH/bin:$JAVA_HOME/bin/gu:$JAVA_HOME/bin/native-image:$JAVA_HOME/bin/lli:$JAVA_HOME/bin/rebuild-images:$JAVA_HOME/bin/polyglot
+
+#JENV
+export JENV_PATH="$HOME/.jenv"
+
+#PYTHON 2.7
+export PYTHON27_PATH="$HOME/Library/Python/2.7/bin"
+
+#PYTHON 3
+export PYTHON3_PATH="$HOME/Library/Python/3.7/bin"
 
 #PATH ENVIROMENT
-export PATH=$PATH:$HOME/bin:$MYSQL_HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$CABAL_PATH:$GHC_PATH
+export PATH=$PATH:$JAVA_HOME:$HOME/.bin/deploy/:$HOME/.bin/plantuml:$RUST_HOME:$HOME/.bin:$MYSQL_HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$CABAL_PATH:$GHC_PATH:$RACKET_PATH/bin:$RACKET_LIB_PATH:$PYTHON3_PATH:$PYTHON27_PATH:$AWS_PATH
 
-if [ -e ~/.customrc ]
+if [ -e ~/.workrc ]
 then
-source ~/.customrc
+source ~/.workrc
 fi
 
+#POWER TMUX CONFIGURATION
 export DEFAULT_USER=shankar
 export SHOW_BATTERY=true
 export SHOW_CPU=true
 
+#JENV INIT
+eval "$(jenv init -)"
 
 # FUNCTIONS
 getEmail() {
@@ -100,6 +130,16 @@ while IFS= read -r file; do
 done <<< $files
 }
 
+kill-port() {
+  lsof -n -i4TCP:$1 | grep LISTEN | awk '{ print $2 }' | xargs kill
+}
+
+bkp_git_changes() {
+ #create folders
+ pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{$NF=""; print "/tmp/backup/"$0 }' | sed 's/ /\//g' | xargs mkdir -p --
+ pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{print $0 }' | sed 's/ /\//g' | xargs -I '{}' cp '{}' '/tmp/backup/{}'
+}
+
 #ALIAS
 # MYSQL SERVICE
 alias mysql_restart="$MYSQL_HOME/support-files/mysql.server restart"
@@ -117,9 +157,14 @@ alias dstopall='docker stop $(docker ps -a -q)'
 alias cnpjF="sed -e 's!\.!!g;s!\(..\)!\1.!1;s!\(.\)!\1.!6;s!\(.\)!\1/!10;s!\(.\)!\1-!15'"
 
 # UTILS
-alias fuck='sudo $(fc -nl -1)'
+alias damnit='sudo $(fc -nl -1)'
 alias packages='$(go list ./... | grep -v /vendor/)'
+alias vim="nvim"
+alias url_repo="git remote get-url origin | sed 's/.*@\([^:/]*\)[:/]\(.*\)\.git/https:\/\/\1\/\2/'"
+alias open_repo='if [ $(uname -s) = "Darwin" ]; then browser="open"; else browser="xdg-open"; fi; $browser $(url_repo)' 
 
+alias hstart="/usr/local/Cellar/hadoop/3.1.2/sbin/start-all.sh"
+alias hstop="/usr/local/Cellar/hadoop/3.1.2/sbin/stop-all.sh"
 
 # THINKING ABOUT THIS COMMANDS
 

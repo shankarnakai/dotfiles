@@ -4,6 +4,8 @@
   #"$HOME/dotfiles/.homerc  >  $HOME/.homerc"\
   #"$HOME/dotfiles/.vimrc  >  $HOME/.vimrc"\
   #"$HOME/dotfiles/.vimrc.plugins  >  $HOME/.vimrc.plugins"\
+  #"$HOME/dotfiles/.vimrc.common  >  $HOME/.vimrc.common"\
+  #"$HOME/dotfiles/.vimrc.mapping  >  $HOME/.vimrc.mapping"\
   #"$HOME/dotfiles/.tmux.conf  >  $HOME/.tmux.conf"\
 #)
 #i=0;
@@ -27,6 +29,14 @@ fi
 
 if [ ! -f ~/.vimrc.plugins ]; then
 ln -s $HOME/dotfiles/.vimrc.plugins ~/.vimrc.plugins
+fi
+
+if [ ! -f ~/.vimrc.mapping ]; then
+ln -s $HOME/dotfiles/.vimrc.mapping ~/.vimrc.mapping
+fi
+
+if [ ! -f ~/.vimrc.common ]; then
+ln -s $HOME/dotfiles/.vimrc.common ~/.vimrc.common
 fi
 
 if [ ! -f ~/.tmux.conf ]; then

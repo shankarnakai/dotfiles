@@ -1,0 +1,75 @@
+" display settings
+syntax enable      " allays show highlight for file
+set nowrap         " dont wrap lines
+set number         " show line number
+set ruler          " show cursor position in status bar
+set title          " show file in titlebar
+set wildmenu       " enhanced command-line completion
+set laststatus=2   " Always display status line
+
+set autoread
+set visualbell     " shut vim up
+set noerrorbells
+
+"encoding
+set encoding=utf8
+set termencoding=utf-8
+set fileencodings=          " Don't do any encoding conversion
+
+" backup
+set noswapfile
+set nobackup
+set nowb
+set wildignore=*.swp,*.bak,*.pyc,*.class
+
+"History
+set history=1000    " remember more commands and search history
+set undolevels=1000 " use many much levels of undo
+
+" searching
+set smarttab   " insert tabs on the start of a line according to
+"              " shiftwidth, not tabstop
+set hlsearch   " highlight search terms
+set incsearch  " show search matches as you type
+set smartcase  " ignore case if search pattern is all lowercase,
+"              " case-sensitive otherwise
+set ignorecase " ignore case when searching
+
+" indent
+set tabstop=8 
+set softtabstop=0 
+set shiftwidth=4 
+
+set autoindent      "Keep indentation from previous line
+set smartindent     "Automatically inserts indentation in some cases
+set cindent         "Like smartindent, but stricter and more customisable
+set expandtab       "Always that been pressed 
+
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
+" => Editing mappings
+" Remap VIM 0 to first non-blank character
+"map 0 ^
+
+set pastetoggle=<F12>
+set clipboard=unnamed
+
+set t_Co=256
+
+if has('gui_running')
+  set background=light
+  set mouse=a
+  set guioptions-=m  "remove menu bar
+  set guioptions-=T  "remove toolbar
+  set guioptions-=r  "remove right-hand scroll bar
+  set guioptions-=L  "remove left-hand scroll bar
+  set guitablabel=%M\ %t
+else
+  set background=dark
+  set mouse=
+endif
+
+" The default leader is '\\', changed to ','
+let mapleader=","

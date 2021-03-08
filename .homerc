@@ -46,11 +46,9 @@ export RACKET_LIB_PATH="$HOME/Library/Racket/7.4/bin"
 export RUST_HOME="$HOME/.cargo/bin"
 
 #JAVA
-export GRAALVM_PATH=/Library/Java/JavaVirtualMachines/graalvm-ce-java8-20.2.0/Contents/Home
+export GRAALVM_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-lts-java11-19.3.4/Contents/Home
 export JAVA_HOME=$(/usr/libexec/java_home -v 11)
-echo $JAVA_HOME
-
-export GRAALVM_TOOLS_PATH=$JENV_PATH/bin:$JAVA_HOME/bin/gu:$JAVA_HOME/bin/native-image:$JAVA_HOME/bin/lli:$JAVA_HOME/bin/rebuild-images:$JAVA_HOME/bin/polyglot
+#export GRAALVM_TOOLS_PATH=$GRAALVM_HOME/bin/gu:$GRAALVM_HOME/bin/native-image:$GRAALVM_HOME/bin/lli:$GRAALVM_HOME/bin/rebuild-images:$GRAALVM_HOME/bin/polyglot
 
 #JENV
 export JENV_PATH="$HOME/.jenv"
@@ -62,7 +60,7 @@ export PYTHON27_PATH="$HOME/Library/Python/2.7/bin"
 export PYTHON3_PATH="$HOME/Library/Python/3.7/bin"
 
 #PATH ENVIROMENT
-export PATH=$PATH:$JAVA_HOME:$HOME/.bin/deploy/:$HOME/.bin/plantuml:$RUST_HOME:$HOME/.bin:$MYSQL_HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$CABAL_PATH:$GHC_PATH:$RACKET_PATH/bin:$RACKET_LIB_PATH:$PYTHON3_PATH:$PYTHON27_PATH:$AWS_PATH
+export PATH=$PATH:$JAVA_HOME:$GRAALVM_HOME/bin:$HOME/.bin/plantuml:$RUST_HOME:$HOME/.bin:$MYSQL_HOME/bin:$GOAPP:$GOROOT/bin:$GOPATH/bin:$PATH:$NPM_FOLDER/bin:$CABAL_PATH:$GHC_PATH:$RACKET_PATH/bin:$RACKET_LIB_PATH:$PYTHON3_PATH:$PYTHON27_PATH:$AWS_PATH
 
 if [ -e ~/.workrc ]
 then

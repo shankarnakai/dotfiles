@@ -1,0 +1,41 @@
+---
+- name: Bootstrap development environment
+  hosts: local
+  roles:
+    - role: elliotweiser.osx-command-line-tools
+      when: ansible_distribution == "MacOSX"
+    - role: brew 
+    - role: git
+    - role: zsh
+    - role: fzf
+    - role: nvim
+    - role: tmux
+    - role: asdf
+    - role: golang
+    - role: redis
+    - role: zsh
+    - role: ranger
+    - role: node
+      vars:
+        npm_config_prefix: "{{ ansible_env.HOME }}/.npm-packages"
+        nodejs_npm_global_packages:
+          - n
+          - diff-so-fancy
+          - npm-merge-driver
+          - "@tailwindcss/language-server"
+    - role: efm-langserver
+      vars:
+        efm_langserver_version: "0.0.44"
+    - role: nvim
+    - role: fzf
+    - role: gantsign.visual-studio-code
+      users:
+        - username: shankarnakai 
+          visual_studio_code_extensions:
+            - "eamodio.gitlens"
+            - "kahole.magit"
+            - "PhilHindle.errorlens"
+            - "sleistner.vscode-fileutils"
+            - "vscodevim.vim"
+            - "EditorConfig.EditorConfig"
+    - role: desktop

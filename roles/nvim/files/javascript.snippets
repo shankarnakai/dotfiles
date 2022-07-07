@@ -1,0 +1,117 @@
+snippet me "module.exports" b
+module.exports = $1;
+endsnippet
+
+snippet constr "constructor" b
+constructor() {
+	super();
+	$0
+}
+endsnippet
+
+snippet ce "console.error" b
+console.error($1);
+endsnippet
+
+snippet pr "promise"
+return new Promise((resolve, reject) => {
+    resolve($1);
+    return 
+});
+endsnippet
+
+# -----------------------------------------------------------------------------
+
+# Mocha testing
+snippet desc
+describe('${1:feature}', () => {
+	${2}
+});
+endsnippet
+
+snippet desca
+describe('${1:feature}', async () => {
+	${2}
+});
+endsnippet
+
+snippet descf
+describe('${1:feature}', function() {
+	${2}
+});
+endsnippet
+
+snippet it
+it('${1:should do something}', () => {
+	${2}
+});
+endsnippet
+
+snippet ita
+it('${1:should do something}', async () => {
+	${2}
+});
+endsnippet
+
+snippet itd
+it('${1:should do something}', (done) => {
+	${2}
+	done();
+});
+endsnippet
+
+snippet itf
+it('${1:should do something}', function(done) {
+	${2}
+	done()
+});
+endsnippet
+
+snippet bef
+before(() => {
+	${1}
+});
+endsnippet
+
+snippet beff
+before(function() {
+	${1}
+});
+endsnippet
+
+snippet af
+after(() => {
+	${1}
+});
+endsnippet
+
+snippet aff
+after(function() {
+	${1}
+});
+endsnippet
+
+snippet befe
+beforeEach(() => {
+	${1}
+});
+endsnippet
+
+snippet befef
+beforeEach(function() {
+	${1}
+});
+endsnippet
+
+snippet afe
+afterEach(() => {
+	${1}
+});
+endsnippet
+
+snippet afef
+afterEach(function() {
+	${1}
+});
+endsnippet
+

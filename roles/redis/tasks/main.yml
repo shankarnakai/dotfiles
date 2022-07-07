@@ -1,0 +1,14 @@
+- name: Install package
+  homebrew: name=redis state=present
+
+- name: Check for redis server
+  shell: brew services list | grep redis | awk '{ print $2}'
+  register: redis_running
+
+- name: Redis Server Service Status 
+  debug: 
+    msg: "It is running {{redis_running.stdout}}"
+
+- name: Startup with systemctl
+  command: brew services start redis --quiet
+  when: redis_running.stdout == 'none'

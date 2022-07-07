@@ -1,0 +1,89 @@
+"********************************************************************
+" Author: Shankar Nakai Goncalves dos Santos
+"
+"
+"
+" Common VIM configuration
+" It can be used by VI, VIM, NEOVIM, Intellij
+"********************************************************************
+
+" display settings
+syntax enable      " allays show highlight for file
+set nowrap         " dont wrap lines
+set number relativenumber " show relative line number
+set ruler          " show cursor position in status bar
+set title          " show file in titlebar
+set wildmenu       " enhanced command-line completion
+set laststatus=2   " Always display status line
+set autoread
+
+" No bells
+set noerrorbells visualbell t_vb=
+
+"encoding
+set encoding=utf8
+set termencoding=utf-8
+set fileencodings=          " Don't do any encoding conversion
+
+" backup
+set noswapfile
+set nobackup
+set nowb
+
+" Patterns to ignore for expand(), ctrlp, etc.
+set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*.swp,*.bak,*~,._*,*.pyc,*__pycache__*,*.egg-info,*.class
+
+"History
+set history=1000    " remember more commands and search history
+set undolevels=1000 " use many much levels of undo
+
+" searching
+set smarttab   " insert tabs on the start of a line according to
+"              " shiftwidth, not tabstop
+set hlsearch   " highlight search terms
+set incsearch  " show search matches as you type
+set smartcase  " ignore case if search pattern is all lowercase,
+"              " case-sensitive otherwise
+set ignorecase " ignore case when searching
+
+" indent
+set tabstop=8 
+set softtabstop=0 
+set shiftwidth=4 
+"set shiftround " use multiple of shiftwidth when indenting with '<' and '>'
+
+set autoindent      "Keep indentation from previous line
+set smartindent     "Automatically inserts indentation in some cases
+set cindent         "Like smartindent, but stricter and more customisable
+set expandtab       "Always that been pressed 
+
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
+" => Editing mappings
+" Remap VIM 0 to first non-blank character
+"map 0 ^
+
+set pastetoggle=<F12>
+set clipboard^=unnamedplus,unnamed " Make "yanks" work with system clipboard
+
+
+""" VISUAL SETTINGS """
+if &term =~ '256color' | set t_ut= | endif
+set background=dark 
+"| colorscheme PaperColor
+
+" The default leader is '\\', changed to ','
+let mapleader=","
+
+""" SHORTCUTS """
+" Quickly edit vimrc
+nmap <leader>, :e $MYVIMRC<CR>
+" Reload vimrc
+"noretap <silent> <leader>V :source $MYVIMRC<cr>
+
+" Quickly save session
+nnoremap <leader>S :mksession! .session<CR>
+
+

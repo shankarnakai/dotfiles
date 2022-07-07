@@ -1,0 +1,212 @@
+"********************************************************************
+" Author: Shankar Nakai Goncalves dos Santos
+"
+"
+"
+" MAPPING 
+"********************************************************************
+
+
+augroup configgroup
+  autocmd!
+  " Make sure Vim returns to the same line when you reopen a file.
+  autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | execute 'normal! g`"zvzz' | endif
+
+  " Automatically adjust quickfix window depending on how much text there is
+  autocmd FileType qf call AdjustWindowHeight(3, 20)
+  function! AdjustWindowHeight(minheight, maxheight)
+    exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
+  endfunction
+augroup END
+
+augroup filemapping
+  au BufRead,BufNewFile todo*           setlocal filetype=todo
+  au BufRead,BufNewFile *.txt           setlocal filetype=todo
+
+  " Automatic syntax highlighting for files
+  au BufRead,BufNewFile *.sbt           setlocal filetype=scala
+  au BufRead,BufNewFile *.scala         setlocal filetype=scala
+
+  " Java settings
+  au BufRead,BufNewFile *.java compiler javac
+  au BufRead,BufNewFile *.java setlocal makeprg=javac\ %
+  au BufRead,BufNewFile *.java let g:syntastic_java_javac_options = "-Xlint -encoding utf-8"
+  au BufRead,BufNewFile *.bsh setlocal filetype=java
+
+  " Golang settings
+  au BufRead,BufNewFile *.go setlocal makeprg=go\ test\ -c
+  au BufRead,BufNewFile *.go let g:syntastic_go_checkers=['go', 'govet', 'golint']
+  au BufRead,BufNewFile *.go command! -nargs=* GolangTest call GolangTest()
+
+  " Auto close preview/scratch window after select option with omnicomplete
+  autocmd CursorMovedI * if pumvisible() == 0 | pclose | endif
+  autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
+
+  autocmd BufEnter * :syntax sync fromstart
+
+  " Map ,gb to add current branch on commit
+  au Filetype gitcommit map ,gb :0r!git rev-parse --abbrev-ref HEAD<CR>A 
+
+
+  " Map ,sh to add current sh file 
+  "au BufRead,BufNewFile *.go setlocal makeprg=go\ test\ -c
+  "au Filetype bash map ,sh ggO#!/bin/bash<ESC>
+ 
+  
+  " Posiciona a janela QuickFix sempre na parte inferior da tela
+  au FileType qf wincmd J
+augroup END
+
+"https://github.com/vim-syntastic/syntastic/issues/1223
+let g:syntastic_mode_map = { "mode": "active",
+                           \ "active_filetypes": [],
+                           \ "passive_filetypes": ["scala"] }
+
+augroup myvimrc
+  au!
+  au BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | if filereadable(expand($MYGVIMRC)) | so $MYGVIMRC | endif | endif
+augroup END
+
+command! FormatJSON call FormatJSON()
+command! FormatXML call FormatXML()
+
+function! ToggleCursor()
+  let g:cursor_on = exists('g:cursor_on') ? !g:cursor_on : 1
+  if g:cursor_on
+    set cursorcolumn
+    set cursorline
+  else
+    set nocursorcolumn
+    set nocursorline
+  endif
+endfunction
+map <Leader>tc :call ToggleCursor() <CR>
+map Tc :call ToggleCursor() <CR>
+
+function! ToggleErrors()
+  if empty(filter(tabpagebuflist(), 'getbufvar(v:val, "&buftype") is# "quickfix"'))
+    " No location/quickfix list shown, open syntastic error location panel
+    Errors
+  else
+    lclose
+  endif
+endfunction
+map <Leader>te :call ToggleErrors() <CR>
+map Te :call ToggleErrors() <CR>
+
+function! ToggleHidden()
+  set listchars=eol:¶,extends:>,precedes:<,nbsp:·,tab:»\ \,trail:~
+  "Toggle the flag (or set it if it doesn't yet exist)...
+  let g:list_on = exists('g:list_on') ? !g:list_on : 1
+  if g:list_on
+    set list
+  else
+    set nolist
+  endif
+  " another nice listchars configuration
+  " set listchars=tab:\|\ ,eol:¬
+  " set listchars=eol:¬,tab:>-,trail:.,extends:»,precedes:«
+  " set listchars=tab:\|\ ,eol:¬,trail:-,extends:>,precedes:<,nbsp:+
+  " set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+  " old used
+  " set listchars=eol:¬,extends:>,precedes:<,nbsp:·,tab:»\ \,trail:~
+endfunction
+map <Leader>th :call ToggleHidden() <CR>
+map Th :call ToggleHidden() <CR>
+
+function! FormatJSON()
+  %!python -m json.tool
+endfunction
+
+function! FormatXML()
+  %!xmllint -format -
+endfunction
+
+function! CloseHelpWindows()
+  :pclose
+  :cclose
+  :lclose
+endfunction
+map <F6> :call CloseHelpWindows()<CR>
+
+function! TrimWhiteSpace()
+  ":%s/\s\+$//e
+	%s/\s*$//
+	''
+endfunction
+command! TrimWhiteSpace call TrimWhiteSpace()
+
+" key (re)mapppings
+
+" shortcut to escape
+map <C-c> <ESC>
+
+" Wrapped lines goes down/up to next row, rather than next line in file.
+nnoremap j gj
+nnoremap k gk
+
+" Map gb and gB move between buffers
+map gb :bnext<CR>
+map gB :bprevious<CR>
+
+
+" visual shifting (does not exit Visual mode)
+vnoremap < <gv
+vnoremap > >gv
+
+" keep the yanked text on paste
+xnoremap <expr> p 'pgv"'.v:register.'y'
+" search visually selected text
+"vnoremap // y/<C-R>"<CR>
+
+nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+
+" Mappings to move lines http://vim.wikia.com/wiki/Moving_lines_up_or_down
+nnoremap <C-j> :m .+1<CR>==
+nnoremap <C-k> :m .-2<CR>==
+inoremap <C-j> <Esc>:m .+1<CR>==gi
+inoremap <C-k> <Esc>:m .-2<CR>==gi
+vnoremap <C-j> :m '>+1<CR>gv=gv
+vnoremap <C-k> :m '<-2<CR>gv=gv
+
+" Move line/block up: \k
+nnoremap <leader>k :m-2<cr>
+vnoremap <leader>k :m'<-2<cr>gv=gv
+
+" Move line/block down: \j
+nnoremap <leader>j :m+1<cr>
+vnoremap <leader>j :m'>+1<cr>gv=gv
+
+" Duplicate line/block down: \y
+nnoremap <leader>d :t.<cr>
+vnoremap <leader>d :t'>.<cr>gv=gv
+
+"Toggling the display of a widget
+"http://vim.wikia.com/wiki/Hide_toolbar_or_menus_to_see_more_text
+nnoremap <C-F1> :if &go=~#'m'<Bar>set go-=m<Bar>else<Bar>set go+=m<Bar>endif<CR>
+nnoremap <C-F2> :if &go=~#'T'<Bar>set go-=T<Bar>else<Bar>set go+=T<Bar>endif<CR>
+nnoremap <C-F3> :if &go=~#'r'<Bar>set go-=r<Bar>else<Bar>set go+=r<Bar>endif<CR>
+
+" ,v brings up my .vimrc
+" ,V reloads it -- making all changes active (have to save first)
+map ,v :sp ~/.vimrc<CR><C-W>_
+map <silent> ,V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR> 
+
+map <Leader>nl i<CR><ESC>O
+map <Leader>nb T>i<CR><ESC>O
+
+" Links
+" https://www.ibm.com/developerworks/library/l-vim-script-1/
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_2)
+" http://vim.wikia.com/wiki/Accessing_the_system_clipboard
+" http://vim.wikia.com/wiki/Remove_unwanted_spaces
+" http://vim.wikia.com/wiki/Search_for_visually_selected_text
+" http://vim.wikia.com/wiki/Power_of_g
+" http://vim.wikia.com/wiki/Fix_syntax_highlighting
+" http://vim.wikia.com/wiki/Search_only_over_a_visual_range
+
+" Comments
+" to replace selected text on visual mode use \%V before text to replace:
+" sample :'<,'>s/\%Vorig/replace/g 

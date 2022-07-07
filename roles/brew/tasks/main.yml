@@ -1,0 +1,22 @@
+---
+- name: Ensuring Homehomebrew Is Installed
+  stat:
+    path: /usr/local/bin/homebrew
+  register: homebrew_check
+
+- name: Installing Homehomebrew
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homehomebrew/install/HEAD/install.sh)"
+  when:
+    - not homebrew_check.stat.exists
+
+- name: Updating Homehomebrew
+  homebrew:
+    update_homebrew: true
+  when: homebrew_check.stat.exists
+
+- name: Upgrading Homehomebrew Packages
+  homebrew:
+    upgrade_all: true
+  register: result
+  until: result is successful
+  when: homebrew_check.stat.exists

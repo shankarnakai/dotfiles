@@ -1,0 +1,251 @@
+"********************************************************************
+" Author: Shankar Nakai Goncalves dos Santos
+"
+"
+"
+" PLUGINS
+"********************************************************************
+
+call plug#begin("~/.vim/bundle")
+
+""""""""""""""""" 
+"ESSENTIALS
+""""""""""""""""" 
+Plug 'ervandew/supertab' " Tab complete everything
+Plug 'tpope/vim-surround' " motions for handling surrounding characters
+Plug 'wellle/targets.vim'  " because cin), etc. is awesome
+
+""""""""""""""""" 
+" CTRLP
+""""""""""""""""" 
+Plug 'ctrlpvim/ctrlp.vim' " Fuzzy-matching go-to file
+nnoremap <C-b> :CtrlPBuffer<CR>
+map <C-t> :CtrlPBufTag<CR>
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+if has('python') ||  has('python3')
+  " Faster and more accurate fuzzy-matching
+  Plug 'felikz/ctrlp-py-matcher'
+  let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+endif
+
+
+""""""""""""""""" 
+" COMMENT with space-/
+""""""""""""""""" 
+Plug 'tpope/vim-commentary' " for code comments
+nmap <leader>/ <Plug>CommentaryLine
+vmap <leader>/ <Plug>Commentary
+
+""""""""""""""""" 
+" BUFFERS
+""""""""""""""""" 
+Plug 'moll/vim-bbye'  " delete buffer without closing window
+nnoremap X :Bdelete<CR>
+
+Plug 'vim-scripts/BufOnly.vim'  " delete all but current buffer
+Plug 'terryma/vim-multiple-cursors' " Multi cursor support
+
+""""""""""""""""" 
+" NERDTREE
+""""""""""""""""" 
+Plug 'scrooloose/nerdtree', {'on': ['NERDTreeToggle', 'NERDTreeFind']}
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>D :NERDTreeFind<CR>
+let NERDTreeIgnore = ['\.pyc', '__pycache__', '.egg-info[[dir]]', 'pip-wheel-metadata[[dir]]']
+let NERDTreeShowHidden=1
+
+""""""""""""""""" 
+" ASYNC LINTING
+""""""""""""""""" 
+Plug 'w0rp/ale'
+nmap <silent> [s <Plug>(ale_previous_wrap)
+nmap <silent> ]s <Plug>(ale_next_wrap)
+nmap <leader>= <Plug>(ale_fix)
+let g:ale_pattern_options = {
+\   '.*\.md$': {'ale_enabled': 0},
+\   '.*\.markdown$': {'ale_enabled': 0},
+\   '.*\.txt$': {'ale_enabled': 0},
+\   '.*\.tex$': {'ale_enabled': 0},
+\}
+nmap <leader>- :ALEToggleBuffer<cr>
+let g:ale_fix_on_save = 1
+
+" nnoremap <leader>+ :let g:ale_fix_on_save = !g:ale_fix_on_save<cr>
+nnoremap <leader>+ :call ToggleFixOnSave()<cr>
+function! ToggleFixOnSave()
+    let g:ale_fix_on_save = !g:ale_fix_on_save
+    echo g:ale_fix_on_save == 1 ? "ale_fix_on_save enabled" : "ale_fix_on_save disabled"
+endfunction
+
+" Quickly open the loclist to see syntax errors
+nmap <leader>' :lopen<CR>
+let g:ale_maximum_file_size = 500000  " Don't lint large files (> 500KB), it can slow things down
+let g:ale_linters = {}
+let g:ale_linters.javascript = ['eslint', 'tsserver']
+let g:ale_linters.typescript = ['eslint', 'tsserver']
+let g:ale_linters.python = ['flake8', 'mypy', 'pyls']
+let g:ale_linters.html = []
+let g:ale_fixers = {}
+let g:ale_fixers.javascript = ['prettier']
+let g:ale_fixers.typescript = ['prettier']
+let g:ale_fixers.python = ['black']
+let g:ale_fixers.css = ['prettier']
+let g:ale_completion_enabled = 1
+
+" Prevent completion from autoinserting. See :help ale-completion-completopt-bug
+set completeopt=menu,menuone,noselect,noinsert
+" Disable pycodestyle in pyls; let flake8 do that
+let g:ale_python_pyls_config = {'pyls': {'plugins': {'pycodestyle': {'enabled': v:false}}}}
+nmap gd <Plug>(ale_go_to_definition)
+
+
+""""""""""""""""" 
+" THEME
+""""""""""""""""" 
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+let g:airline_left_sep=''
+let g:airline_right_sep=''
+let g:airline_theme='papercolor'
+
+" Explicitly specify which extensions to use
+let g:airline_extensions = ['branch', 'ctrlp', 'tabline', 'ale', 'whitespace']
+
+
+
+""""""""""""""""" 
+" Snippets
+""""""""""""""""" 
+if version >= 704 && has('python') || has('python3') | Plug 'SirVer/ultisnips' | endif
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+Plug 'honza/vim-snippets'
+
+
+""""""""""""""""" 
+" TEST 
+""""""""""""""""" 
+Plug 'tpope/vim-dispatch' " So we can run tests asynchronously
+Plug 'janko-m/vim-test'  " For running tests
+let test#python#runner = 'pytest'
+nmap <silent> <leader>tt :TestNearest<CR>
+nmap <silent> <leader>tT :TestNearest --snapshot-update<CR>
+nmap <silent> <leader>tf :TestFile<CR>
+nmap <silent> <leader>tF :TestFile --snapshot-update<CR>
+nmap <silent> <leader>tl :TestLast<CR>
+nmap <silent> <leader>tL :TestLast --snapshot-update<CR>
+let test#strategy = "dispatch"
+" -s for ipdb support; disable cacheprovider so we don't break 'py.test --lf'
+let test#python#pytest#options = '-s -p no:cacheprovider'
+
+Plug 'tpope/vim-sleuth'  " Detect indent settings
+Plug 'machakann/vim-highlightedyank'  " Highlight yank
+if !exists('##TextYankPost') | map y <Plug>(highlightedyank) | endif
+
+""""""""""""""""" 
+" GIT
+""""""""""""""""" 
+Plug 'airblade/vim-gitgutter'
+" Set gitgutter's bindings manually to avoid clashes
+let g:gitgutter_map_keys = 0
+nmap <leader>gh <Plug>GitGutterStageHunk
+nmap <leader>gH <Plug>GitGutterUndoHunk
+nmap [h <Plug>GitGutterPrevHunk
+nmap ]h <Plug>GitGutterNextHunk
+set updatetime=200 " faster updates
+
+Plug 'tpope/vim-fugitive'  " git integration
+map <leader>gs :Gstatus<CR>
+map <leader>gb :Gblame<CR>
+
+Plug 'tpope/vim-rhubarb'  " For :Gbrowse
+" Open current file on Github
+map <leader>gB :Gbrowse<CR>
+" Open currently selected lines on Github
+vmap <leader>gB :Gbrowse<CR>
+map <leader>gr :Gread<CR>
+map <leader>gw :Gwrite<CR>
+
+Plug 'mattn/webapi-vim' | Plug 'mattn/gist-vim', {'on': 'Gist'}
+" Make gists private by default
+let g:gist_post_private = 1
+" Browse to gist after posting it
+let g:gist_open_browser_after_post = 1
+
+""""""""""""""""" 
+" TAGBAR
+""""""""""""""""" 
+Plug 'majutsushi/tagbar', {'on': 'Tagbar'}
+" Open tagbar
+map <leader>\ :Tagbar<CR>
+let g:tagbar_autofocus = 1
+
+""""""""""""""""" 
+" COLOR
+""""""""""""""""" 
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'sloria/vim-hybrid'  " hybrid with easier-to-read line numbers
+
+""""""""""""""""" 
+" LANGUAGE-SPECIFIC
+""""""""""""""""" 
+Plug 'sheerun/vim-polyglot'  " syntax files for most languages
+let g:polyglot_disabled = ['python', 'latex', 'typescript'] 
+
+" Use python-syntax and vimtex
+let g:markdown_fenced_languages = ['javascript', 'python', 'java', 'scala', 'clojure', 'ruby', 'go', 'rust',  'haskell']
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+
+""""""""""""""""" 
+" PYTHON
+""""""""""""""""" 
+Plug 'vim-python/python-syntax'  " Improved python syntax
+let g:python_highlight_all = 1
+
+Plug 'Vimjas/vim-python-pep8-indent'  " Proper python indenting
+
+
+""""""""""""""""" 
+" JAVASCRIPT
+""""""""""""""""" 
+Plug 'pangloss/vim-javascript' " Javascript highlighting
+Plug 'leshill/vim-json' " JSX highlighting
+Plug 'heavenshell/vim-jsdoc'  " For making JS docstrings
+map <C-c>j <Plug>(jsdoc)
+
+Plug 'leafgarland/typescript-vim'
+
+""""""""""""""""" 
+" GO
+""""""""""""""""" 
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } " go lang language support
+let g:gofmt_command="goimports"
+let g:go_list_type = "quickfix"
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1  
+let g:go_highlight_build_constraints = 1
+let g:godef_split=0 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
+command! GoDefNewTab call ChangeGoDef(2)
+command! GoDefCurrent call ChangeGoDef(0)
+command! GoDefHorizontal call ChangeGoDef(1)
+command! GoDefVertical call ChangeGoDef(3)
+function! ChangeGoDef(v)
+  echo "changing godef split to" a:v
+  let g:godef_split=a:v
+endfunction
+
+
+""""""""""""""""" 
+" Rust
+""""""""""""""""" 
+Plug 'rust-lang/rust.vim'
+let g:rustfmt_autosave = 1
+
+
+let g:rust_clip_command = 'pbcopy' " MAC
+"let g:rust_clip_command = 'xclip -selection clipboard' " LINUX
+
+call plug#end()
+filetype plugin indent on

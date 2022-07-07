@@ -1,0 +1,54 @@
+---
+- name: Ensuring GIT is installed
+  stat:
+    path: /usr/bin/git
+  register: homebrew_check
+
+- name: Install Git
+  homebrew: name=git state=present
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - not homebrew_check.stat.exists
+
+- name: Link global gitignore file
+  file:
+    src: "{{ dotfiles_home }}/roles/git/files/gitignore_global.link"
+    dest: "{{ dotfiles_user_home }}/.gitignore_global"
+    state: link
+    force: yes
+
+- name: Check if gitconfig exists
+  stat: path="{{dotfiles_user_home}}/.gitconfig"
+  register: gitconfig_stat
+
+- name: Back up gitconfig
+  command: mv ~/.gitconfig ~/.gitconfig.bak
+  args:
+    creates: "{{dotfiles_user_home}}/.gitconfig.bak"
+  when: gitconfig_stat.stat.exists
+
+- name: Make sure gitconfig is up to date
+  template:
+    src: "gitconfig.j2"
+    dest: "{{dotfiles_user_home}}/.gitconfig"
+
+- name: generate GitHub SSH key "{{github_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{github_ssh_key_filename}}
+    ssh_key_passphrase: "{{github_ssh_key_filename}}"
+    force: no
+
+- name: generate Bitbucket SSH key "{{bitbucket_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: rsa
+    ssh_key_bits: 4096
+    ssh_key_file: .ssh/{{bitbucket_ssh_key_filename}}
+    ssh_key_passphrase: ""
+    force: no

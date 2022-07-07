@@ -1,0 +1,2 @@
+- name: Clone asdf repository
+  homebrew: name=asdf state=present

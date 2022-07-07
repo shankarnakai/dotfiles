@@ -1,0 +1,14 @@
+dotfiles_user: "{{ lookup('env', 'USER') }}"
+dotfiles_user_home: "{{ '~' | expanduser }}"
+dotfiles_home: "{{ dotfiles_user_home }}/.dotfiles"
+
+full_name: Shankar Nakai
+
+personal_git_user: "{{ lookup('env', 'PERSONAL_GIT_USER') }}"
+personal_git_email: "{{ lookup('env', 'PERSONAL_GIT_EMAIL') }}"
+
+secondary_git_user: "{{ lookup('env', 'SECONDARY_GIT_USER') }}"
+secondary_git_email: "{{ lookup('env', 'SECONDARY_GIT_EMAIL') }}"
+
+github_ssh_passphrase: "{{ lookup('env', 'GITHUB_SSH_PASSPHRASE') }}"
+bitbucket_ssh_passphrase: "{{ lookup('env', 'BITHUB_SSH_PASSPHRASE') }}"

@@ -6,9 +6,6 @@
 
 - name: Install Git
   homebrew: name=git state=present
-  become: yes
-  become_user: root
-  become_method: sudo
   when:
     - not homebrew_check.stat.exists
 

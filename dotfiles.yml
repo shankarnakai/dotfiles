@@ -39,3 +39,4 @@
             - "vscodevim.vim"
             - "EditorConfig.EditorConfig"
     - role: desktop
+    - role: alacritty

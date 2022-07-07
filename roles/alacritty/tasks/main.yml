@@ -1,0 +1,3 @@
+---
+- name: Install Alacritty 
+  homebrew_cask: name=alacritty state=present

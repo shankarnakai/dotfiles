@@ -12,6 +12,7 @@
     - role: tmux
     - role: asdf
     - role: golang
+    - role: python 
     - role: redis
     - role: zsh
     - role: ranger

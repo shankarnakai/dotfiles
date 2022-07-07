@@ -1,3 +1,9 @@
 ---
 - name: Install Alacritty 
   homebrew_cask: name=alacritty state=present
+
+- name: Symlink all configuration 
+  file:
+    src: "{{ dotfiles_home }}/roles/alacritty/files/alacritty.yml"
+    dest: "{{ dotfiles_user_home }}/.alacritty.yml"
+    state: link

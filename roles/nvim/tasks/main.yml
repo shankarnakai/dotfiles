@@ -14,13 +14,21 @@
 - name: Makes sure autoload directory exists
   file: path="{{dotfiles_user_home}}/.vim/autoload" state=directory
 
-- name: Make suer vim-plug directory exists
+- name: Make sure vim-plug directory exists NVIM
   file: path="{{ dotfiles_user_home }}/.local/share/nvim/site/autoload" state=directory
 
-- name: Install vim-plug
+- name: Make sure vim-plug directory exists VIM
+  file: path="{{ dotfiles_user_home }}/.vim/autoload" state=directory
+
+- name: Install vim-plug for nvim
   get_url:
     url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     dest: "{{ dotfiles_user_home }}/.local/share/nvim/site/autoload/plug.vim"
+
+- name: Install vim-plug vim
+  get_url:
+    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: "{{ dotfiles_user_home }}/.vim/autoload/plug.vim"
 
 # Snippets
 - name: Makes sure UltiSnips directory exists

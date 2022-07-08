@@ -42,3 +42,4 @@
     - role: desktop
     - role: alacritty
     - role: aws
+    - role: postman

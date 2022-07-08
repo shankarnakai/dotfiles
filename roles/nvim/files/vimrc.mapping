@@ -15,7 +15,7 @@ augroup configgroup
   " Automatically adjust quickfix window depending on how much text there is
   autocmd FileType qf call AdjustWindowHeight(3, 20)
   function! AdjustWindowHeight(minheight, maxheight)
-    exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
+    exe max([min([line('$'), a:maxheight]), a:minheight]) . "wincmd _"
   endfunction
 augroup END
 

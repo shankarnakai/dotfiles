@@ -43,16 +43,16 @@ Plug 'moll/vim-bbye'  " delete buffer without closing window
 nnoremap X :Bdelete<CR>
 
 Plug 'vim-scripts/BufOnly.vim'  " delete all but current buffer
-Plug 'terryma/vim-multiple-cursors' " Multi cursor support
+Plug 'mg979/vim-visual-multi' " Multi cursor support
 
 """"""""""""""""" 
 " NERDTREE
 """"""""""""""""" 
-Plug 'scrooloose/nerdtree', {'on': ['NERDTreeToggle', 'NERDTreeFind']}
-nnoremap <C-n> :NERDTreeToggle<CR>
-nnoremap <leader>D :NERDTreeFind<CR>
+Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
 let NERDTreeIgnore = ['\.pyc', '__pycache__', '.egg-info[[dir]]', 'pip-wheel-metadata[[dir]]']
-"let NERDTreeShowHidden=1
+let NERDTreeShowHidden=1
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 
 """"""""""""""""" 
 " ASYNC LINTING

@@ -1,13 +1,23 @@
 ---
+
+- name: Ensuring AWS is installed
+  stat:
+    path: /usr/local/bin/aws
+  register: homebrew_check
+
 - name: Download the awscli v2
   get_url: url=https://awscli.amazonaws.com/AWSCLIV2.pkg dest=/tmp/AWSCLIV2.pkg
   register: aws_cli_installer
+  when:
+    - not homebrew_check.stat.exists
 
 - name: Install awscli v2 package.
   shell: sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
     # become: true
     # become_user: root
     # become_method: sudo
+  when:
+    - not homebrew_check.stat.exists
 
 - name: Configure AWS.
   shell: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
@@ -19,3 +29,5 @@
     format: "{{ aws_format }}"
   become_user: "{{ dotfiles_user }}"
   changed_when: false
+  when:
+    - not homebrew_check.stat.exists

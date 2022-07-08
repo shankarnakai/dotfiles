@@ -28,7 +28,7 @@ set fileencodings=          " Don't do any encoding conversion
 " backup
 set noswapfile
 set nobackup
-set nowb
+set nowritebackup
 
 " Patterns to ignore for expand(), ctrlp, etc.
 set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*.swp,*.bak,*~,._*,*.pyc,*__pycache__*,*.egg-info,*.class
@@ -75,15 +75,15 @@ set background=dark
 "| colorscheme PaperColor
 
 " The default leader is '\\', changed to ','
-let mapleader=","
+let mapleader=','
 
 """ SHORTCUTS """
 " Quickly edit vimrc
 nmap <leader>, :e $MYVIMRC<CR>
+
 " Reload vimrc
 "noretap <silent> <leader>V :source $MYVIMRC<cr>
 
 " Quickly save session
 nnoremap <leader>S :mksession! .session<CR>
-
 

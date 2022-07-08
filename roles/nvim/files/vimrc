@@ -1,7 +1,5 @@
-if filereadable(expand("~/.vimrc.plugins"))
-  source ~/.vimrc.plugins
-endif
-
 source ~/.vimrc.common
+
+source ~/.vimrc.plugins
 
 source ~/.vimrc.mapping

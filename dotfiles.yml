@@ -4,7 +4,7 @@
   roles:
     - role: elliotweiser.osx-command-line-tools
       when: ansible_distribution == "MacOSX"
-    - role: brew 
+    - role: brew
     - role: git
     - role: zsh
     - role: fzf
@@ -12,7 +12,7 @@
     - role: tmux
     - role: asdf
     - role: golang
-    - role: python 
+    - role: python
     - role: redis
     - role: zsh
     - role: ranger
@@ -31,7 +31,7 @@
     - role: fzf
     - role: gantsign.visual-studio-code
       users:
-        - username: shankarnakai 
+        - username: shankarnakai
           visual_studio_code_extensions:
             - "eamodio.gitlens"
             - "kahole.magit"
@@ -41,3 +41,4 @@
             - "EditorConfig.EditorConfig"
     - role: desktop
     - role: alacritty
+    - role: aws

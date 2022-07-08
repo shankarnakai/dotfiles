@@ -52,7 +52,7 @@ Plug 'scrooloose/nerdtree', {'on': ['NERDTreeToggle', 'NERDTreeFind']}
 nnoremap <C-n> :NERDTreeToggle<CR>
 nnoremap <leader>D :NERDTreeFind<CR>
 let NERDTreeIgnore = ['\.pyc', '__pycache__', '.egg-info[[dir]]', 'pip-wheel-metadata[[dir]]']
-let NERDTreeShowHidden=1
+"let NERDTreeShowHidden=1
 
 """"""""""""""""" 
 " ASYNC LINTING

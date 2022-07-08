@@ -1,0 +1,21 @@
+---
+- name: Download the awscli v2
+  get_url: url=https://awscli.amazonaws.com/AWSCLIV2.pkg dest=/tmp/AWSCLIV2.pkg
+  register: aws_cli_installer
+
+- name: Install awscli v2 package.
+  shell: sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
+    # become: true
+    # become_user: root
+    # become_method: sudo
+
+- name: Configure AWS.
+  shell: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
+  no_log: True
+  with_dict:
+    aws_access_key_id: "{{ aws_access_key }}"
+    aws_secret_access_key: "{{ aws_secret_key }}"
+    region: "{{ aws_region }}"
+    format: "{{ aws_format }}"
+  become_user: "{{ dotfiles_user }}"
+  changed_when: false

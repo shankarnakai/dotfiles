@@ -1,0 +1,5 @@
+aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+aws_profile: "{{ lookup('env', 'AWS_PROFILE') | default('default', true) }}"
+aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-east-1', true) }}"
+aws_format: "{{ lookup('env', 'AWS_FORMAT') | default('json', true) }}"

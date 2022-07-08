@@ -1,4 +1,3 @@
-" Load plugins
 if filereadable(expand("~/.vimrc.plugins"))
   source ~/.vimrc.plugins
 endif
@@ -6,4 +5,3 @@ endif
 source ~/.vimrc.common
 
 source ~/.vimrc.mapping
-""" end plugins """

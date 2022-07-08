@@ -34,3 +34,5 @@
   args:
     creates: "{{dotfiles_user_home}}/.local/bin/pipx"
 
+- name: "Reshim python"
+  command: "asdf reshim python"

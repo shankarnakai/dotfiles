@@ -34,6 +34,8 @@
         discard = checkout --
         nevermind = checkout . 
         uncommit = reset --mixed HEAD~
+
+        # https://stackoverflow.com/questions/4114095/how-do-i-revert-a-git-repository-to-a-previous-commit
         rv= "!f() { git revert --no-commit $1~1..HEAD; git reset; git status; }; f"
 
         l = log --graph --decorate --oneline --abbrev-commit --all

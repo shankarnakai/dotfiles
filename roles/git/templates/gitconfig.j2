@@ -32,9 +32,9 @@
         # http://gggritso.com/human-git-aliases
         unstage = reset -q HEAD --
         discard = checkout --
+        nevermind = checkout . 
         uncommit = reset --mixed HEAD~
-        rv= "!f() { git revert --no-commit $1..HEAD; git status }; f"
-
+        rv= "!f() { git revert --no-commit $1~1..HEAD; git reset; git status; }; f"
 
         l = log --graph --decorate --oneline --abbrev-commit --all
         h = log --graph --decorate --oneline --abbrev-commit

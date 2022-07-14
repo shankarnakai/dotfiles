@@ -1,5 +1,6 @@
 # FUNCTIONS
 
+
 # getEmail 
 getEmail() {
   if [ -f "$1" ]; then

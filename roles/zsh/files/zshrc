@@ -105,10 +105,9 @@ source $ZSH/oh-my-zsh.sh
 # Use rg to respect .gitignore
 export FZF_DEFAULT_COMMAND='rg --hidden --ignore .git -g ""'
 
-export GOPATH=$HOME/Code/go
-export PATH=$PATH:$(go env GOPATH)/bin
 
 source $HOME/.dotfiles/roles/zsh/aliases.zsh
+source $HOME/.dotfiles/roles/zsh/functions.zsh
 source $HOME/.dotfiles/roles/zsh/completion.zsh
 source $HOME/.dotfiles/roles/zsh/config.zsh
 source $HOME/.dotfiles/roles/zsh/env.zsh

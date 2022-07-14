@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Stops accidental commits to master and develop. <https://gist.github.com/stefansundin/9059706>
+
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+if [[ "$BRANCH" == "master" || "$BRANCH" == "develop" ]]; then
+  echo "BAD DEVELOPER BAD, BAD, BAD. You are on branch $BRANCH." 
+  echo "If you reallyyyyyyyy need to commit on $BRANCH, use with -n to bypass this pre-commit hook."
+  exit 1
+fi
+
+# This block allows for chaining pre-commit hooks if this hook is a global hook (via core.hooksPath) and there also exists a repo-specific pre-commit hook
+if [[ -f ".git/hooks/pre-commit" ]]; then
+  type realpath >/dev/null 2>&1 || { echo >&2 "NOTE: the realpath binary is required to chain to the repo-specific pre-commit hook. Ignoring."; exit 0; }
+  if [[ "$(realpath "${BASH_SOURCE[0]}")" != "$(realpath ".git/hooks/pre-commit")" ]]; then
+    .git/hooks/pre-commit
+    exit $?
+  fi
+fi
+exit 0

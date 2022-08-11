@@ -25,7 +25,7 @@
         dfc = "!dfc() { git df $1^ $1; }; dfc"
 
         please = push --force-with-lease
-        publish = "!git push -u origin $(git rev-parse --abbrev-ref HEAD)"
+        #publish = "!git push -u origin $(git rev-parse --abbrev-ref HEAD)"
         # publish current branch
         publish = "!f() { git push -u ${1:-origin} $(git rev-parse --abbrev-ref HEAD); }; f"
 
@@ -41,8 +41,11 @@
         l = log --graph --decorate --oneline --abbrev-commit --all
         h = log --graph --decorate --oneline --abbrev-commit
 
-        issues = !hub browse -- issues
-        url = "!f() { sha=$(git rev-parse ${1:-HEAD}); hub browse -u -- commit/$sha; }; f"
+        #issues = !hub browse -- issues
+        url = "!f() { git remote get-url origin | sed 's/.*@\\([^:/]*\\)[:/]\\(.*\\)\\.git/https:\\/\\/\\1\\/\\2/'; }; f"
+        repo = "!f() {  open $(git url); }; f" 
+        pr = "!f() { open \"$(git url)/pull-requests/\"; }; f" 
+        create-pr = "!f() { open \"$(git url)/pull-requests/new\"; }; f" 
         # Copy current branch name to clipboard (macOS only)
         cb = "!git rev-parse --abbrev-ref HEAD | tr -d '\n' | pbcopy"
 
@@ -54,7 +57,7 @@
         ui = true
 [core]
         excludesfile = ~/.gitignore_global
-        editor = vim
+        editor = nvim
         hooksPath = ~/.config/git/hooks/
 [apply]
         whitespace = nowarn

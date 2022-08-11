@@ -1,5 +1,12 @@
 # FUNCTIONS
 
+universal_open() {
+  if [ $(uname -s) = \"Darwin\" ]; then
+    echo "open"
+  else 
+    echo "xdg-open"; 
+  fi; 
+}
 
 # getEmail 
 getEmail() {

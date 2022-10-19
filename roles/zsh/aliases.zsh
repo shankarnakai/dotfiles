@@ -18,8 +18,6 @@ alias dstopall='docker stop $(docker ps -a -q)'
 
 # GIT
 alias url_repo="git remote get-url origin | sed 's/.*@\([^:/]*\)[:/]\(.*\)\.git/https:\/\/\1\/\2/'"
-alias open_repo='if [ $(uname -s) = "Darwin" ]; then browser="open"; else browser="xdg-open"; fi; $browser $(url_repo)' 
-alias open_repo2="if [ $(uname -s) = \"Darwin\" ]; then browser=\"open\"; else browser=\"xdg-open\"; fi; $browser $(git remote get-url origin | sed 's/.*@\([^:/]*\)[:/]\(.*\)\.git/https:\/\/\1\/\2/')" 
 
 
 # UTILS
@@ -28,5 +26,5 @@ alias reload!='. ~/.zshrc'
 alias pkill!="pkill -9 -f "
 alias lj='jobs'
 alias timezsh="time zsh -i -c echo"
-alias open="universal_open"
+alias open="$(universal_open)"
 

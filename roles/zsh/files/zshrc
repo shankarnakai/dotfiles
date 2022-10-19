@@ -106,8 +106,8 @@ source $ZSH/oh-my-zsh.sh
 export FZF_DEFAULT_COMMAND='rg --hidden --ignore .git -g ""'
 
 
-source $HOME/.dotfiles/roles/zsh/aliases.zsh
 source $HOME/.dotfiles/roles/zsh/functions.zsh
+source $HOME/.dotfiles/roles/zsh/aliases.zsh
 source $HOME/.dotfiles/roles/zsh/completion.zsh
 source $HOME/.dotfiles/roles/zsh/config.zsh
 source $HOME/.dotfiles/roles/zsh/env.zsh

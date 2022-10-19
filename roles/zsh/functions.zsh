@@ -1,7 +1,7 @@
 # FUNCTIONS
 
 universal_open() {
-  if [ $(uname -s) = \"Darwin\" ]; then
+  if [ $(uname -s) = "Darwin" ]; then
     echo "open"
   else 
     echo "xdg-open"; 
@@ -42,37 +42,36 @@ done
 # Example:
 #  replace "*.go" "some string" "new string" # it will replace string in all the files in the current directory
 #  replace "*.go" "some string" "new string" true # the same but it will not really replace, just dry run 
-replace() {
-ext=$1
-find=$2
-newStr=$3
-dry=$4
+function replace() {
+  ext=$1
+  find=$2
+  newStr=$3
+  dry=$4
 
-files=
+  files=
 
-if [ "$dry" != "true" ]; then 
-	files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
-else
-	files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -l "$find" {} \+;)
-fi
+  if [ "$dry" != "true" ]; then
+    files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
+  else
+    files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -l "$find" {} \+;)
+  fi
 
-if [ -z "$files" ]; then
-  echo "No results found"
-  return 0
-fi
+  if [ -z "$files" ]; then
+    echo "No results found"
+    return 0
+  fi
 
+  if [ "$dry" != "true" ]; then 
+    echo "$files"
+    return 0
+  fi
 
-if [ "$dry" != "true" ]; then 
-	echo "$files"
-	return 0
-fi
-
-pattern="s/$find/$newStr/g"
-while IFS= read -r file; do
-  sed -i '' -e "$pattern"  $file 
-  truncate -s -1 $file
-  #sed -i '' -e '$d'  $file
-done <<< $files
+  pattern="s/$find/$newStr/g"
+  while IFS= read -r file; do
+    sed -i '' -e "$pattern"  $file 
+    truncate -s -1 $file
+    #sed -i '' -e '$d'  $file
+  done <<< $files
 }
 
 # kill-port will kill all the process running in the specified port

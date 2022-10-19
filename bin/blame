@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Blame will git blame all the historical changes for an specific file 
+#
+# $1 - file path 
+#
+# Examples
+#
+#  blame /internal/some/file/path.go
+
+
+f=$1
+shift
+hashes=$(git log --pretty=format:%H -- "$f")
+for hash in $hashes; do
+  echo "**************************************************************************************************************"
+  echo "--- FILE   : $f"
+  echo "--- LOADING: $hash"
+  echo "**************************************************************************************************************"
+
+  git blame --color-lines --color-by-age "$@" "$hash" -- "$f" 
+  while true; do
+    #read -r -p "Press any key to continue... " -n1 -s key;
+    IFS= read -n1 -r key
+    [[ $key == ' ' ]] && break
+    echo ""
+  done
+done

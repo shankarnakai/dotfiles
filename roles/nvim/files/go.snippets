@@ -550,6 +550,50 @@ if !reflect.DeepEqual(${1:expected}, ${2:actual}) {
 }
 endsnippet
 
+## Mock
+snippet mt "Mock type"
+//${1:${VISUAL}}
+type ${1:${VISUAL}} struct {
+	mock.Mock
+}
+endsnippet
+
+snippet mve "Mock value and error"
+func (mock *${1}) ${2:${VISUAL}} {
+	args := mock.Called(${3})
+	value := args.Get(0)
+	err := args.Error(1)
+
+	if value == nil || err != nil{
+		return nil, err
+	}
+	return value.(${4}), err 
+}
+endsnippet
+
+snippet me "Mock error"
+func (mock *${1}) ${2:${VISUAL}} {
+	args := mock.Called(${3})
+	return args.Error(0)
+}
+endsnippet
+
+snippet mv "Mock value"
+func (mock *${1}) ${2:${VISUAL}} {
+	args := mock.Called(${3})
+	return args.Get(0).(${4})
+}
+endsnippet
+
+snippet mc "Mock constructor"
+func New${1:${VISUAL}}(t *testing.T) *$1 {
+	mock := &$1{}
+	mock.Test(t)
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+	return mock
+}
+endsnippet
+
 global !p
 
 import re

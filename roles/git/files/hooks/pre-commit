@@ -3,7 +3,7 @@
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
 
-if [[ "$BRANCH" == "master" || "$BRANCH" == "develop" ]]; then
+if [[ "$BRANCH" == "master" || "$BRANCH" == "develop" || "$BRANCH" == "main" ]]; then
   echo "BAD DEVELOPER BAD, BAD, BAD. You are on branch $BRANCH." 
   echo "If you reallyyyyyyyy need to commit on $BRANCH, use with -n to bypass this pre-commit hook."
   exit 1

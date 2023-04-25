@@ -6,7 +6,6 @@
 " MAPPING 
 "********************************************************************
 
-
 augroup configgroup
   autocmd!
   " Make sure Vim returns to the same line when you reopen a file.

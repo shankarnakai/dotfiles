@@ -98,7 +98,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-. /usr/local/opt/asdf/libexec/asdf.sh
 
 #source /usr/share/doc/fzf/examples/key-bindings.zsh
 

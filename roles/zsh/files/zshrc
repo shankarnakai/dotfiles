@@ -115,3 +115,10 @@ source $HOME/.dotfiles/roles/zsh/path.zsh
 if [ -e ~/.localrc ]; then
   source ~/.localrc
 fi
+
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform
+

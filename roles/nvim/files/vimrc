@@ -3,3 +3,7 @@ source ~/.vimrc.common
 source ~/.vimrc.plugins
 
 source ~/.vimrc.mapping
+
+"source ~/.vimrc.local
+
+"source ~/.vimrc.plugs

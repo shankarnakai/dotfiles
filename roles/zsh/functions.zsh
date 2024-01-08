@@ -69,7 +69,7 @@ function replace() {
   pattern="s/$find/$newStr/g"
   while IFS= read -r file; do
     sed -i '' -e "$pattern"  $file 
-    truncate -s -1 $file
+    #truncate -s -1 $file
     #sed -i '' -e '$d'  $file
   done <<< $files
 }

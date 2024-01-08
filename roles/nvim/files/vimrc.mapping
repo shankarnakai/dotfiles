@@ -18,6 +18,7 @@ augroup configgroup
   endfunction
 augroup END
 
+
 augroup filemapping
   au BufRead,BufNewFile todo*           setlocal filetype=todo
   au BufRead,BufNewFile *.txt           setlocal filetype=todo
@@ -54,6 +55,13 @@ augroup filemapping
   
   " Posiciona a janela QuickFix sempre na parte inferior da tela
   au FileType qf wincmd J
+augroup END
+
+" vim-go key bindings and autocommands
+augroup go
+    autocmd!
+    " emulate autobuild
+    au bufwritepost *.go silent! :GoInstall
 augroup END
 
 "https://github.com/vim-syntastic/syntastic/issues/1223
@@ -127,6 +135,14 @@ function! CloseHelpWindows()
   :lclose
 endfunction
 map <F6> :call CloseHelpWindows()<CR>
+
+"ToggleLineNumbers will alternate between relative number and regular number
+" This is useful for when pair-programming, because they can reference the
+" line without getting confused
+function! ToggleLineNumbers()
+  set number relativenumber!
+endfunction
+:command! ToggleLineNumbers :call ToggleLineNumbers()
 
 function! TrimWhiteSpace()
   ":%s/\s\+$//e

@@ -2,11 +2,6 @@
 
 priority -10
 
-# shorthand variable declaration
-snippet : "v := value"
-${1} := ${0}
-endsnippet
-
 # anonymous function
 snippet anon "fn := func() { ... }"
 ${1:fn} := func() {
@@ -15,13 +10,8 @@ ${1:fn} := func() {
 ${0}
 endsnippet
 
-# append
-snippet ap "append(slice, value)"
-append(${1:slice}, ${0:value})
-endsnippet
-
 # append assignment
-snippet ap= "a = append(a, value)"
+snippet ap "a = append(a, value)"
 ${1:slice} = append($1, ${0:value})
 endsnippet
 
@@ -62,17 +52,6 @@ const (
 )
 endsnippet
 
-# continue
-snippet cn "continue"
-continue
-endsnippet
-
-# default case
-snippet default "default: ..."
-default:
-	${0:${VISUAL}}
-endsnippet
-
 # defer
 snippet df "defer someFunction()"
 defer ${1:func}(${2})
@@ -94,34 +73,6 @@ defer func() {
 }()
 endsnippet
 
-# gpl
-snippet gpl
-/*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, see <http://www.gnu.org/licenses/>.
-*
-* Copyright (C) ${1:Author}, `!v strftime("%Y")`
-*/
-${0}
-endsnippet
-
-# import
-snippet import "import ( ... )"
-import (
-	"${1:package}"
-)
-endsnippet
-
 # full interface snippet
 snippet interface "interface I { ... }"
 type ${1:Interface} interface {
@@ -132,13 +83,6 @@ endsnippet
 # if condition
 snippet if "if ... { ... }"
 if ${1:condition} {
-	${0:${VISUAL}}
-}
-endsnippet
-
-# else snippet
-snippet else
-else {
 	${0:${VISUAL}}
 }
 endsnippet
@@ -180,14 +124,6 @@ if err != nil {
 ${0}
 endsnippet
 
-# error log snippet
-snippet errl "Error with log.Fatal(err)" !b
-if err != nil {
-	log.Fatal(err)
-}
-${0}
-endsnippet
-
 # error multiple return
 snippet errn, "Error return with two return values" !b
 if err != nil {
@@ -203,38 +139,6 @@ if err != nil {
 ${0}
 endsnippet
 
-snippet errn,wf "Error return wrapf with two return values" !b
-if err != nil {
-	return nil, errors.Wrapf(err, "${1:message %v}", ${2:args...})
-}
-${0}
-endsnippet
-
-# error panic
-snippet errp "Error panic" !b
-if err != nil {
-	panic(${1})
-}
-${0}
-endsnippet
-
-# error test
-snippet errt "Error test fatal " !b
-if err != nil {
-	t.Fatal(err)
-}
-${0}
-endsnippet
-
-# error handle
-snippet errh "Error handle and return" !b
-if err != nil {
-	${1}
-	return
-}
-${0}
-endsnippet
-
 # json field tag
 snippet json "\`json:key\`"
 \`json:"${1:`!v  go#util#snippetcase(matchstr(getline("."), '\w\+'))`}"\`
@@ -245,9 +149,9 @@ snippet yaml "\`yaml:key\`"
 \`yaml:"${1:`!v  go#util#snippetcase(matchstr(getline("."), '\w\+'))`}"\`
 endsnippet
 
-# fallthrough
-snippet ft "fallthrough"
-fallthrough
+# dyav field tag
+snippet dyav "\`dynamodbav:key\`"
+\`dynamodbav:"${1:`!v  go#util#snippetcase(matchstr(getline("."), '\w\+'))`}"\`
 endsnippet
 
 # for loop
@@ -365,23 +269,6 @@ if !ok {
 }
 endsnippet
 
-# package
-snippet package "package ..."
-// Package $1 provides ${2:...}
-package ${1:main}
-${0}
-endsnippet
-
-# panic
-snippet pn "panic()"
-panic("${0:msg}")
-endsnippet
-
-# return
-snippet rt "return"
-return ${0:${VISUAL}}
-endsnippet
-
 # select
 snippet select "select { case a := <-chan: ... }"
 select {
@@ -431,8 +318,8 @@ endsnippet
 
 # test function
 snippet test "func TestXYZ(t *testing.T) { ... }"
-func Test${1:Function}(t *testing.T) {
-	${0:${VISUAL}}
+func Test${0:${VISUAL}}(t *testing.T) {
+	${1}
 }
 endsnippet
 
@@ -593,6 +480,38 @@ func New${1:${VISUAL}}(t *testing.T) *$1 {
 	return mock
 }
 endsnippet
+
+snippet setup "Setup Test dependencies"
+type ${1:${VISUAL}}Dependencies struct {
+	someMock *SomeMock
+}
+
+func setup${1}(t *testing.T) (*${1}, *${1}Dependencies) {
+	deps := &${1}Dependencies{
+		someMock: NewSomeMocker(t),
+	}
+
+	${1} := new${1}deps.someMock)
+	return ${1}, deps
+}
+endsnippet
+
+snippet setupH "Setup Handler Test dependencies"
+type ${1:${VISUAL}}Dependencies struct {
+	someMock *SomeMock
+}
+
+func setup${1}(t *testing.T) (*${1}, *${1}Dependencies) {
+	deps := &${1}Dependencies{
+		someMock: NewSomeMocker(t),
+	}
+
+	${1} := new${1}deps.someMock)
+
+	return makeHandleTester(t, deps, ${1})
+}
+endsnippet
+
 
 global !p
 

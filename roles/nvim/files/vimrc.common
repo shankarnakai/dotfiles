@@ -102,6 +102,6 @@ set updatetime=300
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
 
-set signcolumn=yes:1
+set signcolumn=yes
 highlight clear SignColumn
 

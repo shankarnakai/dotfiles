@@ -54,7 +54,7 @@ Plug 'mg979/vim-visual-multi' " Multi cursor support
 """"""""""""""""" 
 " NERDTREE
 """"""""""""""""" 
-Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
+Plug 'preservim/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
 let NERDTreeIgnore = ['\.pyc', '__pycache__', '.egg-info[[dir]]', 'pip-wheel-metadata[[dir]]']
 let NERDTreeShowHidden=1
 "nnoremap <C-S-n> :NERDTreeToggle<CR>
@@ -123,7 +123,6 @@ let g:airline_extensions = ['branch', 'tabline', 'ale', 'whitespace']
 " Snippets
 """"""""""""""""" 
 Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 let g:UltiSnipsJumpForwardTrigger='<c-j>'
 let g:UltiSnipsJumpBackwardTrigger='<c-k>'
 let g:UltiSnipsSnippetsDir = '~/.config/nvim/snips/'
@@ -347,8 +346,8 @@ Plug 'leafgarland/typescript-vim'
 """"""""""""""""" 
 " GO
 """"""""""""""""" 
-Plug 'buoto/gotests-vim'
-let g:gotests_template_dir = '/Users/shankarnakai/.dotfiles/roles/golang/templates/gotests/'
+"Plug 'buoto/gotests-vim'
+"let g:gotests_template_dir = '/Users/shankarnakai/.dotfiles/roles/golang/templates/gotests/'
 "let g:gotests_template = 'testify'
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } " go lang language support
@@ -360,11 +359,16 @@ let g:go_highlight_fields = 1
 let g:go_highlight_types = 1
 let g:go_highlight_operators = 1  
 let g:go_highlight_build_constraints = 1
+let g:go_build_tags = 'tag' 
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
 let g:godef_split=0 "0 new buffer, 1 split window, 2 new tab, 3 vsplit window
+
 command! GoDefNewTab call ChangeGoDef(2)
 command! GoDefCurrent call ChangeGoDef(0)
 command! GoDefHorizontal call ChangeGoDef(1)
 command! GoDefVertical call ChangeGoDef(3)
+
 function! ChangeGoDef(v)
   echo 'changing godef split to' a:v
   let g:godef_split=a:v

@@ -1,0 +1,13 @@
+- name: Install package
+  homebrew: name=direnv state=present
+
+- name: Ensuring Direnv Is Installed
+  stat:
+    path: /usr/local/bin/direnv
+  register: direnv_check
+
+- name: Installing Direnv
+  shell: brew install direnv
+  when:
+    - not direnv_check.stat.exists
+

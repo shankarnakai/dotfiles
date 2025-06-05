@@ -332,8 +332,13 @@ endsnippet
 
 # test table snippet
 snippet tt
-type args struct {
+var (
+	someError = errors.New("someError")
+)
 
+type args struct {
+	input1 string
+	input2 int
 }
 
 var scenarios = map[string]struct {
@@ -342,24 +347,36 @@ var scenarios = map[string]struct {
 	want string
 	wantErr error 
 }{
-	"SHOULD work": {
-		given	: args{},
-		want	: "${2}", 
-		wantErr : nil,
-	},
+	"SHOULD succeed with valid inputs": {
+            given: args{
+                input1: "valid input",
+                input2: 42,
+            },
+            want:    "expected result",
+            wantErr: nil,
+        },
+        "SHOULD fail with invalid input": {
+            given: args{
+                input1: "invalid input",
+                input2: 0,
+            },
+            want:    "",
+            wantErr: someError,
+        },
 }
 for name, tt := range scenarios {
 	tt := tt
 	t.Run(name, func(t *testing.T){
-	    result, err := ${4:Function}(tt.given)
+	    t.Parallel()
+	    got, err := ${4:Function}(tt.given)
 
-	    if tt.wantErr == nil {
-		    assert.NoError(t, err)
+	    if tt.wantErr != nil {
+		    assert.ErrorIs(t, err, tt.wantErr)
 	    } else {
-		    assert.EqualError(t, err, tt.wantErr.Error())
+		    assert.NoError(t, err)
 	    }
 
-	    assert.Equal(t, tt.want, result)
+	    assert.Equal(t, tt.want, got)
 	})
 }
 endsnippet

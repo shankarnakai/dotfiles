@@ -27,3 +27,6 @@ alias pkill!="pkill -9 -f "
 alias lj='jobs'
 alias timezsh="time zsh -i -c echo"
 alias open="$(universal_open)"
+
+## CURL
+alias curltime="curl -w \"@$HOME/.curl-format.txt\" -o /dev/null -s "

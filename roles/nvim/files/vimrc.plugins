@@ -1,8 +1,6 @@
 "********************************************************************
 " Author: Shankar Nakai Goncalves dos Santos
 "
-"
-"
 " PLUGINS
 "********************************************************************
 
@@ -16,18 +14,8 @@ Plug 'tpope/vim-surround' " motions for handling surrounding characters
 Plug 'wellle/targets.vim'  " because cin), etc. is awesome
 
 """"""""""""""""" 
-" CTRLP
+" FZF 
 """"""""""""""""" 
-"Plug 'ctrlpvim/ctrlp.vim' " Fuzzy-matching go-to file
-"nnoremap <C-b> :CtrlPBuffer<CR>
-"map <C-t> :CtrlPBufTag<CR>
-"let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-"if has('python') ||  has('python3')
-"  " Faster and more accurate fuzzy-matching
-"  Plug 'felikz/ctrlp-py-matcher'
-"  let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-"endif
-
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 nnoremap <C-p> :Files<CR>
@@ -36,7 +24,7 @@ nnoremap <Leader>h :History<CR>
 
 
 """"""""""""""""" 
-" COMMENT with space-/
+" COMMENT with ,/
 """"""""""""""""" 
 Plug 'tpope/vim-commentary' " for code comments
 nmap <leader>/ <Plug>CommentaryLine
@@ -48,14 +36,28 @@ vmap <leader>/ <Plug>Commentary
 Plug 'moll/vim-bbye'  " delete buffer without closing window
 nnoremap X :Bdelete<CR>
 
-Plug 'vim-scripts/BufOnly.vim'  " delete all but current buffer
 Plug 'mg979/vim-visual-multi' " Multi cursor support
 
 """"""""""""""""" 
 " NERDTREE
 """"""""""""""""" 
 Plug 'preservim/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
-let NERDTreeIgnore = ['\.pyc', '__pycache__', '.egg-info[[dir]]', 'pip-wheel-metadata[[dir]]']
+
+let NERDTreeIgnore = [
+   \ '\.pyc', 
+   \ '__pycache__', 
+   \ '.egg-info[[dir]]', 
+   \ 'pip-wheel-metadata[[dir]]',
+   \ '\.class$',
+   \ '^target$',
+   \ '^build$',
+   \ '^\.settings$',
+   \ '\.classpath$',
+   \ '\.project$',
+   \ '^\.idea$',
+   \ '^\.gradle$',
+  \]
+
 let NERDTreeShowHidden=1
 "nnoremap <C-S-n> :NERDTreeToggle<CR>
 "nnoremap <C-f> :NERDTreeFind<CR>
@@ -64,7 +66,7 @@ nnoremap <C-f> :NERDTreeToggle<CR>
 """"""""""""""""" 
 " ASYNC LINTING
 """"""""""""""""" 
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 nmap <silent> [s <Plug>(ale_previous_wrap)
 nmap <silent> ]s <Plug>(ale_next_wrap)
 nmap <leader>= <Plug>(ale_fix)
@@ -92,6 +94,7 @@ let g:ale_linters.javascript = ['eslint', 'tsserver']
 let g:ale_linters.typescript = ['eslint', 'tsserver']
 let g:ale_linters.python = ['flake8', 'mypy', 'pyls']
 let g:ale_linters.html = []
+
 let g:ale_fixers = {}
 let g:ale_fixers.javascript = ['prettier']
 let g:ale_fixers.typescript = ['prettier']
@@ -112,11 +115,15 @@ nmap gd <Plug>(ale_go_to_definition)
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 let g:airline_left_sep=''
 let g:airline_right_sep=''
-let g:airline_theme='papercolor'
+let g:airline_theme = 'catppuccin'
 
 " Explicitly specify which extensions to use
 let g:airline_extensions = ['branch', 'tabline', 'ale', 'whitespace']
 
+""""""""""""""""" 
+" COLOR
+""""""""""""""""" 
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 
 
 """"""""""""""""" 
@@ -162,22 +169,8 @@ nmap ]h <Plug>GitGutterNextHunk
 set updatetime=200 " faster updates
 
 Plug 'tpope/vim-fugitive'  " git integration
-map <leader>gs :Gstatus<CR>
-map <leader>gb :Gblame<CR>
-
-Plug 'tpope/vim-rhubarb'  " For :Gbrowse
-" Open current file on Github
-map <leader>gB :Gbrowse<CR>
-" Open currently selected lines on Github
-vmap <leader>gB :Gbrowse<CR>
-map <leader>gr :Gread<CR>
-map <leader>gw :Gwrite<CR>
-
-Plug 'mattn/webapi-vim' | Plug 'mattn/gist-vim', {'on': 'Gist'}
-" Make gists private by default
-let g:gist_post_private = 1
-" Browse to gist after posting it
-let g:gist_open_browser_after_post = 1
+map <leader>gs :Git status<CR>
+map <leader>gb :Git blame<CR>
 
 """"""""""""""""" 
 " TAGBAR
@@ -187,15 +180,17 @@ Plug 'majutsushi/tagbar', {'on': 'Tagbar'}
 map <leader>\ :Tagbar<CR>
 let g:tagbar_autofocus = 1
 
+
 """"""""""""""""" 
-" COLOR
+" DEBUGGER 
 """"""""""""""""" 
-Plug 'NLKNguyen/papercolor-theme'
-Plug 'sloria/vim-hybrid'  " hybrid with easier-to-read line numbers
+Plug 'sebdah/vim-delve'
 
 """"""""""""""""" 
 " LANGUAGE-SPECIFIC
 """"""""""""""""" 
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
 Plug 'sheerun/vim-polyglot'  " syntax files for most languages
 let g:polyglot_disabled = ['python', 'latex', 'typescript'] 
 
@@ -322,6 +317,10 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
+""""""""""""""""" 
+" JAVA  
+""""""""""""""""" 
+
 
 """"""""""""""""" 
 " PYTHON
@@ -374,13 +373,28 @@ function! ChangeGoDef(v)
   let g:godef_split=a:v
 endfunction
 
+let g:go_debug_windows = {
+      \ 'vars':       'rightbelow 50vnew',
+      \ 'stack':      'rightbelow 10new',
+      \ 'goroutines':      'rightbelow 10new',
+      \ }
+      
+let g:go_debug_mappings = {
+      \ '(go-debug-continue)': {'key': 'c', 'arguments': '<nowait>'},
+      \ '(go-debug-next)': {'key': 'n', 'arguments': '<nowait>'},
+      \ '(go-debug-step)': {'key': 's'},
+      \ '(go-debug-print)': {'key': 'p'},
+  \}
+
+map <leader>ds :GoDebugStart<cr>
+map <leader>dt :GoDebugStop<cr>
+map <leader>db :GoDebugBreakpoint<cr>
 
 """"""""""""""""" 
-" Rust
+" RUST
 """"""""""""""""" 
 Plug 'rust-lang/rust.vim'
 let g:rustfmt_autosave = 1
-
 
 let g:rust_clip_command = 'pbcopy' " MAC
 "let g:rust_clip_command = 'xclip -selection clipboard' " LINUX
@@ -393,3 +407,8 @@ Plug 'unisonweb/unison', { 'branch': 'trunk', 'rtp': 'editor-support/vim' }
 
 call plug#end()
 filetype plugin indent on
+
+
+colorscheme catppuccin-macchiato " catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
+
+

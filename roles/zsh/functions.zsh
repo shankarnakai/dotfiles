@@ -88,3 +88,4 @@ bkp_git_changes() {
  pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{$NF=""; print "/tmp/backup/"$0 }' | sed 's/ /\//g' | xargs mkdir -p --
  pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{print $0 }' | sed 's/ /\//g' | xargs -I '{}' cp '{}' '/tmp/backup/{}'
 }
+

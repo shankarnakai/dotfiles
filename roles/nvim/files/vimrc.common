@@ -73,7 +73,7 @@ set clipboard^=unnamedplus,unnamed " Make "yanks" work with system clipboard
 """ VISUAL SETTINGS """
 if &term =~ '256color' | set t_ut= | endif
 set background=dark 
-"| colorscheme PaperColor
+" colorscheme kanagawa
 
 " The default leader is '\\', changed to ','
 let mapleader=','

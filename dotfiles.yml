@@ -9,22 +9,15 @@
     - role: zsh
     - role: direnv 
     - role: fzf
+    - role: ripgrep
     - role: nvim
     - role: tmux
-    - role: asdf
     - role: golang
     - role: python
     - role: redis
     - role: zsh
     - role: ranger
     - role: node
-      vars:
-        npm_config_prefix: "{{ ansible_env.HOME }}/.npm-packages"
-        nodejs_npm_global_packages:
-          - n
-          - diff-so-fancy
-          - npm-merge-driver
-          - "@tailwindcss/language-server"
     - role: efm-langserver
       vars:
         efm_langserver_version: "0.0.44"

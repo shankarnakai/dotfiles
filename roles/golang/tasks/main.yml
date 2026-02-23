@@ -1,10 +1,32 @@
-- name: Add golang plugin to asdf
-  command: "asdf plugin-add golang"
-  register: golang_add
-  failed_when: golang_add == 2
+- name: Fetch latest stable Go release info
+  uri:
+    url: https://go.dev/dl/?mode=json
+    return_content: true
+  register: go_releases
 
-- name: Install golang {{version}} with asdf
-  command: "asdf install golang {{version}}"
+- name: Set latest Go version
+  set_fact:
+    go_version: "{{ (go_releases.json | selectattr('stable', 'equalto', true) | first).version }}"
 
-- name: Set global version for golang to {{version}}
-  command: "asdf global golang {{version}}"
+- name: Set Go architecture
+  set_fact:
+    go_arch: "{{ 'arm64' if ansible_architecture == 'arm64' else 'amd64' }}"
+
+- name: Download Go tarball
+  get_url:
+    url: "https://dl.google.com/go/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
+    dest: "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
+    mode: "0644"
+
+- name: Remove existing Go installation
+  file:
+    path: /usr/local/go
+    state: absent
+  become: true
+
+- name: Extract Go to /usr/local
+  unarchive:
+    src: "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
+    dest: /usr/local
+    remote_src: true
+  become: true

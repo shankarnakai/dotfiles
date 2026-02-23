@@ -3,14 +3,10 @@
 Configure linux workstation using Ansible.
 
 ### Languages
-Languages are managed with [asdf](https://asdf-vm.com/#/).
-- Golang
-- Rust
-- Java
-- Python
-- Nodejs
-- Deno
-- Terraform
+- Golang (official binary)
+- Python (pyenv)
+- Nodejs (homebrew)
+- Terraform (homebrew)
 
 ### System
 - fzf

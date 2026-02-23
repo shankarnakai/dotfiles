@@ -60,3 +60,5 @@
       tags: [aws]
     - role: postman
       tags: [postman]
+    - role: ollama
+      tags: [ollama]

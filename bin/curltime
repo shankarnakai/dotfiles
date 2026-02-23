@@ -1,0 +1,12 @@
+#!/bin/bash
+
+curl -w @- -o /dev/null -s "$@" <<'EOF'
+    time_namelookup      :  %{time_namelookup} seconds\n
+       time_connect      :  %{time_connect} seconds\n
+    time_appconnect      :  %{time_appconnect} seconds\n
+   time_pretransfer      :  %{time_pretransfer} seconds\n
+      time_redirect      :  %{time_redirect} seconds\n
+ time_starttransfer(TTFB):  %{time_starttransfer} seconds\n
+                            ----------\n
+         time_total      :  %{time_total} seconds\n
+EOF

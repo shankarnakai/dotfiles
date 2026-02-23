@@ -25,3 +25,9 @@
     dest: "{{dotfiles_user_home}}/.zshrc"
     state: link
     force: yes
+
+- name: Symlink .curl-format.txt
+  file:
+    src: "{{ dotfiles_home }}/roles/zsh/files/curl-format.txt"
+    dest: "{{dotfiles_user_home}}/.curl-format.txt"
+    state: link

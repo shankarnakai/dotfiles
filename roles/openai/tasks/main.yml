@@ -1,0 +1,5 @@
+---
+- name: Install Codex CLI
+  npm:
+    name: "@openai/codex"
+    global: true

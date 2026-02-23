@@ -62,3 +62,15 @@
       tags: [postman]
     - role: ollama
       tags: [ollama]
+    - role: claude
+      tags: [claude]
+    - role: gemini
+      tags: [gemini]
+    - role: openai
+      tags: [openai]
+    - role: obsidian
+      tags: [obsidian]
+    - role: wisperflow
+      tags: [wisperflow]
+    - role: antigravity
+      tags: [antigravity]

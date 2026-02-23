@@ -1,0 +1,5 @@
+---
+- name: Install Wispr Flow
+  homebrew_cask:
+    name: wispr-flow
+    state: present

@@ -1,0 +1,10 @@
+---
+- name: Install Claude Desktop
+  homebrew_cask:
+    name: claude
+    state: present
+
+- name: Install Claude Code
+  npm:
+    name: "@anthropic-ai/claude-code"
+    global: true

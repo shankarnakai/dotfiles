@@ -5,7 +5,10 @@
       "Bash(head:*)",
       "Bash(grep:*)",
       "Bash(/opt/homebrew/bin/python3.14:*)",
-      "Bash(unzip:*)"
+      "Bash(unzip:*)",
+      "Bash(brew search:*)",
+      "Bash(brew info --cask antigravity)",
+      "Bash(npm info:*)"
     ]
   }
 }

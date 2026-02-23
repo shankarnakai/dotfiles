@@ -1,0 +1,5 @@
+---
+- name: Install Gemini CLI
+  npm:
+    name: "@google/gemini-cli"
+    global: true

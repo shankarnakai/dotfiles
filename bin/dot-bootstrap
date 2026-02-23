@@ -12,7 +12,7 @@ if ! [ -x "$(command -v ansible)" ]; then
 fi
 
 ansible-galaxy install -r requirements.yml
-ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --ask-become-pass --tags "$tags"
+ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --ask-become-pass --tags "$tags" ${2:+--start-at-task "$2"}
 
 if command -v terminal-notifier 1>/dev/null 2>&1; then
   terminal-notifier -title "dotfiles: Bootstrap complete" -message "Successfully set up dev environment."

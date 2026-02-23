@@ -79,8 +79,12 @@
 
 - name: Install plugins
   command: vim +PlugInstall +qall
+  args:
+    creates: "{{ dotfiles_user_home }}/.vim/plugged"
   when: vim_install_plugins
 
 - name: Install VIM Go Binaries
   command: vim +GoInstallBinaries +qall
+  args:
+    creates: "{{ dotfiles_user_home }}/go/bin"
   when: vim_install_plugins

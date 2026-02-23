@@ -4,25 +4,37 @@
   roles:
     - role: elliotweiser.osx-command-line-tools
       when: ansible_distribution == "MacOSX"
+      tags: [osx-tools]
     - role: brew
+      tags: [brew]
     - role: git
+      tags: [git]
     - role: zsh
-    - role: direnv 
+      tags: [zsh]
+    - role: direnv
+      tags: [direnv]
     - role: fzf
+      tags: [fzf]
     - role: ripgrep
+      tags: [ripgrep]
     - role: nvim
+      tags: [nvim]
     - role: tmux
+      tags: [tmux]
     - role: golang
+      tags: [golang]
     - role: python
+      tags: [python]
     - role: redis
-    - role: zsh
+      tags: [redis]
     - role: ranger
+      tags: [ranger]
     - role: node
+      tags: [node]
     - role: efm-langserver
       vars:
         efm_langserver_version: "0.0.44"
-    - role: nvim
-    - role: fzf
+      tags: [efm-langserver]
     - role: gantsign.visual-studio-code
       users:
         - username: shankarnakai
@@ -33,7 +45,12 @@
             - "sleistner.vscode-fileutils"
             - "vscodevim.vim"
             - "EditorConfig.EditorConfig"
+      tags: [vscode]
     - role: desktop
+      tags: [desktop]
     - role: alacritty
+      tags: [alacritty]
     - role: aws
+      tags: [aws]
     - role: postman
+      tags: [postman]

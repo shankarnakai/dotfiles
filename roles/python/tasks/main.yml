@@ -10,9 +10,12 @@
 
 - name: Install latest Python 3
   shell: pyenv install {{ python_latest.stdout }} --skip-existing
+  register: pyenv_result
+  changed_when: "'already installed' not in pyenv_result.stderr"
 
 - name: Set global Python version
   shell: pyenv global {{ python_latest.stdout }}
+  changed_when: false
 
 - name: Check if pytest.ini file exists
   stat:
@@ -21,13 +24,16 @@
 
 - name: Back up existing pytest.ini
   command: mv ~/pytest.ini ~/pytest.ini.bak
-  when: pytest_stat.stat.exists
+  args:
+    creates: "{{ ansible_env.HOME }}/pytest.ini.bak"
+  when: pytest_stat.stat.exists and not pytest_stat.stat.islnk
 
 - name: Link pytest.ini file
   file:
     src: "{{ dotfiles_home }}/roles/python/files/pytest.ini"
     dest: "{{ ansible_env.HOME }}/pytest.ini"
     state: link
+    force: yes
 
 - name: Install pipx
   homebrew:

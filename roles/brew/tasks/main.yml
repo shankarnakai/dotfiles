@@ -1,22 +1,22 @@
 ---
-- name: Ensuring Homehomebrew Is Installed
-  stat:
-    path: /usr/local/bin/homebrew
+- name: Check if Homebrew is installed
+  shell: command -v brew
   register: homebrew_check
+  failed_when: false
+  changed_when: false
 
-- name: Installing Homehomebrew
-  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homehomebrew/install/HEAD/install.sh)"
-  when:
-    - not homebrew_check.stat.exists
+- name: Installing Homebrew
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: homebrew_check.rc != 0
 
-- name: Updating Homehomebrew
+- name: Updating Homebrew
   homebrew:
     update_homebrew: true
-  when: homebrew_check.stat.exists
+  when: homebrew_check.rc == 0
 
-- name: Upgrading Homehomebrew Packages
+- name: Upgrading Homebrew Packages
   homebrew:
     upgrade_all: true
   register: result
   until: result is successful
-  when: homebrew_check.stat.exists
+  when: homebrew_check.rc == 0

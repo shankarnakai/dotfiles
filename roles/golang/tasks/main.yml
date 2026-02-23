@@ -12,17 +12,25 @@
   set_fact:
     go_arch: "{{ 'arm64' if ansible_architecture == 'arm64' else 'amd64' }}"
 
+- name: Check installed Go version
+  shell: /usr/local/go/bin/go version 2>/dev/null | awk '{print $3}' || echo "none"
+  register: go_current
+  changed_when: false
+  failed_when: false
+
 - name: Download Go tarball
   get_url:
     url: "https://dl.google.com/go/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
     dest: "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
     mode: "0644"
+  when: go_current.stdout != go_version
 
 - name: Remove existing Go installation
   file:
     path: /usr/local/go
     state: absent
   become: true
+  when: go_current.stdout != go_version
 
 - name: Extract Go to /usr/local
   unarchive:
@@ -30,3 +38,4 @@
     dest: /usr/local
     remote_src: true
   become: true
+  when: go_current.stdout != go_version

@@ -2,11 +2,13 @@
   homebrew: name=redis state=present
 
 - name: Check for redis server
-  shell: brew services list | grep redis | awk '{ print $2}'
+  shell: brew services list | grep -E '^redis\s' | awk '{ print $2}'
   register: redis_running
+  changed_when: false
+  failed_when: false
 
-- name: Redis Server Service Status 
-  debug: 
+- name: Redis Server Service Status
+  debug:
     msg: "It is running {{redis_running.stdout}}"
 
 - name: Startup with systemctl

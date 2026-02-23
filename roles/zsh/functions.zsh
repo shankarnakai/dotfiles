@@ -89,3 +89,6 @@ bkp_git_changes() {
  pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{print $0 }' | sed 's/ /\//g' | xargs -I '{}' cp '{}' '/tmp/backup/{}'
 }
 
+function gi() {
+  curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@;
+}

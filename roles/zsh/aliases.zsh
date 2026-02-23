@@ -18,6 +18,7 @@ alias dstopall='docker stop $(docker ps -a -q)'
 
 ## GIT
 alias url_repo="git remote get-url origin | sed 's/.*@\([^:/]*\)[:/]\(.*\)\.git/https:\/\/\1\/\2/'"
+alias clean_git_branches='git branch --merged | grep -v "^\*\\|main" | xargs -n 1 git branch -d'
 
 
 ## UTILS

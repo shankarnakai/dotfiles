@@ -116,16 +116,22 @@ if [ -e ~/.localrc ]; then
   source ~/.localrc
 fi
 
-autoload bashcompinit && bashcompinit
+
+fpath+=~/.zfunc
 autoload -Uz compinit && compinit
 
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
 
-# zsh completion for codex
-#compdef codex
+#export MISE_ENV="development"
+#eval "$(/usr/local/bin/mise activate zsh)"
+#eval "$(mise activate zsh)"
 
-_codex() {
-  _arguments '*:filename:_files'
-}
-_codex
+alias tm='task-master'
+
+# Created by `pipx` on 2025-09-05 03:25:21
+export PATH="$PATH:$HOME/.local/bin"
+
+# Added by Antigravity
+export PATH="/Users/shankarnakai/.antigravity/antigravity/bin:$PATH"

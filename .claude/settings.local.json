@@ -4,7 +4,8 @@
       "Bash(echo === $\\(basename $role\\) ===:*)",
       "Bash(head:*)",
       "Bash(grep:*)",
-      "Bash(/opt/homebrew/bin/python3.14:*)"
+      "Bash(/opt/homebrew/bin/python3.14:*)",
+      "Bash(unzip:*)"
     ]
   }
 }

@@ -12,3 +12,7 @@
     src: "{{ dotfiles_home }}/roles/tmux/files/tmux.conf"
     dest: "{{dotfiles_user_home}}/.tmux.conf"
     state: link
+
+- name: Install tmux plugins via TPM
+  command: "{{dotfiles_user_home}}/.tmux/plugins/tpm/bin/install_plugins"
+  changed_when: false

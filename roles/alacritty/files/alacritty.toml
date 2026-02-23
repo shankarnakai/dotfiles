@@ -36,17 +36,17 @@ TERM = "xterm-256color"
 size = 12
 
 [font.bold]
-family = "Monoid"
+family = "Monoid Nerd Font"
 
 [font.glyph_offset]
 x = 0
 y = 0
 
 [font.italic]
-family = "Monoid"
+family = "Monoid Nerd Font"
 
 [font.normal]
-family = "Monoid"
+family = "Monoid Nerd Font"
 
 [font.offset]
 x = 0
@@ -338,7 +338,7 @@ mouse = "Middle"
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
 
 [window]
-decorations = "buttonless"
+decorations = "Buttonless"
 opacity = 0.98
 option_as_alt = 'Both'
 

@@ -1,9 +1,29 @@
 ---
-- name: Install Alacritty 
-  homebrew_cask: name=alacritty state=present
+- name: Install Alacritty
+  homebrew_cask:
+    name: alacritty
+    state: present
+    install_options: no-quarantine
 
-- name: Symlink all configuration 
+- name: Install Monoid Nerd Font
+  homebrew_cask:
+    name: font-monoid-nerd-font
+    state: present
+
+- name: Create alacritty config directory
   file:
-    src: "{{ dotfiles_home }}/roles/alacritty/files/alacritty.yml"
-    dest: "{{ dotfiles_user_home }}/.alacritty.yml"
+    path: "{{ ansible_env.HOME }}/.config/alacritty"
+    state: directory
+    mode: "0755"
+
+- name: Symlink alacritty.toml config
+  file:
+    src: "{{ dotfiles_home }}/roles/alacritty/files/alacritty.toml"
+    dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
+    state: link
+
+- name: Symlink catppuccin-macchiato theme
+  file:
+    src: "{{ dotfiles_home }}/roles/alacritty/files/catppuccin-macchiato.toml"
+    dest: "{{ ansible_env.HOME }}/.config/alacritty/catppuccin-macchiato.toml"
     state: link

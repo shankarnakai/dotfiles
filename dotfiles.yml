@@ -1,6 +1,12 @@
 ---
 - name: Bootstrap development environment
   hosts: local
+  pre_tasks:
+    - name: Keep sudo alive
+      become: true
+      command: /usr/bin/true
+      changed_when: false
+
   roles:
     - role: elliotweiser.osx-command-line-tools
       when: ansible_distribution == "MacOSX"

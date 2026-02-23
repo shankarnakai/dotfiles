@@ -12,10 +12,8 @@
     - not homebrew_check.stat.exists
 
 - name: Install awscli v2 package.
-  shell: sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
-    # become: true
-    # become_user: root
-    # become_method: sudo
+  shell: installer -pkg /tmp/AWSCLIV2.pkg -target /
+  become: true
   changed_when: true
   when:
     - not homebrew_check.stat.exists
@@ -32,3 +30,5 @@
   changed_when: false
   when:
     - not homebrew_check.stat.exists
+    - aws_access_key | length > 0
+    - aws_secret_key | length > 0

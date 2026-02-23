@@ -33,9 +33,6 @@
   when: go_current.stdout != go_version
 
 - name: Extract Go to /usr/local
-  unarchive:
-    src: "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
-    dest: /usr/local
-    remote_src: true
+  command: tar xzf "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz" -C /usr/local
   become: true
   when: go_current.stdout != go_version

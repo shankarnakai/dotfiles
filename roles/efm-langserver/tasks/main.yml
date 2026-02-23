@@ -42,15 +42,28 @@
     state: present
   when: ansible_distribution == "MacOSX"
 
-- name: Install linters and formatters with pip
-  ansible.builtin.pip:
-    name:
-      - flake8
-      - black
-      - yamllint
-      - git+https://github.com/Vimjas/vint@master
+- name: Install linters and formatters with homebrew
+  homebrew:
+    name: "{{ item }}"
     state: present
-    executable: pip3
+  loop:
+    - flake8
+    - black
+    - yamllint
+  when: ansible_distribution == "MacOSX"
+
+- name: Ensure pipx is installed
+  homebrew:
+    name: pipx
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: Install vint with pipx
+  command: pipx install vim-vint
+  register: pipx_vint
+  changed_when: "'installed package' in pipx_vint.stdout"
+  failed_when: pipx_vint.rc != 0 and 'already installed' not in pipx_vint.stdout
+  when: ansible_distribution == "MacOSX"
 
 - name: Install linters and formatters with npm
   loop:

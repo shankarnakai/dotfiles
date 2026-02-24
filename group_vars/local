@@ -11,8 +11,9 @@ personal_git_email: "{{ lookup('env', 'PERSONAL_GIT_EMAIL') }}"
 work_git_name: "{{ lookup('env', 'WORK_GIT_NAME') }}"
 work_git_email: "{{ lookup('env', 'WORK_GIT_EMAIL') }}"
 
-# Org for URL routing (only work needs explicit routing)
-github_work_org: "{{ lookup('env', 'GITHUB_WORK_ORG') }}"
+# Orgs for URL routing (only work needs explicit routing)
+# Comma-separated list in GITHUB_WORK_ORGS
+github_work_orgs: "{{ (lookup('env', 'GITHUB_WORK_ORGS') | default(lookup('env', 'GITHUB_WORK_ORG'), true)).split(',') | map('trim') | reject('equalto', '') | list }}"
 
 # SSH key passphrases (optional — empty = no passphrase)
 github_work_ssh_passphrase: "{{ lookup('env', 'GITHUB_WORK_SSH_PASSPHRASE') }}"

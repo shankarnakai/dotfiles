@@ -85,9 +85,12 @@
         default = simple
         followTags = true
 # URL rewrites: work org routes to github-work SSH alias (longest prefix wins)
-[url "git@github-work:{{ github_work_org }}/"]
-    insteadOf = git@github.com:{{ github_work_org }}/
-    insteadOf = https://github.com/{{ github_work_org }}/
+{% for org in github_work_orgs %}
+[url "git@github-work:{{ org }}/"]
+    insteadOf = git@github.com:{{ org }}/
+    insteadOf = https://github.com/{{ org }}/
+
+{% endfor %}
 
 # All other GitHub HTTPS URLs → SSH (uses personal key via Host github.com)
 [url "git@github.com:"]

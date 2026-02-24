@@ -60,7 +60,8 @@ Bitbucket:     https://bitbucket.org/team/repo
 PERSONAL_GIT_EMAIL     # Personal email for commits
 WORK_GIT_NAME          # Work display name
 WORK_GIT_EMAIL         # Work email for commits
-GITHUB_WORK_ORG        # GitHub org name for work URL routing
+GITHUB_WORK_ORGS       # Comma-separated GitHub org names for work URL routing
+                       # Backwards-compatible: falls back to GITHUB_WORK_ORG if GITHUB_WORK_ORGS is unset
 ```
 
 Note: The personal commit name comes from `full_name` in `group_vars/local` (hardcoded), not an env var.

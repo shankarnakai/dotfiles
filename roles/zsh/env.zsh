@@ -1,5 +1,5 @@
 export TERM=xterm-256color
-export GPG_TTY=$(tty)
+export GPG_TTY="$(tty)"
 
 export KUBE_EDITOR='vim'
 
@@ -16,24 +16,27 @@ export FZF_DEFAULT_COMMAND="rg --files --follow --no-ignore-vcs --hidden -g '!{n
 #************************************************
 # GO
 #************************************************
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-[ -f "$HOME/.go_env" ] && go env -w $(cat ~/.go_env)
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"
+[ -f "$HOME/.go_env" ] && go env -w "$(cat "$HOME/.go_env")"
 
 #************************************************
 # JAVA
 #************************************************
-export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+_java_home="$(/usr/libexec/java_home 2>/dev/null)"
+[ -n "$_java_home" ] && export JAVA_HOME="$_java_home"
+unset _java_home
 
 #************************************************
 # NVM
 #************************************************
 export NVM_DIR="$HOME/.nvm"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && source "/usr/local/opt/nvm/nvm.sh"
-[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && source "/usr/local/opt/nvm/etc/bash_completion.d/nvm"
+_nvm_prefix="$(brew --prefix nvm 2>/dev/null)"
+[ -s "$_nvm_prefix/nvm.sh" ] && source "$_nvm_prefix/nvm.sh"
+[ -s "$_nvm_prefix/etc/bash_completion.d/nvm" ] && source "$_nvm_prefix/etc/bash_completion.d/nvm"
+unset _nvm_prefix
 
 #************************************************
 # DIRENV
 #************************************************
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
-

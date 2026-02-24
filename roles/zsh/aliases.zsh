@@ -1,5 +1,5 @@
 # SEARCH
-alias pg="ps -ef | grep"
+pg() { ps -ef | grep -v grep | grep "$@"; }
 
 ## KUBERNETES
 alias k="kubectl"
@@ -27,7 +27,7 @@ alias clean_git_branches='git branch --merged | grep -v "^\*\\|main" | xargs -n 
 
 
 ## UTILS
-alias damnit='sudo $(fc -nl -1)'
+alias damnit='sudo "$(fc -nl -1)"'
 alias reload!='. ~/.zshrc'
 alias pkill!="pkill -9 -f "
 alias lj='jobs'
@@ -35,4 +35,4 @@ alias timezsh="time zsh -i -c echo"
 open() { "$(universal_open)" "$@"; }
 
 ## CURL
-alias curltime="curl -w \"@$HOME/.curl-format.txt\" -o /dev/null -s "
+alias curltime="curl -w \"@\$HOME/.curl-format.txt\" -o /dev/null -s "

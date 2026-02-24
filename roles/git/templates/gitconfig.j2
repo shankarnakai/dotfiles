@@ -1,8 +1,6 @@
-[hub]
-        protocol = https
 [user]
         name = {{ full_name }}
-        email = {{ personal_git_user }}
+        email = {{ personal_git_email }}
 [alias]
         a = add
         st = status
@@ -86,15 +84,21 @@
         # Setting to git 2.0 default to surpress warning message
         default = simple
         followTags = true
-[github]
-        user = {{ personal_git_user }}
-[bitbucket]
-        user = {{ secondary_git_user }} 
-        email = {{ secondary_git_email }} 
+# URL rewrites: work org routes to github-work SSH alias (longest prefix wins)
+[url "git@github-work:{{ github_work_org }}/"]
+    insteadOf = git@github.com:{{ github_work_org }}/
+    insteadOf = https://github.com/{{ github_work_org }}/
 
-# Fix git error: Could not read Username for github.com 
-# http://albertech.blogspot.com/2016/11/fix-git-error-could-not-read-username.html
+# All other GitHub HTTPS URLs → SSH (uses personal key via Host github.com)
 [url "git@github.com:"]
     insteadOf = https://github.com/
+
 [url "git@bitbucket.org:"]
     insteadOf = https://bitbucket.org/
+
+# Conditional includes (Git >= 2.36)
+[includeIf "hasconfig:remote.*.url:git@github-work:**"]
+    path = ~/.gitconfig-work
+
+[includeIf "hasconfig:remote.*.url:git@bitbucket.org:**"]
+    path = ~/.gitconfig-work

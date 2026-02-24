@@ -1,7 +1,10 @@
-complete -C '$(which aws_completer)' aws-okta
-
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
+
+command -v aws_completer &>/dev/null && complete -C "$(command -v aws_completer)" aws-okta
+
+_terraform="$(command -v terraform 2>/dev/null)"
+[ -n "$_terraform" ] && complete -o nospace -C "$_terraform" terraform
+unset _terraform
 
 # zsh completion for codex
 compdef _codex codex
@@ -16,7 +19,7 @@ _gitignoreio_get_command_list() {
 
 _gitignoreio () {
   compset -P '*,'
-  compadd -S '' `_gitignoreio_get_command_list`
+  compadd -S '' "$(_gitignoreio_get_command_list)"
 }
 
 compdef _gitignoreio gi

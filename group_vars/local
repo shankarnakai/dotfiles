@@ -4,11 +4,18 @@ dotfiles_home: "{{ dotfiles_user_home }}/.dotfiles"
 
 full_name: Shankar Nakai
 
+# Personal identity
 personal_git_user: "{{ lookup('env', 'PERSONAL_GIT_USER') }}"
 personal_git_email: "{{ lookup('env', 'PERSONAL_GIT_EMAIL') }}"
 
-secondary_git_user: "{{ lookup('env', 'SECONDARY_GIT_USER') }}"
-secondary_git_email: "{{ lookup('env', 'SECONDARY_GIT_EMAIL') }}"
+# Work identity (shared by github-work and bitbucket-work)
+work_git_name: "{{ lookup('env', 'WORK_GIT_NAME') }}"
+work_git_email: "{{ lookup('env', 'WORK_GIT_EMAIL') }}"
 
-github_ssh_passphrase: "{{ lookup('env', 'GITHUB_SSH_PASSPHRASE') }}"
-bitbucket_ssh_passphrase: "{{ lookup('env', 'BITHUB_SSH_PASSPHRASE') }}"
+# Org for URL routing (only work needs explicit routing)
+github_work_org: "{{ lookup('env', 'GITHUB_WORK_ORG') }}"
+
+# SSH key passphrases (optional — empty = no passphrase)
+github_work_ssh_passphrase: "{{ lookup('env', 'GITHUB_WORK_SSH_PASSPHRASE') }}"
+github_personal_ssh_passphrase: "{{ lookup('env', 'GITHUB_PERSONAL_SSH_PASSPHRASE') }}"
+bitbucket_work_ssh_passphrase: "{{ lookup('env', 'BITBUCKET_WORK_SSH_PASSPHRASE') }}"

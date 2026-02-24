@@ -1,27 +1,27 @@
 # FUNCTIONS
 
 universal_open() {
-  if [ $(uname -s) = "Darwin" ]; then
+  if [ "$(uname -s)" = "Darwin" ]; then
     echo "open"
-  else 
-    echo "xdg-open"; 
-  fi; 
-}
-
-# getEmail 
-getEmail() {
-  if [ -f "$1" ]; then
-    grep -o '[[:alnum:]+\.\_\-]*@[[:alnum:]+\.\_\-]*' "$1" | sort | uniq -i
   else
-    echo "Expected a file at $1, but it doesn't exist." >&2
-    exit 1
+    echo "xdg-open"
   fi
 }
 
-# forever will continually run a command forever 
-# you can set a internal in seconds that the command can be execute
-#   N - number representing internal in seconds
-#   COMMAND - any shell command 
+# getEmail
+getEmail() {
+  if [ -f "$1" ]; then
+    grep -o '[[:alnum:]_.+-]*@[[:alnum:]_.+-]*' "$1" | sort | uniq -i
+  else
+    echo "Expected a file at $1, but it doesn't exist." >&2
+    return 1
+  fi
+}
+
+# forever will continually run a command forever
+# you can set an interval in seconds between executions
+#   N - number representing interval in seconds
+#   COMMAND - any shell command
 # Example:
 #   forever 1 echo "Hello World"
 forever() {
@@ -39,19 +39,19 @@ forever() {
 
 # replace will replace a string in all the files that match with the pattern passed as argument
 #  ext - string represent file extension
-#  find - string to be find
-#  newStr - string to be used 
-#  dry - boolean Dry run, without replace string in the files
+#  find - string to be found
+#  newStr - string to be used
+#  dry - boolean Dry run, without replacing string in the files
 # Example:
 #  replace "*.go" "some string" "new string" # it will replace string in all the files in the current directory
-#  replace "*.go" "some string" "new string" true # the same but it will not really replace, just dry run 
+#  replace "*.go" "some string" "new string" true # the same but it will not really replace, just dry run
 function replace() {
-  ext=$1
-  find=$2
-  newStr=$3
-  dry=$4
+  local ext="$1"
+  local find="$2"
+  local newStr="$3"
+  local dry="$4"
 
-  files=
+  local files
 
   if [ "$dry" == "true" ]; then
     files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
@@ -69,7 +69,10 @@ function replace() {
     return 0
   fi
 
-  pattern="s/$find/$newStr/g"
+  local escaped_find escaped_new
+  escaped_find="$(printf '%s\n' "$find" | sed 's|[/\\&]|\\&|g')"
+  escaped_new="$(printf '%s\n' "$newStr" | sed 's|[/\\&]|\\&|g')"
+  local pattern="s/$escaped_find/$escaped_new/g"
   while IFS= read -r file; do
     sed -i '' -e "$pattern" "$file"
   done <<< "$files"
@@ -83,20 +86,20 @@ kill-port() {
   lsof -n -i4TCP:"$1" | grep LISTEN | awk '{ print $2 }' | xargs kill
 }
 
-# bkp_git_changes helpful comamnd that get all the new files and copy to the /tmp/backup 
+# bkp_git_changes copies new/modified files from git status to /tmp/backup
 # used when unsure if `git rebase` will be ok or when slicing a PR
 bkp_git_changes() {
- #create folders
- pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{$NF=""; print "/tmp/backup/"$0 }' | sed 's/ /\//g' | xargs mkdir -p --
- pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{print $0 }' | sed 's/ /\//g' | xargs -I '{}' cp '{}' '/tmp/backup/{}'
+  pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{$NF=""; print "/tmp/backup/"$0 }' | sed 's/ /\//g' | xargs mkdir -p --
+  pbpaste | sed 's/new file/new-file/' | awk '{ print $2 }' | awk -F'/' '{print $0 }' | sed 's/ /\//g' | xargs -I '{}' cp '{}' '/tmp/backup/{}'
 }
 
-function gi() {
-  curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@;
+gi() {
+  curl -sLw "\n" "https://www.toptal.com/developers/gitignore/api/$*"
 }
 
 # cover runs go test with coverage and opens the result in a browser
 cover() {
-  t="/tmp/go-cover.$$.tmp"
-  go test -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
+  local t="/tmp/go-cover.$$.tmp"
+  go test -coverprofile="$t" "$@" && go tool cover -html="$t"
+  rm -f "$t"
 }

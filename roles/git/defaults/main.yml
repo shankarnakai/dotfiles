@@ -1,3 +1,4 @@
 ---
-github_ssh_key_filename: id_ed25519
-bitbucket_ssh_key_filename: id_rsa
+github_work_ssh_key_filename: id_ed25519_github_work
+github_personal_ssh_key_filename: id_ed25519_github_personal
+bitbucket_work_ssh_key_filename: id_ed25519_bitbucket_work

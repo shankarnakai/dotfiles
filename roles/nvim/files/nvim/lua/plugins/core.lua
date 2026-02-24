@@ -3,28 +3,10 @@ return {
     { "folke/tokyonight.nvim" },
     { "nvim-tree/nvim-web-devicons", lazy = true },
 
-    -- Debugging (replaces vim-delve) - nvim-dap
-    {
-        "mfussenegger/nvim-dap",
-        dependencies = {
-            "leoluz/nvim-dap-go",
-        },
-        ft = { "go"},
-        keys = {
-            { "<leader>ds", function() require("dap-go").debug_test() end, desc = "Debug Go test" },
-            { "<leader>dt", "<cmd>lua require('dap').terminate()<CR>", desc = "Terminate DAP" },
-        },
-        config = function()
-            -- Basic DAP config
-            require("dap-go").setup()
-        end,
-    },
-
-
+    -- Debugging - handled by LazyVim extras (lang.go includes nvim-dap-go)
     { "rcarriga/nvim-dap-ui" },
     { "theHamsta/nvim-dap-virtual-text" },
     { "nvim-neotest/nvim-nio" },
-    { "jay-babu/mason-nvim-dap.nvim" },
 
     {
         "ibhagwan/fzf-lua",
@@ -83,63 +65,11 @@ return {
         end,
     },
 
-    -- Linting/Formatting + LSP (replaces ALE & coc.nvim)
-    -- For a simpler setup, let's just do LSP + null-ls for lint/format
+    -- LSP servers are configured by LazyVim lang extras (go, python, typescript, rust)
+    -- Mason is still needed for installing LSP servers
     {
-        "neovim/nvim-lspconfig",
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            -- auto-install LSP servers
-            {
-                "mason-org/mason.nvim",
-                config = true,
-            },
-            {
-                "mason-org/mason-lspconfig.nvim",
-                config = function()
-                    require("mason-lspconfig").setup({
-                        ensure_installed = { "pyright", "ts_ls", "gopls", "rust_analyzer" },
-                        automatic_enable = false,
-                        automatic_installation = true,
-                        automatic_setup = false,
-                    })
-                end,
-            },
-            {
-              "nvimtools/none-ls.nvim",
-              event = { "BufReadPre", "BufNewFile" },
-              config = function()
-                local none_ls = require("null-ls") -- it's still called `null-ls` internally
-
-                none_ls.setup({
-                  sources = {
-                    none_ls.builtins.formatting.prettier,
-                    none_ls.builtins.diagnostics.eslint,
-                    -- add other sources as needed
-                  },
-                })
-              end,
-            },
-        },
-        config = function()
-          local lspconfig = require("lspconfig")
-
-          -- buffer-local LSP keymaps
-          local on_attach = function(client, bufnr)
-            local opts = { buffer = bufnr, desc = "Go to definition" }
-            vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          end
-
-          local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-          for _, server in ipairs({ "ts_ls", "pyright", "gopls", "rust_analyzer" }) do
-            if lspconfig[server] then
-              lspconfig[server].setup({ on_attach = on_attach, capabilities = capabilities })
-            else
-              vim.notify("LSP server '" .. server .. "' not found in lspconfig", vim.log.levels.WARN)
-            end
-          end
-        end,
+        "mason-org/mason.nvim",
+        config = true,
     },
     -- Statusline (replaces vim-airline)
     {
@@ -252,14 +182,7 @@ return {
         },
       },
 
-    -- Example: Rust tools (replaces rust.vim)
-    {
-        "simrat39/rust-tools.nvim",
-        ft = { "rust" },
-        config = function()
-            require("rust-tools").setup({})
-        end,
-    },
+    -- Rust is configured by LazyVim lang.rust extra (uses rustaceanvim)
 
     {
         "LazyVim/LazyVim",

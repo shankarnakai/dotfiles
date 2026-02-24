@@ -31,21 +31,59 @@
     src: "gitconfig.j2"
     dest: "{{dotfiles_user_home}}/.gitconfig"
 
-- name: generate GitHub SSH key "{{github_ssh_key_filename}}"
+- name: Deploy work gitconfig profile
+  template:
+    src: "gitconfig-work.j2"
+    dest: "{{dotfiles_user_home}}/.gitconfig-work"
+
+- name: Ensure .ssh directory exists
+  file:
+    path: "{{dotfiles_user_home}}/.ssh"
+    state: directory
+    mode: "0700"
+
+- name: Check if SSH config exists
+  stat: path="{{dotfiles_user_home}}/.ssh/config"
+  register: sshconfig_stat
+
+- name: Back up SSH config
+  command: mv ~/.ssh/config ~/.ssh/config.bak
+  args:
+    creates: "{{dotfiles_user_home}}/.ssh/config.bak"
+  when: sshconfig_stat.stat.exists
+
+- name: Deploy SSH config
+  template:
+    src: "ssh_config.j2"
+    dest: "{{dotfiles_user_home}}/.ssh/config"
+    mode: "0600"
+
+- name: generate GitHub Work SSH key "{{github_work_ssh_key_filename}}"
   user:
     name: "{{dotfiles_user}}"
     generate_ssh_key: yes
     ssh_key_type: ed25519
-    ssh_key_file: .ssh/{{github_ssh_key_filename}}
-    ssh_key_passphrase: "{{github_ssh_key_filename}}"
+    ssh_key_file: .ssh/{{github_work_ssh_key_filename}}
+    ssh_key_comment: "{{work_git_email}}"
+    ssh_key_passphrase: "{{github_work_ssh_passphrase}}"
     force: no
 
-- name: generate Bitbucket SSH key "{{bitbucket_ssh_key_filename}}"
+- name: generate GitHub Personal SSH key "{{github_personal_ssh_key_filename}}"
   user:
     name: "{{dotfiles_user}}"
     generate_ssh_key: yes
-    ssh_key_type: rsa
-    ssh_key_bits: 4096
-    ssh_key_file: .ssh/{{bitbucket_ssh_key_filename}}
-    ssh_key_passphrase: ""
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{github_personal_ssh_key_filename}}
+    ssh_key_comment: "{{personal_git_email}}"
+    ssh_key_passphrase: "{{github_personal_ssh_passphrase}}"
+    force: no
+
+- name: generate Bitbucket Work SSH key "{{bitbucket_work_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{bitbucket_work_ssh_key_filename}}
+    ssh_key_comment: "{{work_git_email}}"
+    ssh_key_passphrase: "{{bitbucket_work_ssh_passphrase}}"
     force: no

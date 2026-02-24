@@ -74,3 +74,5 @@
       tags: [wisperflow]
     - role: antigravity
       tags: [antigravity]
+    - role: ast-grep
+      tags: [ast-grep]

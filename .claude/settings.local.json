@@ -8,7 +8,12 @@
       "Bash(unzip:*)",
       "Bash(brew search:*)",
       "Bash(brew info --cask antigravity)",
-      "Bash(npm info:*)"
+      "Bash(npm info:*)",
+      "Bash(ls:*)",
+      "Bash(nvim:*)",
+      "Bash(git:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)"
     ]
   }
 }

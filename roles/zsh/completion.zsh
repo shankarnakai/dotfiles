@@ -1,8 +1,5 @@
 complete -C '$(which aws_completer)' aws-okta
 
-autoload bashcompinit && bashcompinit
-autoload -Uz compinit && compinit
-
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/terraform terraform
 

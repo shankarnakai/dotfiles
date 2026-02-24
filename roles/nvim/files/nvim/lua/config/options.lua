@@ -62,6 +62,7 @@ vim.opt.hlsearch = true            -- Highlight search terms
 vim.opt.incsearch = true           -- Incremental search
 vim.opt.ignorecase = true          -- Case-insensitive search...
 vim.opt.smartcase = true           -- ... but switch to case-sensitive if uppercase is used
+vim.o.grepprg = "rg --vimgrep"
 
 -- Indentation
 vim.opt.tabstop = 8

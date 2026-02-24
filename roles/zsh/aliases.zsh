@@ -5,16 +5,21 @@ alias pg="ps -ef | grep"
 alias k="kubectl"
 
 ## GO
-alias packages='$(go list ./... | grep -v /vendor/)'
+packages() { go list ./... | grep -v /vendor/; }
 
 ## EDITOR
 alias vim="nvim"
 alias vi="nvim"
 
 ## DOCKER SERVICE
-alias dralli='docker rmi $(docker images -a -q)'
-alias drallc='docker rm $(docker ps -a -q)'
-alias dstopall='docker stop $(docker ps -a -q)'
+docker_purge() {
+  echo "This will stop all containers, remove all containers, and remove all images. Continue? [y/N] "
+  read -r ans
+  [[ $ans != [yY] ]] && return 0
+  docker ps -a -q | xargs -r docker stop
+  docker ps -a -q | xargs -r docker rm
+  docker images -a -q | xargs -r docker rmi
+}
 
 ## GIT
 alias url_repo="git remote get-url origin | sed 's/.*@\([^:/]*\)[:/]\(.*\)\.git/https:\/\/\1\/\2/'"
@@ -27,7 +32,7 @@ alias reload!='. ~/.zshrc'
 alias pkill!="pkill -9 -f "
 alias lj='jobs'
 alias timezsh="time zsh -i -c echo"
-alias open="$(universal_open)"
+open() { "$(universal_open)" "$@"; }
 
 ## CURL
 alias curltime="curl -w \"@$HOME/.curl-format.txt\" -o /dev/null -s "

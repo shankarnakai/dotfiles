@@ -13,4 +13,8 @@
 #
 # ...to quickly jump into holman/boom, for example.
 
-cd "$PROJECTS/$1"
+c() {
+  if [[ -z "$1" ]]; then echo "Usage: c <project>" >&2; return 1; fi
+  if [[ -z "$PROJECTS" ]]; then echo "PROJECTS not set" >&2; return 1; fi
+  cd "$PROJECTS/$1" || return 1
+}

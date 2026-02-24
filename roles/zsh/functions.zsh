@@ -25,13 +25,16 @@ getEmail() {
 # Example:
 #   forever 1 echo "Hello World"
 forever() {
-n=$1
-shift
-while true; do
-   "$@"
-   sleep $n
-   clear
-done
+  if [[ -z "$1" ]] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
+    echo "Usage: forever <seconds> <command...>" >&2; return 1
+  fi
+  local n=$1
+  shift
+  while true; do
+    "$@"
+    sleep "$n"
+    clear
+  done
 }
 
 # replace will replace a string in all the files that match with the pattern passed as argument
@@ -50,7 +53,7 @@ function replace() {
 
   files=
 
-  if [ "$dry" != "true" ]; then
+  if [ "$dry" == "true" ]; then
     files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
   else
     files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -l "$find" {} \+;)
@@ -61,24 +64,23 @@ function replace() {
     return 0
   fi
 
-  if [ "$dry" != "true" ]; then 
+  if [ "$dry" == "true" ]; then
     echo "$files"
     return 0
   fi
 
   pattern="s/$find/$newStr/g"
   while IFS= read -r file; do
-    sed -i '' -e "$pattern"  $file 
-    #truncate -s -1 $file
-    #sed -i '' -e '$d'  $file
-  done <<< $files
+    sed -i '' -e "$pattern" "$file"
+  done <<< "$files"
 }
 
 # kill-port will kill all the process running in the specified port
 # Example:
 #  kill-port 8080
 kill-port() {
-  lsof -n -i4TCP:$1 | grep LISTEN | awk '{ print $2 }' | xargs kill
+  if [[ -z "$1" ]]; then echo "Usage: kill-port <port>" >&2; return 1; fi
+  lsof -n -i4TCP:"$1" | grep LISTEN | awk '{ print $2 }' | xargs kill
 }
 
 # bkp_git_changes helpful comamnd that get all the new files and copy to the /tmp/backup 
@@ -91,4 +93,10 @@ bkp_git_changes() {
 
 function gi() {
   curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@;
+}
+
+# cover runs go test with coverage and opens the result in a browser
+cover() {
+  t="/tmp/go-cover.$$.tmp"
+  go test -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
 }

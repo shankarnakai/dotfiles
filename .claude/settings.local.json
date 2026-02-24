@@ -15,7 +15,8 @@
       "Bash(find:*)",
       "Bash(rm:*)",
       "Bash(zsh:*)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(shellcheck:*)"
     ]
   }
 }

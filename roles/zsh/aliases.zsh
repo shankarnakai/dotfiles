@@ -1,5 +1,5 @@
 # SEARCH
-pg() { ps -ef | grep -v grep | grep "$@"; }
+alias pg="ps -ef | grep"
 
 ## KUBERNETES
 alias k="kubectl"

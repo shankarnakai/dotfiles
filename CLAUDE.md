@@ -65,3 +65,13 @@ Lua-based config using LazyVim framework, symlinked to `~/.config/nvim` by the `
 ### Utility Scripts (`bin/`)
 
 Executable scripts added to PATH. Includes `dot-bootstrap` and various git helpers.
+
+## Validation
+
+Always run `shellcheck` after modifying any shell script (`.sh`, `.zsh`, or files in `roles/zsh/`):
+
+```bash
+shellcheck -s bash <file>
+```
+
+Exclude expected false positives for zsh-specific files: SC1091 (can't follow `source` paths) and SC2034 (zsh variables like `ZSH_THEME` and `plugins` used by oh-my-zsh). Fix all other warnings.

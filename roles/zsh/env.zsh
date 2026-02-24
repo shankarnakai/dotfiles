@@ -1,5 +1,6 @@
 export TERM=xterm-256color
-export GPG_TTY="$(tty)"
+GPG_TTY="$(tty)"
+export GPG_TTY
 
 export KUBE_EDITOR='vim'
 

@@ -3,10 +3,6 @@ return {
     { "folke/tokyonight.nvim" },
     { "nvim-tree/nvim-web-devicons", lazy = true },
 
-    -- Debugging - handled by LazyVim extras (lang.go includes nvim-dap-go)
-    { "rcarriga/nvim-dap-ui" },
-    { "theHamsta/nvim-dap-virtual-text" },
-    { "nvim-neotest/nvim-nio" },
 
     {
         "ibhagwan/fzf-lua",

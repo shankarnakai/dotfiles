@@ -41,6 +41,11 @@ end
 -- Create the command :TrimWhiteSpace
 vim.api.nvim_create_user_command("TrimWhiteSpace", trim_whitespace, {})
 
+-- :Rg command - available immediately, triggers fzf-lua lazy load on first use
+vim.api.nvim_create_user_command("Rg", function(opts)
+  require("fzf-lua").grep({ search = opts.args })
+end, { nargs = "?", desc = "Ripgrep search via fzf-lua" })
+
 
 -- Wrapped lines goes down/up to next row, rather than next line in file.
 vim.keymap.set("n", "j", "gj", { noremap = true, silent = true, desc = "Move down by screen line" })

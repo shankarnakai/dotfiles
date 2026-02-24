@@ -26,7 +26,8 @@ return {
       -- 1. Find root of the project (using gradlew, mvnw, .git, etc.)
       local root_markers = { ".git", "mvnw", "gradlew", "build.gradle", "pom.xml" }
       local root_dir = require("jdtls.setup").find_root(root_markers)
-      if root_dir == "" then
+      if not root_dir or root_dir == "" then
+        vim.notify("No Java project root found", vim.log.levels.WARN)
         return
       end
 
@@ -35,10 +36,15 @@ return {
       local workspace_dir = vim.fn.stdpath("data") .. "/site/java/workspace-root/" .. project_name
 
       -- 3. Build the language server startup command
-      -- Adjust this path to where JDTLS is installed (e.g., via Mason) 
-      local jdtls_jar = vim.fn.stdpath("data") .. "/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar"
+      -- Adjust this path to where JDTLS is installed (e.g., via Mason)
+      local jdtls_jar = vim.fn.glob(vim.fn.stdpath("data") .. "/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
+      if jdtls_jar == "" then
+        vim.notify("JDTLS launcher jar not found", vim.log.levels.WARN)
+        return
+      end
       local lombok_jar = vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar"
-      local config_dir = vim.fn.stdpath("data") .. "/mason/packages/jdtls/config_linux"  -- or config_win, config_mac
+      local os_config = jit.os == "OSX" and "config_mac" or (jit.os == "Windows" and "config_win" or "config_linux")
+      local config_dir = vim.fn.stdpath("data") .. "/mason/packages/jdtls/" .. os_config
 
       -- Make sure these exist and match your system’s Java/JDTLS layout
       local cmd = {

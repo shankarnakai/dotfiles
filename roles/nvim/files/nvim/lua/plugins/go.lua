@@ -18,7 +18,10 @@ return {
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.go",
         callback = function()
-          require("go.format").goimport()
+          local ok, err = pcall(require("go.format").goimport)
+          if not ok then
+            vim.notify("goimport error: " .. tostring(err), vim.log.levels.WARN)
+          end
         end,
       })
 

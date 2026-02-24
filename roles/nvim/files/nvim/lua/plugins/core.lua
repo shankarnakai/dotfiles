@@ -133,7 +133,11 @@ return {
           local capabilities = vim.lsp.protocol.make_client_capabilities()
 
           for _, server in ipairs({ "ts_ls", "pyright", "gopls", "rust_analyzer" }) do
-            lspconfig[server].setup({ on_attach = on_attach, capabilities = capabilities })
+            if lspconfig[server] then
+              lspconfig[server].setup({ on_attach = on_attach, capabilities = capabilities })
+            else
+              vim.notify("LSP server '" .. server .. "' not found in lspconfig", vim.log.levels.WARN)
+            end
           end
         end,
     },

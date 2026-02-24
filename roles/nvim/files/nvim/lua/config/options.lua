@@ -13,7 +13,7 @@
 vim.cmd('syntax enable')
 
 -- Display / UI settings
-vim.opt.wrap = true               -- Do not wrap lines
+vim.opt.wrap = true               -- Enable line wrapping
 vim.opt.number = true              -- Show absolute line numbers
 vim.opt.relativenumber = true      -- Show relative line numbers
 vim.opt.ruler = true               -- Show cursor position in status bar

@@ -5,7 +5,6 @@ dotfiles_home: "{{ dotfiles_user_home }}/.dotfiles"
 full_name: Shankar Nakai
 
 # Personal identity
-personal_git_user: "{{ lookup('env', 'PERSONAL_GIT_USER') }}"
 personal_git_email: "{{ lookup('env', 'PERSONAL_GIT_EMAIL') }}"
 
 # Work identity (shared by github-work and bitbucket-work)

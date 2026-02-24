@@ -1,0 +1,17 @@
+#!/bin/zsh
+#
+# Quickly jump into a project directory.
+#
+# Type:
+#
+#   pj <tab>
+#
+# ...to autocomplete on all of your projects. For example:
+#
+#    pj my-app<tab>
+
+pj() {
+  if [[ -z "$1" ]]; then echo "Usage: pj <project>" >&2; return 1; fi
+  if [[ -z "$PROJECTS" ]]; then echo "PROJECTS not set" >&2; return 1; fi
+  cd "$PROJECTS/$1" || return 1
+}

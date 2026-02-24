@@ -1,0 +1,2 @@
+#compdef pj
+[ -n "$PROJECTS" ] && _files -W "$PROJECTS" -/

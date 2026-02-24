@@ -1,0 +1,2 @@
+#compdef my
+[ -n "$PERSONAL" ] && _files -W "$PERSONAL" -/

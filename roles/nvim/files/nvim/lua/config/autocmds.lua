@@ -9,5 +9,5 @@ vim.api.nvim_create_autocmd('WinClosed', {
       end
     end
   end,
-  group = vim.api.nvim_create_augroup('barbar_close_buf', {}),
+  group = vim.api.nvim_create_augroup('auto_close_buf', {}),
 })

@@ -8,35 +8,28 @@
 -- == COMMON SETTINGS / BASIC OPTIONS ==
 -- =====================================
 
--- Enable syntax highlighting
--- (Neovim generally has `syntax on` by default, but you can force it)
-vim.cmd('syntax enable')
-
 -- Display / UI settings
 vim.opt.wrap = true               -- Enable line wrapping
 vim.opt.number = true              -- Show absolute line numbers
 vim.opt.relativenumber = true      -- Show relative line numbers
-vim.opt.ruler = true               -- Show cursor position in status bar
 vim.opt.title = true               -- Show file name in the title bar
 vim.opt.wildmenu = true            -- Enhanced command-line completion
-vim.opt.laststatus = 2             -- Always display status line
 vim.opt.autoread = true            -- Automatically re-read changed files
 
 -- No bells
 vim.opt.errorbells = false
-vim.opt.visualbell = true
-vim.cmd('set t_vb=')               -- Disable beep
+vim.opt.visualbell = false
 
 -- Encoding
 vim.opt.encoding = 'utf-8'
-vim.cmd('set fileencodings=')      -- Disable any file encoding conversions
+vim.opt.fileencodings = ''
 
 -- Backup / swap
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 
--- Ignore patterns for filename completion, ctrlp, etc.
+-- Ignore patterns for filename completion
 vim.opt.wildignore:append {
   '*.zip',
   '*.tar.gz',
@@ -68,8 +61,7 @@ vim.o.grepprg = "rg --vimgrep"
 vim.opt.tabstop = 8
 vim.opt.softtabstop = 0
 vim.opt.shiftwidth = 4
-vim.opt.shiftround = true        -- Uncomment if you want shift commands to use multiples of shiftwidth
-
+vim.opt.shiftround = true
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 vim.opt.cindent = true
@@ -82,9 +74,5 @@ vim.opt.foldlevel = 99
 -- Use system clipboard for yank/paste
 vim.opt.clipboard:append { 'unnamedplus', 'unnamed' }
 
--- Terminal colors / background
-if vim.env.TERM and vim.env.TERM:match('256color') then
-  vim.cmd("set t_ut=")
-end
+-- Background
 vim.opt.background = 'dark'
-

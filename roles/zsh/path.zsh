@@ -15,7 +15,11 @@ export PATH="$PATH:$HOME/go/bin"
 # PROJECTS
 #************************************************
 export PROJECTS="$HOME/projects"
-export pj="$PROJECTS"
+
+#************************************************
+# PERSONAL 
+#************************************************
+export PERSONAL="$HOME/personal"
 
 #************************************************
 # JAVA

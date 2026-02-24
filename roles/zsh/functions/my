@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+my() {
+  if [[ -z "$1" ]]; then echo "Usage: my <folder>" >&2; return 1; fi
+  if [[ -z "$PERSONAL" ]]; then echo "PERSONAL is not set" >&2; return 1; fi
+  cd "$PERSONAL/$1" || return 1
+}

@@ -1,3 +1,4 @@
+unalias gf 2>/dev/null
 gf() {
   if [[ -z "$1" ]]; then echo "Usage: gf <branch>" >&2; return 1; fi
   local branch=$1

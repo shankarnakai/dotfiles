@@ -3,24 +3,7 @@ return {
     "mfussenegger/nvim-jdtls",
     ft = { "java" }, -- only load for Java files
     dependencies = {
-      -- You can optionally use Mason to install the JDTLS server
-     -- {
-     --   "mason-org/mason.nvim",
-     --   config = true,
-     -- },
-     -- {
-     --   "mason-org/mason-lspconfig.nvim",
-     --   config = function()
-     --     require("mason-lspconfig").setup({
-     --       ensure_installed = { "jdtls" },
-     --     })
-     --   end,
-     -- },
-      -- Optional: for code completion
-      "hrsh7th/nvim-cmp",
-      "hrsh7th/cmp-nvim-lsp",
-      -- If you want Treesitter highlighting
-      "nvim-treesitter/nvim-treesitter",
+      "neovim/nvim-lspconfig",
     },
     config = function()
       -- 1. Find root of the project (using gradlew, mvnw, .git, etc.)

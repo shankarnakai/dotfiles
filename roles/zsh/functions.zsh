@@ -1,20 +1,17 @@
 # FUNCTIONS
 
+# Source standalone function files
+_fn_dir="$HOME/.dotfiles/roles/zsh/functions"
+for _fn in "$_fn_dir"/[^_]*; do
+  [ -f "$_fn" ] && source "$_fn"
+done
+unset _fn _fn_dir
+
 universal_open() {
   if [ "$(uname -s)" = "Darwin" ]; then
     echo "open"
   else
     echo "xdg-open"
-  fi
-}
-
-# getEmail
-getEmail() {
-  if [ -f "$1" ]; then
-    grep -o '[[:alnum:]_.+-]*@[[:alnum:]_.+-]*' "$1" | sort | uniq -i
-  else
-    echo "Expected a file at $1, but it doesn't exist." >&2
-    return 1
   fi
 }
 
@@ -103,3 +100,19 @@ cover() {
   go test -coverprofile="$t" "$@" && go tool cover -html="$t"
   rm -f "$t"
 }
+
+## ARCHIVED
+# This area will hold the functions that I don't think it is useful, but they are nice tricks
+# These will be move to a code snipt repository that I can store and search for when I can use it for inspiration or utility
+
+
+# extract_emails 
+extract_emails() {
+  if [ -f "$1" ]; then
+    grep -o '[[:alnum:]_.+-]*@[[:alnum:]_.+-]*' "$1" | sort | uniq -i
+  else
+    echo "Expected a file at $1, but it doesn't exist." >&2
+    return 1
+  fi
+}
+

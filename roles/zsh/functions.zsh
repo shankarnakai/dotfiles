@@ -7,6 +7,8 @@ for _fn in "$_fn_dir"/[^_]*; do
 done
 unset _fn _fn_dir
 
+# universal_open is used to open files in mac or linux
+# it is used on the git alias to open the repository in your default browser
 universal_open() {
   if [ "$(uname -s)" = "Darwin" ]; then
     echo "open"
@@ -14,6 +16,19 @@ universal_open() {
     echo "xdg-open"
   fi
 }
+
+open() { "$(universal_open)" "$@"; }
+
+# docker_purge will clean up all the container, and image
+docker_purge() {
+  echo "This will stop all containers, remove all containers, and remove all images. Continue? [y/N] "
+  read -r ans
+  [[ $ans != [yY] ]] && return 0
+  docker ps -a -q | xargs -r docker stop
+  docker ps -a -q | xargs -r docker rm
+  docker images -a -q | xargs -r docker rmi
+}
+
 
 # forever will continually run a command forever
 # you can set an interval in seconds between executions

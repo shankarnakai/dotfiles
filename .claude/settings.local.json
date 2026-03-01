@@ -16,7 +16,9 @@
       "Bash(rm:*)",
       "Bash(zsh:*)",
       "Bash(xxd:*)",
-      "Bash(shellcheck:*)"
+      "Bash(shellcheck:*)",
+      "Bash(echo exit: $?:*)",
+      "Bash(xargs:*)"
     ]
   }
 }

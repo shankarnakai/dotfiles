@@ -3,6 +3,11 @@
     name: node
     state: present
 
+- name: Install pnpm
+  homebrew:
+    name: pnpm
+    state: present
+
 - name: Install global npm packages
   npm:
     name: "{{ item }}"

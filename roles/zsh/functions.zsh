@@ -11,13 +11,11 @@ unset _fn _fn_dir
 # it is used on the git alias to open the repository in your default browser
 universal_open() {
   if [ "$(uname -s)" = "Darwin" ]; then
-    echo "open"
+    command open "$@"
   else
-    echo "xdg-open"
+    command xdg-open "$@"
   fi
 }
-
-open() { "$(universal_open)" "$@"; }
 
 # docker_purge will clean up all the container, and image
 docker_purge() {
@@ -65,18 +63,18 @@ function replace() {
 
   local files
 
-  if [ "$dry" == "true" ]; then
+  if [[ "$dry" == "true" ]]; then
     files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -n "$find" {} \+;)
   else
     files=$(find ./ \( -type d -name "node_modules" \) -prune -o -type f -iname "$ext" -exec grep -l "$find" {} \+;)
   fi
 
-  if [ -z "$files" ]; then
+  if [[ -z "$files" ]]; then
     echo "No results found"
     return 0
   fi
 
-  if [ "$dry" == "true" ]; then
+  if [[ "$dry" == "true" ]]; then
     echo "$files"
     return 0
   fi

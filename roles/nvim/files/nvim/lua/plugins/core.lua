@@ -67,4 +67,14 @@ return {
     -- Disable unwanted LazyVim plugins
     { "folke/noice.nvim", enabled = false },
     { "folke/which-key.nvim", enabled = false },
+
+    -- Keep markdown rendering but show backticks instead of hiding them
+    {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+            anti_conceal = {
+                enabled = true,
+            },
+        },
+    },
 }

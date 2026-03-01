@@ -41,13 +41,13 @@
 
         #issues = !hub browse -- issues
         url = "!f() { git remote get-url origin | sed 's/.*@\\([^:/]*\\)[:/]\\(.*\\)\\.git/https:\\/\\/\\1\\/\\2/'; }; f"
-        repo = "!f() {  open $(git url); }; f" 
+        repo = "!f() {  universal_open $(git url); }; f"
 
         ## Bitbucket
         # TODO: Make this portable for github
-        pr = "!f() { open \"$(git url)/pull-requests/\"; }; f" 
-        create-pr = "!f() { open \"$(git url)/pull-requests/new\"; }; f" 
-        commitlink = "!f() { open \"$(git url)/commits/$1\"; }; f"
+        pr = "!f() { universal_open \"$(git url)/pull-requests/\"; }; f"
+        create-pr = "!f() { universal_open \"$(git url)/pull-requests/new\"; }; f"
+        commitlink = "!f() { universal_open \"$(git url)/commits/$1\"; }; f"
 
         # TODO: make it use the local branch or pass the branch where to lookup
         # TODO: Use the correct path independently from how deep it is in the repo folder 

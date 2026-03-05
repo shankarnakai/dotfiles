@@ -40,3 +40,9 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# Atelier - Shared context for Claude Code
+# Added by atelier setup.sh
+atelier() {
+    cd "/Users/shankarnakai/projects/atelier" && git pull --quiet && claude
+}

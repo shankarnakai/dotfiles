@@ -59,6 +59,10 @@ vim.keymap.set("v", ">", ">gv", { noremap = true, silent = true, desc = "Shift r
 vim.keymap.set("n", "gb", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
 vim.keymap.set("n", "gB", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
 
+-- Map gt and gT to cycle bufferline tabs (buffers shown in the tabline)
+vim.keymap.set("n", "gt", "<cmd>BufferLineCycleNext<CR>", { noremap = true, silent = true, desc = "Next bufferline tab" })
+vim.keymap.set("n", "gT", "<cmd>BufferLineCyclePrev<CR>", { noremap = true, silent = true, desc = "Previous bufferline tab" })
+
 
 -- keep the yanked text on paste
 vim.keymap.set("x", "p", function()

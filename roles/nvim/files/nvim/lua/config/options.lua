@@ -74,5 +74,8 @@ vim.opt.foldlevel = 99
 -- Use system clipboard for yank/paste
 vim.opt.clipboard:append { 'unnamedplus', 'unnamed' }
 
+-- Timeouts
+vim.opt.timeoutlen = 500           -- Time (ms) to wait for mapped key sequence
+
 -- Background
 vim.opt.background = 'dark'

@@ -5,6 +5,12 @@
     state: present
   become: "{{ ansible_os_family != 'Darwin' }}"
 
+- name: Install GitHub CLI (gh)
+  homebrew: name=gh state=present
+
+- name: Install GitLab CLI (glab)
+  homebrew: name=glab state=present
+
 - name: Link global gitignore file
   file:
     src: "{{ dotfiles_home }}/roles/git/files/gitignore_global.link"

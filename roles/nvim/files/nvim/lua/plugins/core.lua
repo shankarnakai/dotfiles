@@ -43,6 +43,15 @@ return {
         keys = {
             { "<C-f>", "<cmd>Neotree toggle reveal<CR>", desc = "Toggle file explorer" },
         },
+        opts = {
+            filesystem = {
+                filtered_items = {
+                    visible = true,
+                    hide_dotfiles = false,
+                    hide_gitignored = false,
+                },
+            },
+        },
     },
 
     -- Buffer delete (LazyVim uses mini.bufremove, but user prefers X -> Bdelete)

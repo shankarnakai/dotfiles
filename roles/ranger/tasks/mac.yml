@@ -1,0 +1,5 @@
+---
+- name: Install Ranger (macOS)
+  homebrew:
+    name: ranger
+    state: present

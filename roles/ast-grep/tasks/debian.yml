@@ -1,0 +1,6 @@
+---
+- name: Install ast-grep (via cargo)
+  shell: cargo install ast-grep
+  args:
+    creates: "{{ ansible_env.HOME }}/.cargo/bin/ast-grep"
+  when: ansible_os_family == "Debian"

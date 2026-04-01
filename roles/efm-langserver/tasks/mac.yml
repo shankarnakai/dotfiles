@@ -1,0 +1,19 @@
+---
+- name: Install efm-langserver in macOS
+  import_tasks: macos.yml
+
+- name: Install linters and formatters with homebrew
+  homebrew:
+    name:
+      - shellcheck
+      - flake8
+      - black
+      - yamllint
+      - pipx
+    state: present
+
+- name: Install vint with pipx
+  command: pipx install vim-vint
+  register: pipx_vint
+  changed_when: "'installed package' in pipx_vint.stdout"
+  failed_when: pipx_vint.rc != 0 and 'already installed' not in pipx_vint.stdout

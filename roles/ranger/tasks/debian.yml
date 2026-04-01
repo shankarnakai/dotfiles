@@ -1,0 +1,6 @@
+---
+- name: Install Ranger (Linux)
+  package:
+    name: ranger
+    state: present
+  become: true

@@ -1,20 +1,31 @@
-- name: Install pyenv
-  homebrew:
-    name: pyenv
-    state: present
+---
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: Get latest stable Python 3 version
-  shell: pyenv install --list | grep -E '^\s+3\.[0-9]+\.[0-9]+$' | tail -1 | tr -d ' '
+  shell: |
+    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install --list | grep -E '^\s+3\.[0-9]+\.[0-9]+$' | tail -1 | tr -d ' '
   register: python_latest
   changed_when: false
 
 - name: Install latest Python 3
-  shell: pyenv install {{ python_latest.stdout }} --skip-existing
+  shell: |
+    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install {{ python_latest.stdout }} --skip-existing
   register: pyenv_result
   changed_when: "'already installed' not in pyenv_result.stderr"
 
 - name: Set global Python version
-  shell: pyenv global {{ python_latest.stdout }}
+  shell: |
+    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv global {{ python_latest.stdout }}
   changed_when: false
 
 - name: Check if pytest.ini file exists
@@ -34,8 +45,3 @@
     dest: "{{ ansible_env.HOME }}/pytest.ini"
     state: link
     force: yes
-
-- name: Install pipx
-  homebrew:
-    name: pipx
-    state: present

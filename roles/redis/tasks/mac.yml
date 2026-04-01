@@ -1,0 +1,15 @@
+---
+- name: Install redis
+  homebrew:
+    name: redis
+    state: present
+
+- name: Check for redis server
+  shell: brew services list | grep -E '^redis\s' | awk '{ print $2}'
+  register: redis_running
+  changed_when: false
+  failed_when: false
+
+- name: Startup redis service
+  command: brew services start redis --quiet
+  when: redis_running.stdout == 'none'

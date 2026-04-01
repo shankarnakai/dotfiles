@@ -7,16 +7,7 @@
 
 - name: Installing Homebrew
   shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  when: homebrew_check.rc != 0
+  when: homebrew_check.rc != 0 and ansible_os_family == "Darwin"
 
-- name: Updating Homebrew
-  homebrew:
-    update_homebrew: true
-  when: homebrew_check.rc == 0
-
-- name: Upgrading Homebrew Packages
-  homebrew:
-    upgrade_all: true
-  register: result
-  until: result is successful
-  when: homebrew_check.rc == 0
+- include_tasks: update.yml
+  when: homebrew_check.rc == 0 and ansible_os_family == "Darwin"

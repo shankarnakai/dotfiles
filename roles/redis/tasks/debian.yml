@@ -1,0 +1,13 @@
+---
+- name: Install redis-server
+  package:
+    name: redis-server
+    state: present
+  become: true
+
+- name: Ensure redis-server is started
+  service:
+    name: redis-server
+    state: started
+    enabled: yes
+  become: true

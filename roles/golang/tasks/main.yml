@@ -1,3 +1,4 @@
+---
 - name: Fetch latest stable Go release info
   uri:
     url: https://go.dev/dl/?mode=json
@@ -8,9 +9,10 @@
   set_fact:
     go_version: "{{ (go_releases.json | selectattr('stable', 'equalto', true) | first).version }}"
 
-- name: Set Go architecture
+- name: Set Go OS and architecture
   set_fact:
-    go_arch: "{{ 'arm64' if ansible_architecture == 'arm64' else 'amd64' }}"
+    go_os: "{{ 'darwin' if ansible_os_family == 'Darwin' else 'linux' }}"
+    go_arch: "{{ 'arm64' if ansible_architecture == 'arm64' or ansible_architecture == 'aarch64' else 'amd64' }}"
 
 - name: Check installed Go version
   shell: /usr/local/go/bin/go version 2>/dev/null | awk '{print $3}' || echo "none"
@@ -18,21 +20,17 @@
   changed_when: false
   failed_when: false
 
-- name: Download Go tarball
-  get_url:
-    url: "https://dl.google.com/go/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
-    dest: "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz"
-    mode: "0644"
-  when: go_current.stdout != go_version
-
-- name: Remove existing Go installation
-  file:
-    path: /usr/local/go
-    state: absent
+- name: Install tar (Linux)
+  package:
+    name: tar
+    state: present
   become: true
-  when: go_current.stdout != go_version
+  when: ansible_os_family == "Debian"
 
-- name: Extract Go to /usr/local
-  command: tar xzf "/tmp/{{ go_version }}.darwin-{{ go_arch }}.tar.gz" -C /usr/local
+- name: Download and extract Go
+  unarchive:
+    src: "https://dl.google.com/go/{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+    dest: "/usr/local"
+    remote_src: true
   become: true
   when: go_current.stdout != go_version

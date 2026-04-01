@@ -1,0 +1,10 @@
+---
+- name: Install pyenv
+  homebrew:
+    name: pyenv
+    state: present
+
+- name: Install pipx
+  homebrew:
+    name: pipx
+    state: present

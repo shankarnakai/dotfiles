@@ -1,0 +1,12 @@
+---
+- name: Install vim
+  package:
+    name: vim
+    state: present
+  become: true
+
+- name: Install exuberant-ctags
+  package:
+    name: exuberant-ctags
+    state: present
+  become: true

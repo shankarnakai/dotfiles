@@ -1,0 +1,5 @@
+---
+- name: Install ast-grep
+  homebrew:
+    name: ast-grep
+    state: present

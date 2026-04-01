@@ -1,0 +1,17 @@
+---
+- name: Check if AWS is installed
+  stat:
+    path: /usr/local/bin/aws
+  register: aws_check
+
+- name: Download AWS CLI v2 (Linux)
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  when: not aws_check.stat.exists
+
+- name: Extract and install AWS CLI v2
+  shell: |
+    unzip -o /tmp/awscliv2.zip -d /tmp
+    sudo /tmp/aws/install --update
+  when: not aws_check.stat.exists

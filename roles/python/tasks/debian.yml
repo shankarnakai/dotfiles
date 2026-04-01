@@ -1,0 +1,36 @@
+---
+- name: Install pyenv dependencies
+  package:
+    name:
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - curl
+      - git
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libxml2-dev
+      - libxmlsec1-dev
+      - libffi-dev
+      - liblzma-dev
+    state: present
+  become: true
+
+- name: Check if pyenv directory exists
+  stat:
+    path: "{{ ansible_env.HOME }}/.pyenv"
+  register: pyenv_dir
+
+- name: Install pyenv (installer)
+  shell: curl https://pyenv.run | bash
+  when: not pyenv_dir.stat.exists
+
+- name: Install pipx
+  package:
+    name: pipx
+    state: present
+  become: true

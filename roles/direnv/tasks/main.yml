@@ -1,2 +1,5 @@
-- name: Install package
-  homebrew: name=direnv state=present
+- name: Install direnv
+  package:
+    name: direnv
+    state: present
+  become: true

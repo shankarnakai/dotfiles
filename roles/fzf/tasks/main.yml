@@ -1,3 +1,10 @@
-- name: Install fzf
-  homebrew: name=fzf state=present
+---
+- include_tasks: mac.yml
   when: ansible_os_family == "Darwin"
+
+- name: Install fzf (Linux)
+  package:
+    name: fzf
+    state: present
+  become: true
+  when: ansible_os_family == "Debian"

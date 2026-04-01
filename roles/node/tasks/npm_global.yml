@@ -1,0 +1,17 @@
+---
+- name: Install global npm packages
+  shell: |
+    if [ -x "$(command -v npm)" ]; then
+      npm install -g {{ item }}
+    elif [ -x "$(command -v pnpm)" ]; then
+      pnpm add -g {{ item }}
+    fi
+  loop:
+    - yarn
+    - n
+    - diff-so-fancy
+    - npm-merge-driver
+    - "@tailwindcss/language-server"
+  register: npm_install
+  changed_when: "'up to date' not in npm_install.stdout and 'added' in npm_install.stdout"
+  become: "{{ ansible_os_family == 'Debian' }}"

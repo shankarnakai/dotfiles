@@ -3,4 +3,4 @@ localhost
 
 [local:vars]
 ansible_connection=local
-ansible_python_interpreter=/opt/homebrew/bin/python3.14
+ansible_python_interpreter=auto_silent

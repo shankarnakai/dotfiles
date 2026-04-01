@@ -5,19 +5,27 @@ Host github-work
     User git
     IdentityFile ~/.ssh/{{ github_work_ssh_key_filename }}
     IdentitiesOnly yes
+    StrictHostKeyChecking no
 
 Host github.com
     HostName github.com
     User git
     IdentityFile ~/.ssh/{{ github_personal_ssh_key_filename }}
     IdentitiesOnly yes
+    StrictHostKeyChecking no
 
 Host bitbucket.org
     HostName bitbucket.org
     User git
     IdentityFile ~/.ssh/{{ bitbucket_work_ssh_key_filename }}
     IdentitiesOnly yes
+    StrictHostKeyChecking no
 
 Host *
+{% if ansible_os_family == 'Darwin' %}
     AddKeysToAgent yes
     UseKeychain yes
+{% else %}
+    AddKeysToAgent yes
+{% endif %}
+    StrictHostKeyChecking accept-new

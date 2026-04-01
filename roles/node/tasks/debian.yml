@@ -1,0 +1,17 @@
+---
+- name: Install node
+  package:
+    name: nodejs
+    state: present
+  become: true
+
+- name: Install npm
+  package:
+    name: npm
+    state: present
+  become: true
+
+- name: Install pnpm
+  shell: curl -fsSL https://get.pnpm.io/install.sh | sh -
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/pnpm/pnpm"

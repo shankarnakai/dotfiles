@@ -1,0 +1,12 @@
+---
+- name: Install neovim
+  package:
+    name: neovim
+    state: present
+  become: true
+
+- name: Install exuberant-ctags (needed for TagBar plugin)
+  package:
+    name: exuberant-ctags
+    state: present
+  become: true

@@ -1,0 +1,16 @@
+---
+- name: Check if AWS is installed
+  stat:
+    path: /usr/local/bin/aws
+  register: aws_check
+
+- name: Download AWS CLI v2
+  get_url:
+    url: https://awscli.amazonaws.com/AWSCLIV2.pkg
+    dest: /tmp/AWSCLIV2.pkg
+  when: not aws_check.stat.exists
+
+- name: Install AWS CLI v2
+  shell: installer -pkg /tmp/AWSCLIV2.pkg -target /
+  become: true
+  when: not aws_check.stat.exists

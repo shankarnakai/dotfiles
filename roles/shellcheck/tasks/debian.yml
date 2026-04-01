@@ -1,0 +1,6 @@
+---
+- name: Install shellcheck
+  package:
+    name: shellcheck
+    state: present
+  become: true

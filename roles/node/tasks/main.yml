@@ -1,20 +1,8 @@
-- name: Install node
-  homebrew:
-    name: node
-    state: present
+---
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
 
-- name: Install pnpm
-  homebrew:
-    name: pnpm
-    state: present
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
-- name: Install global npm packages
-  npm:
-    name: "{{ item }}"
-    global: true
-  loop:
-    - yarn
-    - n
-    - diff-so-fancy
-    - npm-merge-driver
-    - "@tailwindcss/language-server"
+- include_tasks: npm_global.yml

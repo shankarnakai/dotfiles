@@ -1,4 +1,10 @@
-- name: Install ripgrep
-  homebrew:
+---
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
+
+- name: Install ripgrep (Linux)
+  package:
     name: ripgrep
     state: present
+  become: true
+  when: ansible_os_family == "Debian"

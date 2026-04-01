@@ -4,75 +4,25 @@
     path: "{{ ansible_env.HOME }}/.local/bin"
     state: directory
 
-- name: Install efm-langserver in Linux
-  unarchive:
-    src: https://github.com/mattn/efm-langserver/releases/download/v{{ efm_langserver_version }}/efm-langserver_v{{ efm_langserver_version }}_linux_amd64.tar.gz
-    dest: "{{ ansible_env.HOME }}/.local/bin"
-    remote_src: true
-    extra_opts:
-      - "--strip-components=1"
-      - "efm-langserver_v{{ efm_langserver_version }}_linux_amd64/efm-langserver"
-  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Fedora"
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
 
-- name: Install efm-langserver in macOS
-  import_tasks: macos.yml
-  when: ansible_distribution == "MacOSX"
-
-- name: Install linters and formatters with dnf
-  become: true
-  dnf:
-    name:
-      - ShellCheck
-    state: present
-  when: ansible_distribution == "Fedora"
-
-- name: Install linters and formatters with apt
-  become: true
-  apt:
-    name:
-      - shellcheck
-    state: present
-  when: ansible_distribution == "Ubuntu"
-
-- name: Install linters and formatters with homebrew
-  loop:
-    - shellcheck
-  homebrew:
-    name: "{{ item }}"
-    state: present
-  when: ansible_distribution == "MacOSX"
-
-- name: Install linters and formatters with homebrew
-  homebrew:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - flake8
-    - black
-    - yamllint
-  when: ansible_distribution == "MacOSX"
-
-- name: Ensure pipx is installed
-  homebrew:
-    name: pipx
-    state: present
-  when: ansible_distribution == "MacOSX"
-
-- name: Install vint with pipx
-  command: pipx install vim-vint
-  register: pipx_vint
-  changed_when: "'installed package' in pipx_vint.stdout"
-  failed_when: pipx_vint.rc != 0 and 'already installed' not in pipx_vint.stdout
-  when: ansible_distribution == "MacOSX"
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: Install linters and formatters with npm
+  shell: |
+    if [ -x "$(command -v npm)" ]; then
+      npm install -g {{ item }}
+    elif [ -x "$(command -v pnpm)" ]; then
+      pnpm add -g {{ item }}
+    fi
   loop:
     - eslint_d
     - prettier
-  npm:
-    name: "{{ item }}"
-    global: true
-    state: present
+  register: npm_install_efm
+  changed_when: "'up to date' not in npm_install_efm.stdout and 'added' in npm_install_efm.stdout"
+  become: "{{ ansible_os_family == 'Debian' }}"
 
 - name: Install stylua from GitHub releases
   unarchive:

@@ -1,7 +1,10 @@
 ---
 # Installation
-- import_tasks: mac.yml
+- include_tasks: mac.yml
   when: ansible_os_family == "Darwin"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
 # Neovim config - symlink the Lua-based config directory
 - name: Remove old ~/.config/nvim if it is a plain directory (not a symlink)

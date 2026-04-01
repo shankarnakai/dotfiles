@@ -1,10 +1,12 @@
 ---
-- name: Install Ranger in MacOS 
-  homebrew:
-    name: ranger
-    state: present
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: Set up ranger desktop entry
   copy:
     src: ranger.desktop
     dest: "{{ ansible_env.HOME }}/.local/share/applications/"
+  when: ansible_os_family == "Debian"

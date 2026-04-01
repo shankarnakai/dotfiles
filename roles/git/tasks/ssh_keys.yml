@@ -1,0 +1,30 @@
+---
+- name: generate GitHub Work SSH key "{{github_work_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{github_work_ssh_key_filename}}
+    ssh_key_comment: "{{work_git_email}}"
+    ssh_key_passphrase: "{{github_work_ssh_passphrase}}"
+    force: no
+
+- name: generate GitHub Personal SSH key "{{github_personal_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{github_personal_ssh_key_filename}}
+    ssh_key_comment: "{{personal_git_email}}"
+    ssh_key_passphrase: "{{github_personal_ssh_passphrase}}"
+    force: no
+
+- name: generate Bitbucket Work SSH key "{{bitbucket_work_ssh_key_filename}}"
+  user:
+    name: "{{dotfiles_user}}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/{{bitbucket_work_ssh_key_filename}}
+    ssh_key_comment: "{{work_git_email}}"
+    ssh_key_passphrase: "{{bitbucket_work_ssh_passphrase}}"
+    force: no

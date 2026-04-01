@@ -1,0 +1,12 @@
+---
+- name: Verify Node.js installation
+  command: node --version
+  register: node_version
+  changed_when: false
+  failed_when: node_version.rc != 0
+
+- name: Verify NPM installation
+  command: npm --version
+  register: npm_version
+  changed_when: false
+  failed_when: npm_version.rc != 0

@@ -1,0 +1,18 @@
+---
+- name: Verify Python 3 installation
+  command: python3 --version
+  register: python_version
+  changed_when: false
+  failed_when: python_version.rc != 0
+
+- name: Verify Pip is installed
+  command: python3 -m pip --version
+  register: pip_version
+  changed_when: false
+  failed_when: pip_version.rc != 0
+
+- name: Verify Pytest config exists
+  stat:
+    path: "~/.pytest.ini"
+  register: pytest_stat
+  failed_when: not pytest_stat.stat.exists

@@ -1,0 +1,24 @@
+---
+- name: Verify Git installation
+  command: git --version
+  register: git_version
+  changed_when: false
+  failed_when: git_version.rc != 0
+
+- name: Verify global gitconfig exists
+  stat:
+    path: "~/.gitconfig"
+  register: gitconfig_stat
+  failed_when: not gitconfig_stat.stat.exists
+
+- name: Verify global gitignore exists
+  stat:
+    path: "~/.gitignore_global"
+  register: gitignore_stat
+  failed_when: not gitignore_stat.stat.exists
+
+- name: Verify .ssh directory exists
+  stat:
+    path: "~/.ssh"
+  register: ssh_stat
+  failed_when: not ssh_stat.stat.exists or not ssh_stat.stat.isdir

@@ -84,6 +84,8 @@
         # Setting to git 2.0 default to surpress warning message
         default = simple
         followTags = true
+
+{% if ansible_os_family == 'Darwin' %}
 # URL rewrites: work org routes to github-work SSH alias (longest prefix wins)
 {% for org in github_work_orgs %}
 [url "git@github-work:{{ org }}/"]
@@ -98,6 +100,7 @@
 
 [url "git@bitbucket.org:"]
     insteadOf = https://bitbucket.org/
+{% endif %}
 
 # Conditional includes (Git >= 2.36)
 [includeIf "hasconfig:remote.*.url:git@github-work:**"]

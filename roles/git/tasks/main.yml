@@ -1,13 +1,9 @@
 ---
-- name: Ensuring GIT is installed
-  stat:
-    path: /usr/bin/git
-  register: homebrew_check
-
 - name: Install Git
-  homebrew: name=git state=present
-  when:
-    - not homebrew_check.stat.exists
+  package:
+    name: git
+    state: present
+  become: true
 
 - name: Link global gitignore file
   file:
@@ -17,73 +13,48 @@
     force: yes
 
 - name: Check if gitconfig exists
-  stat: path="{{dotfiles_user_home}}/.gitconfig"
+  stat:
+    path: "{{ dotfiles_user_home }}/.gitconfig"
   register: gitconfig_stat
 
 - name: Back up gitconfig
   command: mv ~/.gitconfig ~/.gitconfig.bak
   args:
-    creates: "{{dotfiles_user_home}}/.gitconfig.bak"
-  when: gitconfig_stat.stat.exists
+    creates: "{{ dotfiles_user_home }}/.gitconfig.bak"
+  when: gitconfig_stat.stat.exists and not gitconfig_stat.stat.islnk
 
 - name: Make sure gitconfig is up to date
   template:
     src: "gitconfig.j2"
-    dest: "{{dotfiles_user_home}}/.gitconfig"
+    dest: "{{ dotfiles_user_home }}/.gitconfig"
 
 - name: Deploy work gitconfig profile
   template:
     src: "gitconfig-work.j2"
-    dest: "{{dotfiles_user_home}}/.gitconfig-work"
+    dest: "{{ dotfiles_user_home }}/.gitconfig-work"
 
 - name: Ensure .ssh directory exists
   file:
-    path: "{{dotfiles_user_home}}/.ssh"
+    path: "{{ dotfiles_user_home }}/.ssh"
     state: directory
     mode: "0700"
 
 - name: Check if SSH config exists
-  stat: path="{{dotfiles_user_home}}/.ssh/config"
+  stat:
+    path: "{{ dotfiles_user_home }}/.ssh/config"
   register: sshconfig_stat
 
 - name: Back up SSH config
   command: mv ~/.ssh/config ~/.ssh/config.bak
   args:
-    creates: "{{dotfiles_user_home}}/.ssh/config.bak"
-  when: sshconfig_stat.stat.exists
+    creates: "{{ dotfiles_user_home }}/.ssh/config.bak"
+  when: sshconfig_stat.stat.exists and not sshconfig_stat.stat.islnk
 
 - name: Deploy SSH config
   template:
     src: "ssh_config.j2"
-    dest: "{{dotfiles_user_home}}/.ssh/config"
+    dest: "{{ dotfiles_user_home }}/.ssh/config"
     mode: "0600"
 
-- name: generate GitHub Work SSH key "{{github_work_ssh_key_filename}}"
-  user:
-    name: "{{dotfiles_user}}"
-    generate_ssh_key: yes
-    ssh_key_type: ed25519
-    ssh_key_file: .ssh/{{github_work_ssh_key_filename}}
-    ssh_key_comment: "{{work_git_email}}"
-    ssh_key_passphrase: "{{github_work_ssh_passphrase}}"
-    force: no
-
-- name: generate GitHub Personal SSH key "{{github_personal_ssh_key_filename}}"
-  user:
-    name: "{{dotfiles_user}}"
-    generate_ssh_key: yes
-    ssh_key_type: ed25519
-    ssh_key_file: .ssh/{{github_personal_ssh_key_filename}}
-    ssh_key_comment: "{{personal_git_email}}"
-    ssh_key_passphrase: "{{github_personal_ssh_passphrase}}"
-    force: no
-
-- name: generate Bitbucket Work SSH key "{{bitbucket_work_ssh_key_filename}}"
-  user:
-    name: "{{dotfiles_user}}"
-    generate_ssh_key: yes
-    ssh_key_type: ed25519
-    ssh_key_file: .ssh/{{bitbucket_work_ssh_key_filename}}
-    ssh_key_comment: "{{work_git_email}}"
-    ssh_key_passphrase: "{{bitbucket_work_ssh_passphrase}}"
-    force: no
+- name: Generate SSH keys
+  include_tasks: ssh_keys.yml

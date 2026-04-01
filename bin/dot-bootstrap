@@ -2,20 +2,34 @@
 set -e
 
 tags="$1"
+skip_become_pass="$2"
 
 if [ -z "$tags" ]; then
   tags="all"
 fi
 
 if ! [ -x "$(command -v ansible)" ]; then
-  brew install ansible
+  # On macOS, use brew. On Linux, use apt if available.
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install ansible
+  elif command -v apt-get &> /dev/null; then
+    sudo apt-get update && sudo apt-get install -y ansible
+  fi
 fi
 
 ansible-galaxy install -r requirements.yml
-if [ -n "$ANSIBLE_BECOME_PASSWORD_FILE" ]; then
-  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --tags "$tags" ${2:+--start-at-task "$2"}
+
+ANSIBLE_OPTS=("--tags" "$tags")
+if [ -n "$3" ]; then
+  ANSIBLE_OPTS+=("--start-at-task" "$3")
+fi
+
+if [ "$skip_become_pass" == "--skip-become-pass" ]; then
+  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml "${ANSIBLE_OPTS[@]}"
+elif [ -n "$ANSIBLE_BECOME_PASSWORD_FILE" ]; then
+  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --become-password-file "$ANSIBLE_BECOME_PASSWORD_FILE" "${ANSIBLE_OPTS[@]}"
 else
-  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --ask-become-pass --tags "$tags" ${2:+--start-at-task "$2"}
+  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --ask-become-pass "${ANSIBLE_OPTS[@]}"
 fi
 
 if command -v terminal-notifier 1>/dev/null 2>&1; then

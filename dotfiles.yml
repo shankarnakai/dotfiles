@@ -7,72 +7,132 @@
       command: /usr/bin/true
       changed_when: false
 
-  roles:
-    - role: elliotweiser.osx-command-line-tools
-      when: ansible_distribution == "MacOSX"
+  tasks:
+    # MacOS Specific Roles
+    - name: OS X Command Line Tools
+      include_role: name=elliotweiser.osx-command-line-tools
+      when: ansible_os_family == 'Darwin'
       tags: [osx-tools]
-    - role: brew
+
+    - name: Homebrew
+      include_role: name=brew
+      when: ansible_os_family == 'Darwin'
       tags: [brew]
-    - role: git
+
+    - name: Alacritty
+      include_role: name=alacritty
+      when: ansible_os_family == 'Darwin'
+      tags: [alacritty]
+
+    # Common Roles
+    - name: Git
+      include_role: name=git
       tags: [git]
-    - role: zsh
+
+    - name: Zsh
+      include_role: name=zsh
       tags: [zsh]
-    - role: direnv
+
+    - name: Direnv
+      include_role: name=direnv
       tags: [direnv]
-    - role: fzf
+
+    - name: Fzf
+      include_role: name=fzf
       tags: [fzf]
-    - role: ripgrep
+
+    - name: Ripgrep
+      include_role: name=ripgrep
       tags: [ripgrep]
-    - role: nvim
+
+    - name: Neovim
+      include_role: name=nvim
       tags: [nvim]
-    - role: tmux
+
+    - name: Tmux
+      include_role: name=tmux
       tags: [tmux]
-    - role: golang
+
+    - name: Golang
+      include_role: name=golang
       tags: [golang]
-    - role: python
+
+    - name: Python
+      include_role: name=python
       tags: [python]
-    - role: redis
+
+    - name: Redis
+      include_role: name=redis
       tags: [redis]
-    - role: ranger
+
+    - name: Ranger
+      include_role: name=ranger
       tags: [ranger]
-    - role: node
+
+    - name: Node
+      include_role: name=node
       tags: [node]
-    - role: efm-langserver
+
+    - name: EFM Langserver
+      include_role: name=efm-langserver
       vars:
         efm_langserver_version: "0.0.44"
       tags: [efm-langserver]
-    - role: gantsign.visual-studio-code
-      users:
-        - username: shankarnakai
-          visual_studio_code_extensions:
-            - "eamodio.gitlens"
-            - "kahole.magit"
-            - "PhilHindle.errorlens"
-            - "sleistner.vscode-fileutils"
-            - "vscodevim.vim"
-            - "EditorConfig.EditorConfig"
+
+    - name: VS Code
+      include_role: name=gantsign.visual-studio-code
+      vars:
+        users:
+          - username: "{{ dotfiles_user }}"
+            visual_studio_code_extensions:
+              - "eamodio.gitlens"
+              - "kahole.magit"
+              - "PhilHindle.errorlens"
+              - "sleistner.vscode-fileutils"
+              - "vscodevim.vim"
+              - "EditorConfig.EditorConfig"
       tags: [vscode]
-    - role: desktop
+
+    - name: Desktop
+      include_role: name=desktop
       tags: [desktop]
-    - role: alacritty
-      tags: [alacritty]
-    - role: aws
+
+    - name: AWS
+      include_role: name=aws
       tags: [aws]
-    - role: postman
+
+    - name: Postman
+      include_role: name=postman
       tags: [postman]
-    - role: ollama
+
+    - name: Ollama
+      include_role: name=ollama
       tags: [ollama]
-    - role: claude
+
+    - name: Claude
+      include_role: name=claude
       tags: [claude]
-    - role: gemini
+
+    - name: Gemini
+      include_role: name=gemini
       tags: [gemini]
-    - role: openai
+
+    - name: OpenAI
+      include_role: name=openai
       tags: [openai]
-    - role: obsidian
+
+    - name: Obsidian
+      include_role: name=obsidian
       tags: [obsidian]
-    - role: wisperflow
+
+    - name: Wisperflow
+      include_role: name=wisperflow
       tags: [wisperflow]
-    - role: antigravity
+
+    - name: Antigravity
+      include_role: name=antigravity
       tags: [antigravity]
-    - role: ast-grep
+
+    - name: Ast-grep
+      include_role: name=ast-grep
       tags: [ast-grep]

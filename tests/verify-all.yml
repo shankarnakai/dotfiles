@@ -1,0 +1,16 @@
+---
+- name: Verify dotfiles bootstrap
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Run Git verification
+      include_tasks: roles/git/verify.yml
+      tags: [git, verification]
+
+    - name: Run Zsh verification
+      include_tasks: roles/zsh/verify.yml
+      tags: [zsh, verification]
+
+    - name: Run Tmux verification
+      include_tasks: roles/tmux/verify.yml
+      tags: [tmux, verification]

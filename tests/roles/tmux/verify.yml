@@ -1,0 +1,18 @@
+---
+- name: Verify tmux installation
+  command: tmux -V
+  register: tmux_version
+  changed_when: false
+  failed_when: tmux_version.rc != 0
+
+- name: Verify TPM is installed
+  stat:
+    path: "~/.tmux/plugins/tpm"
+  register: tpm_stat
+  failed_when: not tpm_stat.stat.exists or not tpm_stat.stat.isdir
+
+- name: Verify .tmux.conf exists and is a symlink
+  stat:
+    path: "~/.tmux.conf"
+  register: tmux_conf_stat
+  failed_when: not tmux_conf_stat.stat.exists or not tmux_conf_stat.stat.islnk

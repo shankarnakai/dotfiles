@@ -1,0 +1,24 @@
+---
+- name: Verify Zsh installation
+  command: zsh --version
+  register: zsh_version
+  changed_when: false
+  failed_when: zsh_version.rc != 0
+
+- name: Verify Oh My Zsh exists
+  stat:
+    path: "~/.oh-my-zsh"
+  register: omz_stat
+  failed_when: not omz_stat.stat.exists or not omz_stat.stat.isdir
+
+- name: Verify .zshrc exists and is a symlink
+  stat:
+    path: "~/.zshrc"
+  register: zshrc_stat
+  failed_when: not zshrc_stat.stat.exists or not zshrc_stat.stat.islnk
+
+- name: Verify .curl-format.txt exists and is a symlink
+  stat:
+    path: "~/.curl-format.txt"
+  register: curl_format_stat
+  failed_when: not curl_format_stat.stat.exists or not curl_format_stat.stat.islnk

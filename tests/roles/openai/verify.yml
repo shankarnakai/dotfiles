@@ -1,0 +1,6 @@
+---
+- name: Verify OpenAI Codex CLI installation
+  stat:
+    path: "/usr/local/bin/codex"
+  register: codex_stat
+  failed_when: not codex_stat.stat.exists

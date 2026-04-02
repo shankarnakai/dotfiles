@@ -1,0 +1,13 @@
+---
+- name: Verify Alacritty installation
+  command: alacritty --version
+  register: alacritty_version
+  changed_when: false
+  failed_when: alacritty_version.rc != 0
+  when: ansible_os_family == 'Debian'
+
+- name: Verify Alacritty config exists
+  stat:
+    path: "~/.config/alacritty/alacritty.toml"
+  register: alacritty_config_stat
+  failed_when: not alacritty_config_stat.stat.exists

@@ -1,0 +1,15 @@
+---
+- name: Install ollama (macOS)
+  homebrew_cask:
+    name: ollama
+    state: present
+
+- name: Check if ollama service is running
+  shell: brew services list | grep -E '^ollama\s' | awk '{ print $2 }'
+  register: ollama_running
+  changed_when: false
+  failed_when: false
+
+- name: Start ollama service
+  command: brew services start ollama --quiet
+  when: ollama_running.stdout == 'none'

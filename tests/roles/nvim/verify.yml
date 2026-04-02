@@ -1,0 +1,12 @@
+---
+- name: Verify Neovim installation
+  command: nvim --version
+  register: nvim_version
+  changed_when: false
+  failed_when: nvim_version.rc != 0
+
+- name: Verify Neovim config exists
+  stat:
+    path: "~/.config/nvim/init.lua"
+  register: nvim_config_stat
+  failed_when: not nvim_config_stat.stat.exists

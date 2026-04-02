@@ -20,67 +20,70 @@
       tags: [brew]
 
     - name: Alacritty
-      include_role: name=alacritty
-      when: ansible_os_family == 'Darwin'
+      import_role: name=alacritty
       tags: [alacritty]
 
     # Common Roles
     - name: Git
-      include_role: name=git
+      import_role: name=git
       tags: [git]
 
     - name: Zsh
-      include_role: name=zsh
+      import_role: name=zsh
       tags: [zsh]
 
     - name: Direnv
-      include_role: name=direnv
+      import_role: name=direnv
       tags: [direnv]
 
     - name: Fzf
-      include_role: name=fzf
+      import_role: name=fzf
       tags: [fzf]
 
     - name: Ripgrep
-      include_role: name=ripgrep
+      import_role: name=ripgrep
       tags: [ripgrep]
 
     - name: Neovim
-      include_role: name=nvim
+      import_role: name=nvim
       tags: [nvim]
 
     - name: Tmux
-      include_role: name=tmux
+      import_role: name=tmux
       tags: [tmux]
 
     - name: Golang
-      include_role: name=golang
+      import_role: name=golang
       tags: [golang]
 
     - name: Python
-      include_role: name=python
+      import_role: name=python
       tags: [python]
 
     - name: Redis
-      include_role: name=redis
+      import_role: name=redis
       tags: [redis]
 
+    - name: Docker
+      import_role: name=docker
+      tags: [docker]
+
     - name: Ranger
-      include_role: name=ranger
+      import_role: name=ranger
       tags: [ranger]
 
     - name: Node
-      include_role: name=node
+      import_role: name=node
       tags: [node]
 
     - name: EFM Langserver
-      include_role: name=efm-langserver
+      import_role: name=efm-langserver
       vars:
         efm_langserver_version: "0.0.44"
       tags: [efm-langserver]
 
     - name: VS Code
-      include_role: name=gantsign.visual-studio-code
+      import_role: name=gantsign.visual-studio-code
       vars:
         users:
           - username: "{{ dotfiles_user }}"
@@ -94,45 +97,45 @@
       tags: [vscode]
 
     - name: Desktop
-      include_role: name=desktop
+      import_role: name=desktop
       tags: [desktop]
 
     - name: AWS
-      include_role: name=aws
+      import_role: name=aws
       tags: [aws]
 
     - name: Postman
-      include_role: name=postman
+      import_role: name=postman
       tags: [postman]
 
     - name: Ollama
-      include_role: name=ollama
+      import_role: name=ollama
       tags: [ollama]
 
     - name: Claude
-      include_role: name=claude
+      import_role: name=claude
       tags: [claude]
 
     - name: Gemini
-      include_role: name=gemini
+      import_role: name=gemini
       tags: [gemini]
 
     - name: OpenAI
-      include_role: name=openai
+      import_role: name=openai
       tags: [openai]
 
     - name: Obsidian
-      include_role: name=obsidian
+      import_role: name=obsidian
       tags: [obsidian]
 
     - name: Wisperflow
-      include_role: name=wisperflow
+      import_role: name=wisperflow
       tags: [wisperflow]
 
     - name: Antigravity
-      include_role: name=antigravity
+      import_role: name=antigravity
       tags: [antigravity]
 
     - name: Ast-grep
-      include_role: name=ast-grep
+      import_role: name=ast-grep
       tags: [ast-grep]

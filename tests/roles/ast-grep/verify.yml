@@ -1,0 +1,6 @@
+---
+- name: Verify ast-grep installation
+  stat:
+    path: "/usr/local/bin/sg"
+  register: sg_stat
+  failed_when: not sg_stat.stat.exists

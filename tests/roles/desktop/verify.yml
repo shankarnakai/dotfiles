@@ -1,0 +1,4 @@
+---
+- name: Verify Desktop role (dummy task as it's a collection of tools)
+  debug:
+    msg: "Desktop role verified (placeholders for specific desktop apps could be added)"

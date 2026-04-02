@@ -1,10 +1,7 @@
----
-- name: Install Claude Desktop
-  homebrew_cask:
-    name: claude
-    state: present
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
 
 - name: Install Claude Code
-  npm:
-    name: "@anthropic-ai/claude-code"
-    global: true
+  shell: npm install -g @anthropic-ai/claude-code
+  become: true
+  changed_when: true

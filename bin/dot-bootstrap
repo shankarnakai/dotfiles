@@ -20,16 +20,21 @@ fi
 ansible-galaxy install -r requirements.yml
 
 ANSIBLE_OPTS=("--tags" "$tags")
+echo "Debug: tags=$tags"
+echo "Debug: ANSIBLE_OPTS=${ANSIBLE_OPTS[*]}"
 if [ -n "$3" ]; then
   ANSIBLE_OPTS+=("--start-at-task" "$3")
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+
 if [ "$skip_become_pass" == "--skip-become-pass" ]; then
-  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml "${ANSIBLE_OPTS[@]}"
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" "${ANSIBLE_OPTS[@]}"
 elif [ -n "$ANSIBLE_BECOME_PASSWORD_FILE" ]; then
-  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --become-password-file "$ANSIBLE_BECOME_PASSWORD_FILE" "${ANSIBLE_OPTS[@]}"
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" --become-password-file "$ANSIBLE_BECOME_PASSWORD_FILE" "${ANSIBLE_OPTS[@]}"
 else
-  ansible-playbook -i ~/.dotfiles/hosts ~/.dotfiles/dotfiles.yml --ask-become-pass "${ANSIBLE_OPTS[@]}"
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" --ask-become-pass "${ANSIBLE_OPTS[@]}"
 fi
 
 if command -v terminal-notifier 1>/dev/null 2>&1; then

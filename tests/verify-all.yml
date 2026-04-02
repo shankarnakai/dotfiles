@@ -14,3 +14,103 @@
     - name: Run Tmux verification
       include_tasks: roles/tmux/verify.yml
       tags: [tmux, verification]
+
+    - name: Run Python verification
+      include_tasks: roles/python/verify.yml
+      tags: [python, verification]
+
+    - name: Run Golang verification
+      include_tasks: roles/golang/verify.yml
+      tags: [golang, verification]
+
+    - name: Run Node verification
+      include_tasks: roles/node/verify.yml
+      tags: [node, verification]
+
+    - name: Run Neovim verification
+      include_tasks: roles/nvim/verify.yml
+      tags: [nvim, verification]
+
+    - name: Run FZF verification
+      include_tasks: roles/fzf/verify.yml
+      tags: [fzf, verification]
+
+    - name: Run Ripgrep verification
+      include_tasks: roles/ripgrep/verify.yml
+      tags: [ripgrep, verification]
+
+    - name: Run Direnv verification
+      include_tasks: roles/direnv/verify.yml
+      tags: [direnv, verification]
+
+    - name: Run Redis verification
+      include_tasks: roles/redis/verify.yml
+      tags: [redis, verification]
+
+    - name: Run Docker verification
+      include_tasks: roles/docker/verify.yml
+      tags: [docker, verification]
+
+    - name: Run Alacritty verification
+      include_tasks: roles/alacritty/verify.yml
+      tags: [alacritty, verification]
+
+    - name: Run Postman verification
+      include_tasks: roles/postman/verify.yml
+      tags: [postman, verification]
+
+    - name: Run Obsidian verification
+      include_tasks: roles/obsidian/verify.yml
+      tags: [obsidian, verification]
+
+    - name: Run VS Code verification
+      include_tasks: roles/vscode/verify.yml
+      tags: [vscode, verification]
+
+    - name: Run Ollama verification
+      include_tasks: roles/ollama/verify.yml
+      tags: [ollama, verification]
+
+    - name: Run Claude verification
+      include_tasks: roles/claude/verify.yml
+      tags: [claude, verification]
+
+    - name: Run Gemini verification
+      include_tasks: roles/gemini/verify.yml
+      tags: [gemini, verification]
+
+    - name: Run OpenAI verification
+      include_tasks: roles/openai/verify.yml
+      tags: [openai, verification]
+
+    - name: Run Wisperflow verification
+      include_tasks: roles/wisperflow/verify.yml
+      tags: [wisperflow, verification]
+
+    - name: Run Antigravity verification
+      include_tasks: roles/antigravity/verify.yml
+      tags: [antigravity, verification]
+
+    - name: Run Brew verification
+      include_tasks: roles/brew/verify.yml
+      tags: [brew, verification]
+
+    - name: Run Ranger verification
+      include_tasks: roles/ranger/verify.yml
+      tags: [ranger, verification]
+
+    - name: Run EFM Langserver verification
+      include_tasks: roles/efm-langserver/verify.yml
+      tags: [efm-langserver, verification]
+
+    - name: Run Desktop verification
+      include_tasks: roles/desktop/verify.yml
+      tags: [desktop, verification]
+
+    - name: Run AWS verification
+      include_tasks: roles/aws/verify.yml
+      tags: [aws, verification]
+
+    - name: Run Ast-grep verification
+      include_tasks: roles/ast-grep/verify.yml
+      tags: [ast-grep, verification]

@@ -1,0 +1,5 @@
+---
+- name: Install Postman (Linux)
+  shell: snap install postman
+  become: true
+  changed_when: true

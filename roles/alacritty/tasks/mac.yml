@@ -1,0 +1,11 @@
+---
+- name: Install Alacritty
+  homebrew_cask:
+    name: alacritty
+    state: present
+    install_options: no-quarantine
+
+- name: Install Monoid Nerd Font
+  homebrew_cask:
+    name: font-monoid-nerd-font
+    state: present

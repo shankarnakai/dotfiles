@@ -1,0 +1,6 @@
+---
+- name: Verify VS Code installation
+  command: code --version
+  register: code_version
+  changed_when: false
+  failed_when: code_version.rc != 0

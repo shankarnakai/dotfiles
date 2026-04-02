@@ -1,0 +1,6 @@
+---
+- name: Verify Claude Code installation
+  stat:
+    path: "/usr/local/bin/claude"
+  register: claude_stat
+  failed_when: not claude_stat.stat.exists

@@ -17,6 +17,8 @@
       - libxmlsec1-dev
       - libffi-dev
       - liblzma-dev
+      - python3-pip
+      - python3-venv
     state: present
   become: true
 

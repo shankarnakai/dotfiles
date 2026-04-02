@@ -1,0 +1,7 @@
+---
+- name: Verify Homebrew installation
+  command: brew --version
+  register: brew_version
+  changed_when: false
+  failed_when: brew_version.rc != 0
+  when: ansible_os_family == 'Darwin'

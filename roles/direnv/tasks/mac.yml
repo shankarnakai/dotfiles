@@ -1,0 +1,5 @@
+---
+- name: Install direnv (macOS)
+  homebrew:
+    name: direnv
+    state: present

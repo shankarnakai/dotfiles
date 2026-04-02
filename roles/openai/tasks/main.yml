@@ -1,5 +1,5 @@
 ---
 - name: Install Codex CLI
-  npm:
-    name: "@openai/codex"
-    global: true
+  shell: npm install -g @openai/codex
+  become: true
+  changed_when: true

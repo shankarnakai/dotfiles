@@ -1,0 +1,6 @@
+---
+- name: Verify Ollama installation
+  command: ollama --version
+  register: ollama_version
+  changed_when: false
+  failed_when: ollama_version.rc != 0

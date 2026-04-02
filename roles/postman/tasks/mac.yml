@@ -1,0 +1,5 @@
+---
+- name: Install Postman (macOS)
+  homebrew_cask:
+    name: postman
+    state: present

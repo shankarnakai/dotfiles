@@ -1,7 +1,14 @@
 ---
-- name: Verify Obsidian installation
+- name: Verify Obsidian installation (Linux)
   stat:
     path: "/snap/bin/obsidian"
   register: obsidian_stat
   failed_when: not obsidian_stat.stat.exists
   when: ansible_os_family == 'Debian'
+
+- name: Verify Obsidian installation (macOS)
+  stat:
+    path: "/Applications/Obsidian.app"
+  register: obsidian_mac_stat
+  failed_when: not obsidian_mac_stat.stat.exists
+  when: ansible_os_family == 'Darwin'

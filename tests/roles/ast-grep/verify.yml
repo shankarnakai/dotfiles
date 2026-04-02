@@ -1,6 +1,14 @@
 ---
-- name: Verify ast-grep installation
+- name: Verify ast-grep installation (Linux)
   stat:
     path: "/usr/local/bin/sg"
   register: sg_stat
   failed_when: not sg_stat.stat.exists
+  when: ansible_os_family == 'Debian'
+
+- name: Verify ast-grep installation (macOS)
+  command: sg --version
+  register: sg_version_mac
+  changed_when: false
+  failed_when: sg_version_mac.rc != 0
+  when: ansible_os_family == 'Darwin'

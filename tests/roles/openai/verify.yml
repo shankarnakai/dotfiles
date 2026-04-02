@@ -1,6 +1,14 @@
 ---
-- name: Verify OpenAI Codex CLI installation
+- name: Verify OpenAI Codex CLI installation (Linux)
   stat:
     path: "/usr/local/bin/codex"
   register: codex_stat
   failed_when: not codex_stat.stat.exists
+  when: ansible_os_family == 'Debian'
+
+- name: Verify OpenAI Codex CLI installation (macOS)
+  command: codex --version
+  register: codex_mac_version
+  changed_when: false
+  failed_when: codex_mac_version.rc != 0
+  when: ansible_os_family == 'Darwin'

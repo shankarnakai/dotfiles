@@ -1,7 +1,14 @@
 ---
-- name: Verify Postman installation
+- name: Verify Postman installation (Linux)
   stat:
     path: "/snap/bin/postman"
   register: postman_stat
   failed_when: not postman_stat.stat.exists
   when: ansible_os_family == 'Debian'
+
+- name: Verify Postman installation (macOS)
+  stat:
+    path: "/Applications/Postman.app"
+  register: postman_mac_stat
+  failed_when: not postman_mac_stat.stat.exists
+  when: ansible_os_family == 'Darwin'

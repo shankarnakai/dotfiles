@@ -8,6 +8,7 @@
   get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
     dest: /tmp/awscliv2.zip
+    mode: "0644"
   when: not aws_check.stat.exists
 
 - name: Extract and install AWS CLI v2

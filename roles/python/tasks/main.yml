@@ -34,7 +34,7 @@
   register: pytest_stat
 
 - name: Back up existing pytest.ini
-  command: mv ~/pytest.ini ~/pytest.ini.bak
+  command: "mv {{ ansible_env.HOME }}/pytest.ini {{ ansible_env.HOME }}/pytest.ini.bak"
   args:
     creates: "{{ ansible_env.HOME }}/pytest.ini.bak"
   when: pytest_stat.stat.exists and not pytest_stat.stat.islnk

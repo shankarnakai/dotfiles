@@ -18,7 +18,7 @@
   register: gitconfig_stat
 
 - name: Back up gitconfig
-  command: mv ~/.gitconfig ~/.gitconfig.bak
+  command: "mv {{ dotfiles_user_home }}/.gitconfig {{ dotfiles_user_home }}/.gitconfig.bak"
   args:
     creates: "{{ dotfiles_user_home }}/.gitconfig.bak"
   when: gitconfig_stat.stat.exists and not gitconfig_stat.stat.islnk
@@ -45,7 +45,7 @@
   register: sshconfig_stat
 
 - name: Back up SSH config
-  command: mv ~/.ssh/config ~/.ssh/config.bak
+  command: "mv {{ dotfiles_user_home }}/.ssh/config {{ dotfiles_user_home }}/.ssh/config.bak"
   args:
     creates: "{{ dotfiles_user_home }}/.ssh/config.bak"
   when: sshconfig_stat.stat.exists and not sshconfig_stat.stat.islnk

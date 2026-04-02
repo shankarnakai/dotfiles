@@ -1,7 +1,7 @@
 ---
 - name: Verify Antigravity installation
-  command: antigravity --version
-  register: antigravity_version
-  changed_when: false
-  failed_when: antigravity_version.rc != 0
+  stat:
+    path: "/Applications/Antigravity.app"
+  register: antigravity_stat
+  failed_when: not antigravity_stat.stat.exists
   when: ansible_os_family == 'Darwin'

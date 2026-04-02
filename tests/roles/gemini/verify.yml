@@ -1,6 +1,14 @@
 ---
-- name: Verify Gemini CLI installation
+- name: Verify Gemini CLI installation (Linux)
   stat:
     path: "/usr/local/bin/gemini"
   register: gemini_stat
   failed_when: not gemini_stat.stat.exists
+  when: ansible_os_family == 'Debian'
+
+- name: Verify Gemini CLI installation (macOS)
+  command: gemini --version
+  register: gemini_mac_version
+  changed_when: false
+  failed_when: gemini_mac_version.rc != 0
+  when: ansible_os_family == 'Darwin'

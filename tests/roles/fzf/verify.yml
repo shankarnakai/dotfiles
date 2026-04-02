@@ -1,0 +1,6 @@
+---
+- name: Verify FZF installation
+  command: fzf --version
+  register: fzf_version
+  changed_when: false
+  failed_when: fzf_version.rc != 0

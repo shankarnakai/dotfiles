@@ -1,0 +1,6 @@
+---
+- name: Verify Direnv installation
+  command: direnv --version
+  register: direnv_version
+  changed_when: false
+  failed_when: direnv_version.rc != 0

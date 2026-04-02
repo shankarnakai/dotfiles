@@ -1,0 +1,14 @@
+---
+- name: Verify AWS CLI installation (Linux)
+  command: /usr/local/bin/aws --version
+  register: aws_version
+  changed_when: false
+  failed_when: aws_version.rc != 0
+  when: ansible_os_family == 'Debian'
+
+- name: Verify AWS CLI installation (macOS)
+  command: aws --version
+  register: aws_version_mac
+  changed_when: false
+  failed_when: aws_version_mac.rc != 0
+  when: ansible_os_family == 'Darwin'

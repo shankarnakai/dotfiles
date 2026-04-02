@@ -11,18 +11,12 @@
   when: ansible_os_family == "Debian"
 
 - name: Install linters and formatters with npm
-  shell: |
-    if [ -x "$(command -v npm)" ]; then
-      npm install -g {{ item }}
-    elif [ -x "$(command -v pnpm)" ]; then
-      pnpm add -g {{ item }}
-    fi
+  shell: "npm install -g {{ item }}"
   loop:
     - eslint_d
     - prettier
-  register: npm_install_efm
-  changed_when: "'up to date' not in npm_install_efm.stdout and 'added' in npm_install_efm.stdout"
-  become: "{{ ansible_os_family == 'Debian' }}"
+  become: true
+  changed_when: true
 
 - name: Install stylua from GitHub releases
   unarchive:

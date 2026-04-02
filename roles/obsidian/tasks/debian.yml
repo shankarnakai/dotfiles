@@ -1,0 +1,5 @@
+---
+- name: Install Obsidian (Linux)
+  shell: snap install obsidian --classic
+  become: true
+  changed_when: true

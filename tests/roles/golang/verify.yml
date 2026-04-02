@@ -1,12 +1,6 @@
 ---
 - name: Verify Go installation
-  command: go version
+  command: /usr/local/go/bin/go version
   register: go_version
   changed_when: false
   failed_when: go_version.rc != 0
-
-- name: Verify GOPATH directory exists
-  stat:
-    path: "~/go"
-  register: gopath_stat
-  failed_when: not gopath_stat.stat.exists or not gopath_stat.stat.isdir

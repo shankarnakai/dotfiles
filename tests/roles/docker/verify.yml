@@ -1,0 +1,12 @@
+---
+- name: Verify Docker installation
+  command: docker --version
+  register: docker_version
+  changed_when: false
+  failed_when: docker_version.rc != 0
+
+- name: Verify Docker Compose installation
+  command: docker compose version
+  register: docker_compose_version
+  changed_when: false
+  failed_when: docker_compose_version.rc != 0

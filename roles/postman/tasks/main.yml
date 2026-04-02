@@ -1,3 +1,5 @@
----
-- name: Install Postman 
-  homebrew_cask: name=postman state=present
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"

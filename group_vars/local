@@ -1,6 +1,6 @@
 dotfiles_user: "{{ lookup('env', 'USER') }}"
 dotfiles_user_home: "{{ '~' | expanduser }}"
-dotfiles_home: "{{ dotfiles_user_home }}/.dotfiles"
+dotfiles_home: "{{ playbook_dir }}"
 
 full_name: Shankar Nakai
 

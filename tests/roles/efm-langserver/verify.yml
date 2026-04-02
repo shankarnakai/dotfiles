@@ -1,0 +1,14 @@
+---
+- name: Verify EFM Langserver installation
+  command: /home/ubuntu/.local/bin/efm-langserver -v
+  register: efm_version
+  changed_when: false
+  failed_when: efm_version.rc != 0
+  when: ansible_os_family == 'Debian'
+
+- name: Verify EFM Langserver installation (macOS)
+  command: efm-langserver -v
+  register: efm_version_mac
+  changed_when: false
+  failed_when: efm_version_mac.rc != 0
+  when: ansible_os_family == 'Darwin'

@@ -1,5 +1,2 @@
----
-- name: Install Antigravity
-  homebrew_cask:
-    name: antigravity
-    state: present
+- include_tasks: mac.yml
+  when: ansible_os_family == "Darwin"

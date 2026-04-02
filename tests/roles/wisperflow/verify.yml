@@ -1,0 +1,7 @@
+---
+- name: Verify Wisperflow installation (macOS)
+  stat:
+    path: "/Applications/Wispr Flow.app"
+  register: wispr_flow_stat
+  failed_when: not wispr_flow_stat.stat.exists
+  when: ansible_os_family == 'Darwin'

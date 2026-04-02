@@ -1,0 +1,10 @@
+---
+- name: Check if ollama is installed
+  command: which ollama
+  register: ollama_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install ollama (Linux)
+  shell: curl -fsSL https://ollama.com/install.sh | sh
+  when: ollama_installed.rc != 0

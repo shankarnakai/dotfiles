@@ -1,0 +1,7 @@
+---
+- name: Verify Postman installation
+  stat:
+    path: "/snap/bin/postman"
+  register: postman_stat
+  failed_when: not postman_stat.stat.exists
+  when: ansible_os_family == 'Debian'

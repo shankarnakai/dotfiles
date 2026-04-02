@@ -1,0 +1,8 @@
+---
+- name: Verify Redis service is running
+  service:
+    name: "{{ 'redis-server' if ansible_os_family == 'Debian' else 'redis' }}"
+    state: started
+  check_mode: yes
+  register: redis_service
+  failed_when: redis_service.changed

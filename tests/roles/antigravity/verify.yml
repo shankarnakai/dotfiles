@@ -1,0 +1,7 @@
+---
+- name: Verify Antigravity installation
+  command: antigravity --version
+  register: antigravity_version
+  changed_when: false
+  failed_when: antigravity_version.rc != 0
+  when: ansible_os_family == 'Darwin'

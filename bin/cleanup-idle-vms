@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# cleanup-idle-vms - Automatically purges idle Multipass VMs if memory is low
+
+THRESHOLD_MB=4096
+
+while true; do
+  # Get available memory in MB
+  available_mem=$(free -m | awk '/^Mem:/{print $7}')
+
+  if [ "$available_mem" -lt "$THRESHOLD_MB" ]; then
+    echo "$(date): Memory low (${available_mem}MB). Checking for idle Multipass VMs..."
+
+    # Get VM names in JSON format for reliable parsing
+    vms=$(multipass list --format json | jq -r '.list[].name')
+
+    for vm in $vms; do
+      # Get 1-minute load average
+      load=$(multipass info "$vm" --format json | jq -r ".info.\"$vm\".load[0]")
+
+      # Check if load is 0.00 (negligible activity)
+      if [ "$(echo "$load == 0.00" | bc -l)" -eq 1 ]; then
+        echo "$(date): Deleting idle VM: $vm (Load: $load)"
+        multipass delete --purge "$vm"
+      else
+        echo "$(date): Keeping active VM: $vm (Load: $load)"
+      fi
+    done
+  else
+    echo "$(date): Memory sufficient (${available_mem}MB). No action needed."
+  fi
+
+  # Wait 15 minutes (900 seconds)
+  sleep 900
+done

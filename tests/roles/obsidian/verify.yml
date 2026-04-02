@@ -1,0 +1,7 @@
+---
+- name: Verify Obsidian installation
+  stat:
+    path: "/snap/bin/obsidian"
+  register: obsidian_stat
+  failed_when: not obsidian_stat.stat.exists
+  when: ansible_os_family == 'Debian'

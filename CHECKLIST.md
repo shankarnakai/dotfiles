@@ -29,35 +29,35 @@ This checklist tracks the progress of making each Ansible role cross-platform (U
 ---
 
 ## Phase 2: Languages & Runtimes
-- [ ] **Role: python**
-- [ ] **Role: golang**
-- [ ] **Role: node**
+- [x] **Role: python**
+- [x] **Role: golang**
+- [x] **Role: node**
 
 ---
 
 ## Phase 3: Editors & Tools
-- [ ] **Role: nvim**
-- [ ] **Role: fzf**
-- [ ] **Role: ripgrep**
-- [ ] **Role: direnv**
+- [x] **Role: nvim**
+- [x] **Role: fzf**
+- [x] **Role: ripgrep**
+- [x] **Role: direnv**
 
 ---
 
 ## Phase 4: Services & Apps
-- [ ] **Role: redis**
-- [ ] **Role: docker** (Check if existing role exists or needs creation)
-- [ ] **Role: alacritty**
+- [x] **Role: redis**
+- [x] **Role: docker**
+- [x] **Role: alacritty**
 
 ---
 
 ## Phase 5: AI & Specialized Tools
-- [ ] **Role: ollama**
-- [ ] **Role: claude**
-- [ ] **Role: gemini**
-- [ ] **Role: openai**
+- [x] **Role: ollama**
+- [x] **Role: claude**
+- [x] **Role: gemini**
+- [x] **Role: openai**
 
 ---
 
 ## Phase 6: Final Integration
 - [ ] **Full Bootstrap Test** (Run entire `dotfiles.yml` on a clean Ubuntu VM)
-- [ ] **GitHub Actions Setup** (Automated macOS/Ubuntu testing on push)
+- [x] **GitHub Actions Setup** (Automated macOS/Ubuntu testing on push)

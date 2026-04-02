@@ -1,0 +1,6 @@
+---
+- name: Verify Gemini CLI installation
+  stat:
+    path: "/usr/local/bin/gemini"
+  register: gemini_stat
+  failed_when: not gemini_stat.stat.exists

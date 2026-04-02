@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, linux ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Run dotfiles bootstrap
+        run: |
+          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv --skip-become-pass
+        env:
+          DOTFILES_USER: runner
+          DOTFILES_HOME: ${{ github.workspace }}
+
+      - name: Run verification
+        run: |
+          ansible-playbook -i localhost, tests/verify-all.yml
+        env:
+          DOTFILES_USER: runner
+          DOTFILES_HOME: ${{ github.workspace }}
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "/usr/local/bin" >> $GITHUB_PATH
+
+      - name: Set up Ansible
+        run: |
+          brew install ansible
+
+      - name: Run dotfiles bootstrap
+        run: |
+          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv --skip-become-pass
+        env:
+          DOTFILES_USER: runner
+          DOTFILES_HOME: ${{ github.workspace }}
+
+      - name: Run verification
+        run: |
+          ansible-playbook -i localhost, tests/verify-all.yml
+        env:
+          DOTFILES_USER: runner
+          DOTFILES_HOME: ${{ github.workspace }}

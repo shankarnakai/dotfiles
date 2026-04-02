@@ -1,0 +1,6 @@
+---
+- name: Verify Ranger installation
+  command: ranger --version
+  register: ranger_version
+  changed_when: false
+  failed_when: ranger_version.rc != 0

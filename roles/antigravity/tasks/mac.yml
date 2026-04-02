@@ -1,0 +1,5 @@
+---
+- name: Install Antigravity
+  homebrew_cask:
+    name: antigravity
+    state: present

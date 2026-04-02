@@ -13,6 +13,6 @@
 
 - name: Verify Pytest config exists
   stat:
-    path: "~/.pytest.ini"
+    path: "~/pytest.ini"
   register: pytest_stat
   failed_when: not pytest_stat.stat.exists

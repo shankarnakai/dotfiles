@@ -24,7 +24,9 @@ export PERSONAL="$HOME/personal"
 #************************************************
 # JAVA
 #************************************************
-export PATH="$HOME/Library/Java/JavaVirtualMachines/openjdk-21.0.1/Contents/Home:$PATH"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  [ -d "$HOME/Library/Java/JavaVirtualMachines/openjdk-21.0.1/Contents/Home" ] && export PATH="$HOME/Library/Java/JavaVirtualMachines/openjdk-21.0.1/Contents/Home:$PATH"
+fi
 if command -v brew &>/dev/null; then
   _tomcat_prefix="$(brew --prefix tomcat@9 2>/dev/null)"
   [ -d "$_tomcat_prefix/bin" ] && export PATH="$_tomcat_prefix/bin:$PATH"

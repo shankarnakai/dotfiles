@@ -1,0 +1,6 @@
+---
+- name: Verify Ripgrep installation
+  command: rg --version
+  register: rg_version
+  changed_when: false
+  failed_when: rg_version.rc != 0

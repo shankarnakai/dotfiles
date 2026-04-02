@@ -13,5 +13,6 @@
 - name: Extract and install AWS CLI v2
   shell: |
     unzip -o /tmp/awscliv2.zip -d /tmp
-    sudo /tmp/aws/install --update
+    /tmp/aws/install --update
+  become: true
   when: not aws_check.stat.exists

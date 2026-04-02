@@ -34,6 +34,8 @@ multipass mount . "$VM_NAME":/home/ubuntu/.dotfiles
 
 echo "🛠️ Installing Ansible inside VM..."
 multipass exec "$VM_NAME" -- sudo apt update
+multipass exec "$VM_NAME" -- sudo apt install -y software-properties-common
+multipass exec "$VM_NAME" -- sudo apt-add-repository --yes --update ppa:ansible/ansible
 multipass exec "$VM_NAME" -- sudo apt install -y ansible
 
 echo "🏗️ Running dotfiles bootstrap..."

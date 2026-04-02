@@ -8,6 +8,7 @@
   get_url:
     url: https://awscli.amazonaws.com/AWSCLIV2.pkg
     dest: /tmp/AWSCLIV2.pkg
+    mode: "0644"
   when: not aws_check.stat.exists
 
 - name: Install AWS CLI v2

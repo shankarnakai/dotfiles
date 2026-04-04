@@ -1,8 +1,36 @@
 #!/usr/bin/env bash
 set -e
 
-tags="$1"
-skip_become_pass="$2"
+tags=""
+skip_become_pass=""
+start_at_task=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --tags)
+      tags="$2"
+      shift 2
+      ;;
+    --skip-become-pass)
+      skip_become_pass="--skip-become-pass"
+      shift
+      ;;
+    --start-at-task)
+      start_at_task="$2"
+      shift 2
+      ;;
+    *)
+      if [ -z "$tags" ]; then
+        tags="$1"
+      elif [ -z "$skip_become_pass" ] && [[ "$1" == "--skip-become-pass" ]]; then
+        skip_become_pass="--skip-become-pass"
+      elif [ -z "$start_at_task" ]; then
+        start_at_task="$1"
+      fi
+      shift
+      ;;
+  esac
+done
 
 if [ -z "$tags" ]; then
   tags="all"
@@ -20,11 +48,12 @@ fi
 ansible-galaxy install -r requirements.yml
 
 ANSIBLE_OPTS=("--tags" "$tags")
+if [ -n "$start_at_task" ]; then
+  ANSIBLE_OPTS+=("--start-at-task" "$start_at_task")
+fi
+
 echo "Debug: tags=$tags"
 echo "Debug: ANSIBLE_OPTS=${ANSIBLE_OPTS[*]}"
-if [ -n "$3" ]; then
-  ANSIBLE_OPTS+=("--start-at-task" "$3")
-fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"

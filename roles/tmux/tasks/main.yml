@@ -3,7 +3,7 @@
   package:
     name: tmux
     state: present
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
 
 - name: Install tpm
   git:

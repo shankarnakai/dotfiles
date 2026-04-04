@@ -81,12 +81,10 @@
     - name: Run Claude verification
       include_tasks: roles/claude/verify.yml
       tags: [claude, verification]
-      when: lookup('env', 'CI') == ""
 
     - name: Run Gemini verification
       include_tasks: roles/gemini/verify.yml
       tags: [gemini, verification]
-      when: lookup('env', 'CI') == ""
 
     - name: Run OpenAI verification
       include_tasks: roles/openai/verify.yml
@@ -131,4 +129,3 @@
     - name: Run Ast-grep verification
       include_tasks: roles/ast-grep/verify.yml
       tags: [ast-grep, verification]
-      when: lookup('env', 'CI') == ""

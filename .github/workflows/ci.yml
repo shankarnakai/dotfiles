@@ -21,7 +21,7 @@ jobs:
 
       - name: Run dotfiles bootstrap
         run: |
-          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv --skip-become-pass
+          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv,claude,gemini,ast-grep --skip-become-pass
         env:
           DOTFILES_USER: runner
           DOTFILES_HOME: ${{ github.workspace }}
@@ -50,7 +50,7 @@ jobs:
       - name: Run dotfiles bootstrap
 
         run: |
-          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv --skip-become-pass
+          ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv,claude,gemini,ast-grep --skip-become-pass
         env:
           DOTFILES_USER: runner
           DOTFILES_HOME: ${{ github.workspace }}

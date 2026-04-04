@@ -66,6 +66,3 @@ else
   ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" --ask-become-pass "${ANSIBLE_OPTS[@]}"
 fi
 
-if [ -z "$CI" ] && command -v terminal-notifier 1>/dev/null 2>&1; then
-  terminal-notifier -title "dotfiles: Bootstrap complete" -message "Successfully set up dev environment."
-fi

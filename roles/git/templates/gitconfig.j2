@@ -85,7 +85,7 @@
         default = simple
         followTags = true
 
-{% if ansible_os_family == 'Darwin' %}
+{% if ansible_os_family == 'Darwin' and not (lookup('env', 'CI') | default(false, true)) %}
 # URL rewrites: work org routes to github-work SSH alias (longest prefix wins)
 {% for org in github_work_orgs %}
 [url "git@github-work:{{ org }}/"]

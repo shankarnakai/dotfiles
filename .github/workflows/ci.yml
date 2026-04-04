@@ -47,7 +47,12 @@ jobs:
         run: |
           brew install ansible
 
+      - name: Remove problematic gems
+        run: |
+          gem uninstall terminal-notifier -x 2>/dev/null || true
+
       - name: Run dotfiles bootstrap
+
         run: |
           ./bin/dot-bootstrap --tags git,zsh,tmux,python,golang,node,nvim,fzf,ripgrep,direnv --skip-become-pass
         env:

@@ -3,7 +3,7 @@
   package:
     name: git
     state: present
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
 
 - name: Link global gitignore file
   file:

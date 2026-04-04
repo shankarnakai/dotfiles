@@ -3,7 +3,7 @@
   package:
     name: zsh
     state: present
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
 
 - name: Check for oh-my-zsh installation
   stat:

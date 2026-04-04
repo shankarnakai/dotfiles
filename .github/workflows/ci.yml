@@ -47,10 +47,6 @@ jobs:
         run: |
           brew install ansible
 
-      - name: Remove problematic gems
-        run: |
-          gem uninstall terminal-notifier -x 2>/dev/null || true
-
       - name: Run dotfiles bootstrap
 
         run: |

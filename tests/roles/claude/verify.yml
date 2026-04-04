@@ -18,4 +18,4 @@
     path: "/Applications/Claude.app"
   register: claude_desktop_stat
   failed_when: not claude_desktop_stat.stat.exists
-  when: ansible_os_family == 'Darwin'
+  when: ansible_os_family == 'Darwin' and lookup('env', 'CI') == ""

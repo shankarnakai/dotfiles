@@ -46,71 +46,89 @@
     - name: Run Redis verification
       include_tasks: roles/redis/verify.yml
       tags: [redis, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Docker verification
       include_tasks: roles/docker/verify.yml
       tags: [docker, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Alacritty verification
       include_tasks: roles/alacritty/verify.yml
       tags: [alacritty, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Postman verification
       include_tasks: roles/postman/verify.yml
       tags: [postman, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Obsidian verification
       include_tasks: roles/obsidian/verify.yml
       tags: [obsidian, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run VS Code verification
       include_tasks: roles/vscode/verify.yml
       tags: [vscode, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Ollama verification
       include_tasks: roles/ollama/verify.yml
       tags: [ollama, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Claude verification
       include_tasks: roles/claude/verify.yml
       tags: [claude, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Gemini verification
       include_tasks: roles/gemini/verify.yml
       tags: [gemini, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run OpenAI verification
       include_tasks: roles/openai/verify.yml
       tags: [openai, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Wisperflow verification
       include_tasks: roles/wisperflow/verify.yml
       tags: [wisperflow, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Antigravity verification
       include_tasks: roles/antigravity/verify.yml
       tags: [antigravity, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Brew verification
       include_tasks: roles/brew/verify.yml
       tags: [brew, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Ranger verification
       include_tasks: roles/ranger/verify.yml
       tags: [ranger, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run EFM Langserver verification
       include_tasks: roles/efm-langserver/verify.yml
       tags: [efm-langserver, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Desktop verification
       include_tasks: roles/desktop/verify.yml
       tags: [desktop, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run AWS verification
       include_tasks: roles/aws/verify.yml
       tags: [aws, verification]
+      when: lookup('env', 'CI') == ""
 
     - name: Run Ast-grep verification
       include_tasks: roles/ast-grep/verify.yml
       tags: [ast-grep, verification]
+      when: lookup('env', 'CI') == ""

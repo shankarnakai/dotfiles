@@ -1,9 +1,9 @@
 ---
 - name: Verify Claude Code installation (Linux)
-  stat:
-    path: "/usr/local/bin/claude"
-  register: claude_stat
-  failed_when: not claude_stat.stat.exists
+  command: claude --version
+  register: claude_linux_version
+  changed_when: false
+  failed_when: claude_linux_version.rc != 0
   when: ansible_os_family == 'Debian'
 
 - name: Verify Claude Code installation (macOS)

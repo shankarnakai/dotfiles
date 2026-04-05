@@ -1,14 +1,4 @@
 ---
-- name: Fetch latest stable Go release info
-  uri:
-    url: https://go.dev/dl/?mode=json
-    return_content: true
-  register: go_releases
-
-- name: Set latest Go version
-  set_fact:
-    go_version: "{{ (go_releases.json | selectattr('stable', 'equalto', true) | first).version }}"
-
 - name: Set Go OS and architecture
   set_fact:
     go_os: "{{ 'darwin' if ansible_os_family == 'Darwin' else 'linux' }}"
@@ -27,10 +17,19 @@
   become: true
   when: ansible_os_family == "Debian"
 
+- name: Remove old Go installation
+  file:
+    path: /usr/local/go
+    state: absent
+  become: true
+  when: go_current.stdout != golang_version
+
 - name: Download and extract Go
   unarchive:
-    src: "https://dl.google.com/go/{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+    src: "https://dl.google.com/go/{{ golang_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
     dest: "/usr/local"
     remote_src: true
   become: true
-  when: go_current.stdout != go_version
+  when: go_current.stdout != golang_version
+
+

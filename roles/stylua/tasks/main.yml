@@ -1,0 +1,13 @@
+---
+- name: Create directory ~/.local/bin/
+  file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: "0755"
+
+- name: Install stylua from GitHub releases
+  unarchive:
+    src: "https://github.com/JohnnyMorganz/StyLua/releases/download/v{{ stylua_version }}/stylua-{{ 'macos' if ansible_facts['os_family'] == 'Darwin' else 'linux' }}.zip"
+    dest: "~/.local/bin"
+    mode: "u+x"
+    remote_src: true

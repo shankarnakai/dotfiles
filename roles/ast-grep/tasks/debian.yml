@@ -1,5 +1,5 @@
 ---
 - name: Install ast-grep (via npm)
-  shell: npm install -g @ast-grep/cli
+  shell: "npm install -g @ast-grep/cli@{{ ast_grep_version }}"
   become: true
   changed_when: true

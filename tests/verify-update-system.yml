@@ -1,0 +1,27 @@
+---
+- name: Verify Update Check System
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Ensure versions.yml exists
+      stat:
+        path: "{{ playbook_dir }}/../versions.yml"
+      register: versions_stat
+      failed_when: not versions_stat.stat.exists
+
+    - name: Run check-updates for a single role (golang)
+      command: "{{ playbook_dir }}/../bin/dot-bootstrap check-updates --tags golang"
+      register: check_output
+      changed_when: false
+
+    - name: Verify output contains the summary table
+      assert:
+        that:
+          - "'Role' in check_output.stdout"
+          - "'golang' in check_output.stdout"
+          - "'Status' in check_output.stdout"
+        fail_msg: "The summary table was not found in the output of check-updates."
+
+    - name: Verify check-updates output format
+      debug:
+        msg: "Check-updates output verified successfully."

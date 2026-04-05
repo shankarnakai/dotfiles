@@ -1,0 +1,6 @@
+---
+efm_langserver_version: "0.0.44"
+golang_version: "go1.26.1"
+python_version: "3.12.2"
+stylua_version: "0.13.1"
+ast_grep_version: "0.20.2"

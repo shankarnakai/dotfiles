@@ -1,0 +1,59 @@
+---
+- name: Check for updates across all roles
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+    - versions.yml
+
+  vars:
+    update_results: []
+
+  tasks:
+    - name: Initialize results list
+      set_fact:
+        update_results: []
+
+    - name: Check EFM Langserver
+      block:
+        - include_tasks: roles/efm-langserver/tasks/lookup_version.yml
+        - set_fact:
+            update_results: "{{ update_results + [{'role': 'efm-langserver', 'current': efm_langserver_version, 'latest': efm_langserver_latest_version, 'status': ('Outdated' if efm_langserver_version != efm_langserver_latest_version else 'Up to date')}] }}"
+      tags: [efm-langserver, updates]
+
+    - name: Check StyLua
+      block:
+        - include_tasks: roles/stylua/tasks/lookup_version.yml
+        - set_fact:
+            update_results: "{{ update_results + [{'role': 'stylua', 'current': stylua_version, 'latest': stylua_latest_version, 'status': ('Outdated' if stylua_version != stylua_latest_version else 'Up to date')}] }}"
+      tags: [stylua, updates]
+
+    - name: Check Golang
+      block:
+        - include_tasks: roles/golang/tasks/lookup_version.yml
+        - set_fact:
+            update_results: "{{ update_results + [{'role': 'golang', 'current': golang_version, 'latest': golang_latest_version, 'status': ('Outdated' if golang_version != golang_latest_version else 'Up to date')}] }}"
+      tags: [golang, updates]
+
+    - name: Check Python
+      block:
+        - include_tasks: roles/python/tasks/lookup_version.yml
+        - set_fact:
+            update_results: "{{ update_results + [{'role': 'python', 'current': python_version, 'latest': python_latest_version, 'status': ('Outdated' if python_version != python_latest_version else 'Up to date')}] }}"
+      tags: [python, updates]
+
+    - name: Check ast-grep
+      block:
+        - include_tasks: roles/ast-grep/tasks/lookup_version.yml
+        - set_fact:
+            update_results: "{{ update_results + [{'role': 'ast-grep', 'current': ast_grep_version, 'latest': ast_grep_latest_version, 'status': ('Outdated' if ast_grep_version != ast_grep_latest_version else 'Up to date')}] }}"
+      tags: [ast-grep, updates]
+
+    - name: Display Update Summary Table
+      debug:
+        msg: |
+          Role               | Current    | Latest     | Status
+          -------------------|------------|------------|------------
+          {% for result in update_results %}
+          {{ "%-18s | %-10s | %-10s | %s" | format(result.role, result.current, result.latest, result.status) }}
+          {% endfor %}
+      tags: [always]

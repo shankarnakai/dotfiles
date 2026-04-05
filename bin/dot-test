@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# bin/dot-test - Unified Multipass testing utility for dotfiles roles
+# Usage: bin/dot-test <role_name> [--keep] [--instance-type 22.04]
+
+set -e
+
+ROLE="$1"
+if [ -z "$ROLE" ]; then
+    echo "Usage: bin/dot-test <role_name> [--keep] [--instance-type version]"
+    exit 1
+fi
+
+shift
+VM_NAME="dot-test-${ROLE}-$(date +%s)"
+INSTANCE_TYPE="22.04"
+KEEP_VM=false
+
+# Parse remaining arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --keep)
+      KEEP_VM=true
+      shift
+      ;;
+    --instance-type)
+      INSTANCE_TYPE="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+cleanup() {
+  if [ "$KEEP_VM" = true ]; then
+    echo -e "\n📌 Keeping VM: $VM_NAME for inspection."
+    echo "🗑️ To destroy later: multipass delete --purge $VM_NAME"
+  else
+    echo -e "\n🧹 Cleaning up... purging $VM_NAME"
+    multipass delete --purge "$VM_NAME"
+  fi
+}
+
+trap cleanup EXIT ERR SIGINT SIGTERM
+
+echo "🚀 Launching Ubuntu $INSTANCE_TYPE VM: $VM_NAME..."
+multipass launch "$INSTANCE_TYPE" --name "$VM_NAME" --cpus 2 --memory 4G --disk 20G
+
+echo "📂 Mounting dotfiles to VM..."
+multipass mount . "$VM_NAME":/home/ubuntu/.dotfiles
+
+echo "🛠️ Installing Ansible inside VM..."
+multipass exec "$VM_NAME" -- sudo apt update
+multipass exec "$VM_NAME" -- sudo apt install -y ansible curl
+
+echo "🏗️ Running dotfiles role: $ROLE..."
+multipass exec "$VM_NAME" -- bash -c "cd ~/.dotfiles && ./bin/dot-bootstrap install --tags $ROLE --skip-become-pass"
+
+echo "🧪 Running verification for: $ROLE..."
+# Check if a specific verify file exists for the role
+if [ -f "tests/roles/${ROLE}/verify.yml" ]; then
+    multipass exec "$VM_NAME" -- bash -c "cd ~/.dotfiles && ansible-playbook -i localhost, tests/verify-all.yml --tags $ROLE,verification"
+else
+    echo "⚠️ No specific verify.yml found for $ROLE. Running all tests."
+    multipass exec "$VM_NAME" -- bash -c "cd ~/.dotfiles && ansible-playbook -i localhost, tests/verify-all.yml"
+fi
+
+echo "✅ Test completed successfully!"

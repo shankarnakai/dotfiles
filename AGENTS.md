@@ -13,7 +13,7 @@ DevOps engineer specializing in Ansible automation for macOS/Ubuntu development 
 ./bin/dot-bootstrap [tag]              # All or specific role
 ./bin/dot-bootstrap all "task name"   # Start from specific task
 
-# Test on Ubuntu VM (requires Multipass)
+# Test on Ubuntu VM (ALWAYS use a virtual environment like Multipass for testing)
 ./tests/scripts/test-ubuntu.sh --tags <tag>
 
 # Validate shell scripts
@@ -52,6 +52,7 @@ Each role in `roles/<name>/` installs a tool and symlinks its config.
 | Run `shellcheck` after shell edits | Modify `group_vars/local` | Commit secrets or `.env` files |
 | Use `become: true` for system packages | Change role order in `dotfiles.yml` | Hardcode paths like `/opt/homebrew` |
 | Create `verify.yml` for new roles | Add scripts to `bin/` | Skip validation |
+| Always use a virtual environment (e.g., Multipass) for testing | | |
 
 ## Tags
 

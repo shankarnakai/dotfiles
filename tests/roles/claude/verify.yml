@@ -1,13 +1,13 @@
 ---
 - name: Verify Claude Code installation (Linux)
-  command: "~/.claude/bin/claude --version"
+  command: "~/.local/bin/claude --version"
   register: claude_linux_version
   changed_when: false
   failed_when: claude_linux_version.rc != 0
   when: ansible_os_family == 'Debian'
 
 - name: Verify Claude Code installation (macOS)
-  command: "~/.claude/bin/claude --version"
+  command: "~/.local/bin/claude --version"
   register: claude_mac_version
   changed_when: false
   failed_when: claude_mac_version.rc != 0

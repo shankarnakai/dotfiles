@@ -3,8 +3,5 @@
 
 - name: Install Claude Code (native)
   shell: curl -fsSL https://claude.ai/install.sh | bash
-  register: claude_install_output
-
-- name: Debug Claude installation output
-  debug:
-    var: claude_install_output.stdout_lines
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/bin/claude"

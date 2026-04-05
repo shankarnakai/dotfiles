@@ -3,6 +3,5 @@
 
 - name: Install Claude Code (native)
   shell: curl -fsSL https://claude.ai/install.sh | bash
-  become: true
   args:
-    creates: /usr/local/bin/claude
+    creates: "{{ ansible_env.HOME }}/.claude/bin/claude"

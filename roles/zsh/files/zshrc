@@ -54,4 +54,7 @@ esac
 atelier() {
     cd "$HOME/projects/atelier" && git pull --quiet && claude
 }
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+fi

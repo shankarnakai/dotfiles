@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -e
+
+ROLE=$1
+
+if [ -z "$ROLE" ]; then
+  echo "Usage: dot-bootstrap upgrade <role>"
+  exit 1
+fi
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+ROLE_CLEAN=$(echo "$ROLE" | tr '-' '_')
+
+echo "Checking for updates for $ROLE..."
+
+# Run lookup version and capture the latest version
+LATEST_VERSION=$(ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/update-check.yml" --tags "$ROLE" | grep "latest=" | tail -n 1 | sed -E 's/.*latest=([^"} ]+).*/\1/')
+
+if [ -z "$LATEST_VERSION" ]; then
+  echo "Could not find latest version for $ROLE"
+  exit 1
+fi
+
+# Get CURRENT_VERSION
+CURRENT_VERSION=$(grep "^${ROLE_CLEAN}_version:" "$DOTFILES_DIR/versions.yml" | sed -E 's/.*: "([^"]+)".*/\1/')
+
+if [ "$CURRENT_VERSION" == "$LATEST_VERSION" ]; then
+  echo "$ROLE is already up to date ($CURRENT_VERSION)."
+  exit 0
+fi
+
+echo "$ROLE update available: $CURRENT_VERSION -> $LATEST_VERSION"
+read -p "Upgrade $ROLE to $LATEST_VERSION? [y/N] " confirm
+
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+  echo "Updating $ROLE in versions.yml..."
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s/^${ROLE_CLEAN}_version: \".*\"/${ROLE_CLEAN}_version: \"${LATEST_VERSION}\"/" "$DOTFILES_DIR/versions.yml"
+  else
+    sed -i "s/^${ROLE_CLEAN}_version: \".*\"/${ROLE_CLEAN}_version: \"${LATEST_VERSION}\"/" "$DOTFILES_DIR/versions.yml"
+  fi
+  
+  echo "Applying the update..."
+  exec "$DOTFILES_DIR/bin/dot-bootstrap" install --tags "$ROLE" "${@:2}"
+else
+  echo "Upgrade cancelled."
+fi

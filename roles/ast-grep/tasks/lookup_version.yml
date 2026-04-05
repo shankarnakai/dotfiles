@@ -1,0 +1,17 @@
+---
+- name: Get latest ast-grep version from npm
+  shell: npm view @ast-grep/cli version
+  register: ast_grep_latest
+  changed_when: false
+  delegate_to: localhost
+  tags: [ast-grep, updates]
+
+- name: Set latest ast-grep version variable
+  set_fact:
+    ast_grep_latest_version: "{{ ast_grep_latest.stdout }}"
+  tags: [ast-grep, updates]
+
+- name: Compare versions
+  debug:
+    msg: "ast-grep: current={{ ast_grep_version }}, latest={{ ast_grep_latest_version }}"
+  tags: [ast-grep, updates]

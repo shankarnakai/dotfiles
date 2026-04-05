@@ -88,12 +88,40 @@ function replace() {
   done <<< "$files"
 }
 
-# kill-port will kill all the process running in the specified port
+# kill-port will kill all the processes running on the specified ports
 # Example:
-#  kill-port 8080
+#  kill-port 8080 3000
 kill-port() {
-  if [[ -z "$1" ]]; then echo "Usage: kill-port <port>" >&2; return 1; fi
-  lsof -n -i4TCP:"$1" | grep LISTEN | awk '{ print $2 }' | xargs kill
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: kill-port <port1> [port2 ...]" >&2
+    return 1
+  fi
+
+  for port in "$@"; do
+    # Get PIDs for the port (TCP/UDP, IPv4/IPv6)
+    # -t: terse output (only PIDs)
+    # -i: internet files on specified port
+    local pids=$(lsof -t -i :"$port" 2>/dev/null)
+
+    if [[ -n "$pids" ]]; then
+      echo "\nProcesses on port $port:"
+      lsof -i :"$port"
+      
+      # Try graceful kill first (SIGTERM)
+      echo "$pids" | xargs kill 2>/dev/null
+      
+      # Wait a moment and check if they are gone
+      sleep 0.5
+      if lsof -t -i :"$port" >/dev/null 2>&1; then
+        echo "Some processes still alive on port $port. Forcing (SIGKILL)..."
+        echo "$pids" | xargs kill -9 2>/dev/null
+      else
+        echo "Successfully killed processes on port $port."
+      fi
+    else
+      echo "No processes found on port $port."
+    fi
+  done
 }
 
 # bkp_git_changes copies new/modified files from git status to /tmp/backup

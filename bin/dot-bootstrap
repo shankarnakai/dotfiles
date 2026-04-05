@@ -1,43 +1,56 @@
 #!/usr/bin/env bash
 set -e
 
-tags=""
-skip_become_pass=""
-start_at_task=""
+# Default action is 'install'
+ACTION="install"
+TAGS="all"
+SKIP_BECOME_PASS=""
+START_AT_TASK=""
+
+# Check if the first argument is a subcommand
+case $1 in
+  install|uninstall|check-updates|upgrade)
+    ACTION=$1
+    shift
+    ;;
+  -*)
+    # If the first argument is an option, it's the default 'install' action
+    ACTION="install"
+    ;;
+esac
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --tags)
-      tags="$2"
+      TAGS="$2"
       shift 2
       ;;
     --skip-become-pass)
-      skip_become_pass="--skip-become-pass"
+      SKIP_BECOME_PASS="--skip-become-pass"
       shift
       ;;
     --start-at-task)
-      start_at_task="$2"
+      START_AT_TASK="$2"
       shift 2
       ;;
     *)
-      if [ -z "$tags" ]; then
-        tags="$1"
-      elif [ -z "$skip_become_pass" ] && [[ "$1" == "--skip-become-pass" ]]; then
-        skip_become_pass="--skip-become-pass"
-      elif [ -z "$start_at_task" ]; then
-        start_at_task="$1"
+      if [ "$TAGS" == "all" ]; then
+        TAGS="$1"
+      elif [ -z "$SKIP_BECOME_PASS" ] && [[ "$1" == "--skip-become-pass" ]]; then
+        SKIP_BECOME_PASS="--skip-become-pass"
+      elif [ -z "$START_AT_TASK" ]; then
+        START_AT_TASK="$1"
       fi
       shift
       ;;
   esac
 done
 
-if [ -z "$tags" ]; then
-  tags="all"
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Ensure Ansible is installed
 if ! [ -x "$(command -v ansible)" ]; then
-  # On macOS, use brew. On Linux, use apt if available.
   if [[ "$OSTYPE" == "darwin"* ]]; then
     brew install ansible
   elif command -v apt-get &> /dev/null; then
@@ -45,24 +58,51 @@ if ! [ -x "$(command -v ansible)" ]; then
   fi
 fi
 
-ansible-galaxy install -r requirements.yml
+# Install dependencies
+ansible-galaxy install -r "$DOTFILES_DIR/requirements.yml"
 
-ANSIBLE_OPTS=("--tags" "$tags")
-if [ -n "$start_at_task" ]; then
-  ANSIBLE_OPTS+=("--start-at-task" "$start_at_task")
+ANSIBLE_OPTS=()
+
+case $ACTION in
+  install)
+    PLAYBOOK="$DOTFILES_DIR/dotfiles.yml"
+    ANSIBLE_OPTS+=("--tags" "$TAGS")
+    ;;
+  uninstall)
+    PLAYBOOK="$DOTFILES_DIR/dotfiles.yml"
+    ANSIBLE_OPTS+=("--tags" "$TAGS" "-e" "dotfiles_action=uninstall")
+    ;;
+  check-updates)
+    PLAYBOOK="$DOTFILES_DIR/update-check.yml"
+    if [ "$TAGS" != "all" ]; then
+      ANSIBLE_OPTS+=("--tags" "$TAGS")
+    fi
+    ;;
+  upgrade)
+    if [ "$TAGS" == "all" ]; then
+      echo "Error: Please specify a role to upgrade (e.g., dot-bootstrap upgrade golang)."
+      exit 1
+    fi
+    exec "$DOTFILES_DIR/bin/dot-upgrade" "$TAGS"
+    ;;
+esac
+
+
+if [ -n "$START_AT_TASK" ]; then
+  ANSIBLE_OPTS+=("--start-at-task" "$START_AT_TASK")
 fi
 
-echo "Debug: tags=$tags"
-echo "Debug: ANSIBLE_OPTS=${ANSIBLE_OPTS[*]}"
+echo "Action: $ACTION"
+if [ "$ACTION" != "check-updates" ]; then
+  echo "Tags: $TAGS"
+fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
-
-if [ "$skip_become_pass" == "--skip-become-pass" ]; then
-  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" "${ANSIBLE_OPTS[@]}"
+if [ "$SKIP_BECOME_PASS" == "--skip-become-pass" ] || [ "$ACTION" == "check-updates" ]; then
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$PLAYBOOK" "${ANSIBLE_OPTS[@]}"
 elif [ -n "$ANSIBLE_BECOME_PASSWORD_FILE" ]; then
-  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" --become-password-file "$ANSIBLE_BECOME_PASSWORD_FILE" "${ANSIBLE_OPTS[@]}"
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$PLAYBOOK" --become-password-file "$ANSIBLE_BECOME_PASSWORD_FILE" "${ANSIBLE_OPTS[@]}"
 else
-  ansible-playbook -i "$DOTFILES_DIR/hosts" "$DOTFILES_DIR/dotfiles.yml" --ask-become-pass "${ANSIBLE_OPTS[@]}"
+  ansible-playbook -i "$DOTFILES_DIR/hosts" "$PLAYBOOK" --ask-become-pass "${ANSIBLE_OPTS[@]}"
 fi
+
 

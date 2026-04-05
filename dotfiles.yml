@@ -1,6 +1,8 @@
 ---
 - name: Bootstrap development environment
   hosts: local
+  vars_files:
+    - versions.yml
   pre_tasks:
     - name: Keep sudo alive
       become: true
@@ -78,9 +80,11 @@
 
     - name: EFM Langserver
       import_role: name=efm-langserver
-      vars:
-        efm_langserver_version: "0.0.44"
       tags: [efm-langserver]
+
+    - name: StyLua
+      import_role: name=stylua
+      tags: [stylua]
 
     - name: VS Code
       import_role: name=gantsign.visual-studio-code

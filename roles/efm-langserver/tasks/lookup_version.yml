@@ -1,0 +1,18 @@
+---
+- name: Get latest efm-langserver version from GitHub
+  uri:
+    url: https://api.github.com/repos/mattn/efm-langserver/releases/latest
+    return_content: true
+  register: efm_latest_release
+  delegate_to: localhost
+  tags: [efm-langserver, updates]
+
+- name: Set latest efm-langserver version variable
+  set_fact:
+    efm_langserver_latest_version: "{{ efm_latest_release.json.tag_name | replace('v', '') }}"
+  tags: [efm-langserver, updates]
+
+- name: Compare versions
+  debug:
+    msg: "efm-langserver: current={{ efm_langserver_version }}, latest={{ efm_langserver_latest_version }}"
+  tags: [efm-langserver, updates]

@@ -1,6 +1,31 @@
 ---
-- name: Verify Go installation
+- name: Verify Go version
   command: /usr/local/go/bin/go version
   register: go_version
   changed_when: false
   failed_when: go_version.rc != 0
+  tags: [golang, verification]
+
+- name: Create temporary Go file
+  copy:
+    dest: /tmp/verify_go.go
+    content: |
+      package main
+      import "fmt"
+      func main() {
+          fmt.Println("OK")
+      }
+  tags: [golang, verification]
+
+- name: Verify Go installation is not corrupted (can compile and run)
+  command: /usr/local/go/bin/go run /tmp/verify_go.go
+  register: go_run
+  changed_when: false
+  failed_when: go_run.rc != 0 or go_run.stdout != "OK"
+  tags: [golang, verification]
+
+- name: Remove temporary Go file
+  file:
+    path: /tmp/verify_go.go
+    state: absent
+  tags: [golang, verification]

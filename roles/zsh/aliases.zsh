@@ -19,5 +19,16 @@ alias pkill!="pkill -9 -f "
 alias lj='jobs'
 alias timezsh="time zsh -i -c echo"
 
+## CLIPBOARD (macOS compatibility)
+if ! command -v pbcopy &>/dev/null; then
+    if command -v wl-copy &>/dev/null; then
+        alias pbcopy='wl-copy'
+        alias pbpaste='wl-paste'
+    elif command -v xclip &>/dev/null; then
+        alias pbcopy='xclip -selection clipboard'
+        alias pbpaste='xclip -selection clipboard -o'
+    fi
+fi
+
 ## CURL
 alias curltime="curl -w \"@\$HOME/.curl-format.txt\" -o /dev/null -s "

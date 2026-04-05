@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# bin/dot-reflect - Meta-analysis tool for the dotfiles repository
+# Gathers session context to identify optimization opportunities.
+
+echo "### Dotfiles Reflection Report ###"
+echo "Date: $(date)"
+echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
+
+echo -e "\n1. Recent Changes Patterns:"
+git log -n 5 --pretty=format:"%h - %s" --reverse | sed 's/^/  /'
+
+echo -e "\n2. TODO Status:"
+grep -c "##" TODO.md | xargs -I{} echo "  Pending Tasks: {}"
+
+echo -e "\n3. Managed Versions Status:"
+grep -c "_version:" versions.yml | xargs -I{} echo "  Locked Tools: {}"
+
+echo -e "\n4. Suggested Improvements:"
+if git diff HEAD~5 | grep -q "unarchive:"; then
+    echo "  - [POLICY] Detected frequent use of 'unarchive'. Ensure 'Clean Install' policy is followed."
+fi
+
+if ls tests/scripts/test-*-multipass.sh 1> /dev/null 2>&1; then
+    echo "  - [COMMAND] Multiple Multipass scripts detected. Consider consolidating into 'bin/dot-test'."
+fi
+
+echo -e "\n### End Reflection ###"

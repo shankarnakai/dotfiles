@@ -5,19 +5,11 @@
 - include_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- name: Get latest stable Python 3 version
+- name: Install Python version from versions.yml
   shell: |
     export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
     eval "$(pyenv init -)"
-    pyenv install --list | grep -E '^\s+3\.[0-9]+\.[0-9]+$' | tail -1 | tr -d ' '
-  register: python_latest
-  changed_when: false
-
-- name: Install latest Python 3
-  shell: |
-    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
-    eval "$(pyenv init -)"
-    pyenv install {{ python_latest.stdout }} --skip-existing
+    pyenv install {{ python_version }} --skip-existing
   register: pyenv_result
   changed_when: "'already installed' not in pyenv_result.stderr"
 
@@ -25,8 +17,9 @@
   shell: |
     export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
     eval "$(pyenv init -)"
-    pyenv global {{ python_latest.stdout }}
+    pyenv global {{ python_version }}
   changed_when: false
+
 
 - name: Check if pytest.ini file exists
   stat:

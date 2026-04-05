@@ -1,7 +1,8 @@
 - include_tasks: mac.yml
   when: ansible_os_family == "Darwin"
 
-- name: Install Claude Code
-  shell: npm install -g @anthropic-ai/claude-code
+- name: Install Claude Code (native)
+  shell: curl -fsSL https://claude.ai/install.sh | bash
   become: true
-  changed_when: true
+  args:
+    creates: /usr/local/bin/claude

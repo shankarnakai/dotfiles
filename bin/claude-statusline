@@ -1,0 +1,134 @@
+#!/bin/bash
+# Claude Code Status Line — Powerline-style session dashboard
+#
+# Segments (left to right):
+#   1. Model      — Active Claude model name (e.g. "Opus 4.6 (1M context)")
+#   2. Cost       — Session cost in USD. Color escalates: green <$10, cyan <$25,
+#                   yellow <$50, bright yellow <$100, bright red <$200, magenta ≥$200
+#   3. Tokens     — ↑ cumulative input tokens, ↓ output tokens, ⚡ cache read tokens
+#   4. Context    — ctx bar showing context window usage %. Green <40%, yellow <70%, red ≥70%
+#   5. Time       — Wall-clock time elapsed since session started
+#   6. Quota      — 5-hour rate limit usage % (only shown after first API call)
+#
+# Requires: jq, bc, a Nerd Font / powerline-patched font
+# Config:   ~/.claude/settings.json → statusLine.command → this file
+
+input=$(cat)
+
+MODEL=$(echo "$input" | jq -r '.model.display_name')
+COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
+PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
+IN_TOKENS=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
+OUT_TOKENS=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
+CACHE_READ=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
+QUOTA_5H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+
+COST_FMT=$(printf '$%.2f' "$COST")
+DURATION_SEC=$((DURATION_MS / 1000))
+MINS=$((DURATION_SEC / 60))
+SECS=$((DURATION_SEC % 60))
+
+# Format token counts (e.g. 1234567 -> 1.2M, 12345 -> 12.3k)
+fmt_tokens() {
+  local n=$1
+  if [ "$n" -ge 1000000 ]; then
+    printf '%.1fM' "$(echo "$n / 1000000" | bc -l)"
+  elif [ "$n" -ge 1000 ]; then
+    printf '%.1fk' "$(echo "$n / 1000" | bc -l)"
+  else
+    echo "$n"
+  fi
+}
+
+IN_FMT=$(fmt_tokens "$IN_TOKENS")
+OUT_FMT=$(fmt_tokens "$OUT_TOKENS")
+CACHE_FMT=$(fmt_tokens "$CACHE_READ")
+
+# Build a bar: filled=█, empty=─, minimum 1 filled block if pct > 0
+mk_bar() {
+  local pct=$1 width=$2
+  local filled=$((pct * width / 100))
+  # Show at least 1 filled block when > 0%
+  [ "$pct" -gt 0 ] && [ "$filled" -eq 0 ] && filled=1
+  local empty=$((width - filled))
+  local bar=""
+  for ((i=0; i<filled; i++)); do bar+="█"; done
+  for ((i=0; i<empty; i++)); do bar+="─"; done
+  echo "$bar"
+}
+
+CTX_BAR=$(mk_bar "$PCT" 10)
+
+# Quota bar (if available)
+QUOTA_SEG=""
+if [ -n "$QUOTA_5H" ]; then
+  QUOTA_INT=$(printf '%.0f' "$QUOTA_5H")
+  QUOTA_BAR=$(mk_bar "$QUOTA_INT" 10)
+
+  if [ "$QUOTA_INT" -lt 50 ]; then
+    S6_FG="\033[30m"; S6_BG="\033[102m"; S6_TRAIL="\033[92m"  # black on bright green
+  elif [ "$QUOTA_INT" -lt 80 ]; then
+    S6_FG="\033[30m"; S6_BG="\033[103m"; S6_TRAIL="\033[93m"  # black on bright yellow
+  else
+    S6_FG="\033[97m"; S6_BG="\033[101m"; S6_TRAIL="\033[91m"  # white on bright red
+  fi
+fi
+
+# Powerline separator (UTF-8 bytes for U+E0B0)
+SEP=$(printf '\xee\x82\xb0')
+
+R="\033[0m"
+BOLD="\033[1m"
+
+# Segment 1 — Model: black on bright magenta
+S1_FG="\033[30m"; S1_BG="\033[105m"; S1_TRAIL="\033[95m"
+
+# Segment 2 — Cost: escalates across 6 tiers
+COST_INT=$(printf '%.0f' "$(echo "$COST * 100" | bc)")
+if [ "$COST_INT" -lt 1000 ]; then
+  S2_FG="\033[30m"; S2_BG="\033[102m"; S2_TRAIL="\033[92m"  # black on bright green  (<$10)
+elif [ "$COST_INT" -lt 2500 ]; then
+  S2_FG="\033[30m"; S2_BG="\033[46m"; S2_TRAIL="\033[36m"   # black on cyan          (<$25)
+elif [ "$COST_INT" -lt 5000 ]; then
+  S2_FG="\033[30m"; S2_BG="\033[43m"; S2_TRAIL="\033[33m"   # black on yellow        (<$50)
+elif [ "$COST_INT" -lt 10000 ]; then
+  S2_FG="\033[30m"; S2_BG="\033[103m"; S2_TRAIL="\033[93m"  # black on bright yellow (<$100)
+elif [ "$COST_INT" -lt 20000 ]; then
+  S2_FG="\033[30m"; S2_BG="\033[101m"; S2_TRAIL="\033[91m"  # black on bright red    (<$200)
+else
+  S2_FG="\033[30m"; S2_BG="\033[105m"; S2_TRAIL="\033[95m"  # black on bright magenta (≥$200)
+fi
+
+# Segment 3 — Tokens: white on dark gray
+S3_FG="\033[97m"; S3_BG="\033[100m"; S3_TRAIL="\033[90m"
+
+# Segment 4 — Context: escalates green → yellow → red
+if [ "$PCT" -lt 40 ]; then
+  S4_FG="\033[30m"; S4_BG="\033[42m"; S4_TRAIL="\033[32m"
+elif [ "$PCT" -lt 70 ]; then
+  S4_FG="\033[30m"; S4_BG="\033[43m"; S4_TRAIL="\033[33m"
+else
+  S4_FG="\033[97m"; S4_BG="\033[41m"; S4_TRAIL="\033[31m"
+fi
+
+# Segment 5 — Time: black on bright blue
+S5_FG="\033[30m"; S5_BG="\033[104m"; S5_TRAIL="\033[94m"
+
+# Build output
+OUT=""
+OUT+="${S1_BG}${S1_FG}${BOLD} ${MODEL} ${R}${S1_TRAIL}${S2_BG}${SEP}${R}"
+OUT+="${S2_BG}${S2_FG}${BOLD} ${COST_FMT} ${R}${S2_TRAIL}${S3_BG}${SEP}${R}"
+OUT+="${S3_BG}${S3_FG}${BOLD} ↑${IN_FMT} ↓${OUT_FMT} ⚡${CACHE_FMT} ${R}${S3_TRAIL}${S4_BG}${SEP}${R}"
+OUT+="${S4_BG}${S4_FG}${BOLD} ctx ${CTX_BAR} ${PCT}% ${R}${S4_TRAIL}${S5_BG}${SEP}${R}"
+OUT+="${S5_BG}${S5_FG}${BOLD} ${MINS}m ${SECS}s ${R}"
+
+# Append quota segment if available
+if [ -n "$QUOTA_5H" ]; then
+  OUT+="${S5_TRAIL}${S6_BG}${SEP}${R}"
+  OUT+="${S6_BG}${S6_FG}${BOLD} quota ${QUOTA_BAR} ${QUOTA_INT}% ${R}${S6_TRAIL}${SEP}${R}"
+else
+  OUT+="${S5_TRAIL}${SEP}${R}"
+fi
+
+printf "%b\n" "$OUT"

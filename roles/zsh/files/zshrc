@@ -54,3 +54,4 @@ esac
 atelier() {
     cd "$HOME/projects/atelier" && git pull --quiet && claude
 }
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"

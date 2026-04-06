@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Start Claude Code with an optional session name attached to OTEL telemetry.
+#
+# Usage:
+#   mclaude [--session-name|-sn <name>] [claude-args...]
+#
+# All other OTEL configuration is expected to be set via .envrc.
+
+SESSION_NAME=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --session-name | -sn)
+    SESSION_NAME="$2"
+    shift 2
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+if [[ -z "$SESSION_NAME" ]]; then
+  read -rp "Session name (leave blank to skip): " SESSION_NAME
+fi
+
+if [[ -n "$SESSION_NAME" ]]; then
+  exec env OTEL_RESOURCE_ATTRIBUTES="session.name=${SESSION_NAME}" claude -n "$SESSION_NAME" "$@"
+else
+  exec claude "$@"
+fi

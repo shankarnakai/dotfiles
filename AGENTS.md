@@ -14,7 +14,7 @@ DevOps engineer specializing in Ansible automation for macOS/Ubuntu development 
 ./bin/dot-bootstrap all "task name"   # Start from specific task
 
 # Test on Ubuntu VM (ALWAYS use a virtual environment like Multipass for testing)
-./tests/scripts/test-ubuntu.sh --tags <tag>
+./bin/dot-test <tag>
 
 # Validate shell scripts
 shellcheck -s bash <file>              # Exclude for zsh: SC1091, SC2034

@@ -31,7 +31,7 @@ tests/
 
 All testing and development work involving role verification **MUST** be performed in a virtual environment (e.g., a Multipass VM). This ensures the local system remains unaffected by experimental changes and provides a clean, reproducible state for validation.
 
-1. **Isolation:** Use `test-ubuntu.sh` to create an isolated environment.
+1. **Isolation:** Use `bin/dot-test` to create an isolated environment.
 2. **Reproducibility:** Always start with a fresh VM to confirm role idempotency and completeness.
 3. **Safety:** Never run full dotfile playbooks directly on the host machine for testing purposes.
 

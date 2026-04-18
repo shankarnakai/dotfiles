@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# claude-clean-plugin-cache
+#
+# Cleans the Claude plugin cache directory.
+# Removes a specific plugin cache or all temp_git_* leftovers.
+#
+# Usage:
+#   claude-clean-plugin-cache              # cleans all temp_git_* dirs
+#   claude-clean-plugin-cache <plugin>     # cleans a specific plugin cache
+#   claude-clean-plugin-cache --all        # cleans everything in plugin cache
+
+CACHE_DIR="$HOME/.claude/plugins/cache"
+
+if [[ ! -d "$CACHE_DIR" ]]; then
+  echo "Plugin cache directory not found: $CACHE_DIR"
+  exit 1
+fi
+
+clean_temp() {
+  local count
+  count=$(find "$CACHE_DIR" -maxdepth 1 -type d -name "temp_git_*" | wc -l | tr -d ' ')
+  if [[ "$count" -eq 0 ]]; then
+    echo "No temp_git_* directories to clean."
+  else
+    find "$CACHE_DIR" -maxdepth 1 -type d -name "temp_git_*" -exec rm -rf {} + 2>/dev/null
+    echo "Removed $count temp_git_* director$([ "$count" -eq 1 ] && echo 'y' || echo 'ies')."
+  fi
+}
+
+if [[ -z "$1" ]]; then
+  clean_temp
+
+elif [[ "$1" == "--all" ]]; then
+  find "$CACHE_DIR" -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null
+  echo "Cleared all plugin cache."
+
+elif [[ "$1" == "--list" ]]; then
+  echo "Cached plugins in $CACHE_DIR:"
+  ls -1 "$CACHE_DIR"
+
+else
+  plugin="$1"
+  target="$CACHE_DIR/$plugin"
+  if [[ -d "$target" ]]; then
+    rm -rf "$target"
+    echo "Removed cache for plugin: $plugin"
+  else
+    echo "No cache found for plugin: $plugin"
+    echo "Available: $(ls -1 "$CACHE_DIR" | tr '\n' ' ')"
+    exit 1
+  fi
+fi

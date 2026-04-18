@@ -1,0 +1,144 @@
+#!/usr/bin/env python3.12
+"""claude-session.py — View Claude Code session transcripts
+
+Usage:
+  claude-session.py <session-id>   Show transcript for a specific session
+  claude-session.py --list         List all sessions (most recent first)
+  claude-session.py --last         Show the most recent session transcript
+"""
+
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+CLAUDE_DIR = Path.home() / ".claude"
+PROJECTS_DIR = CLAUDE_DIR / "projects"
+
+BLUE_BOLD = "\033[1;34m"
+GREEN_BOLD = "\033[1;32m"
+RESET = "\033[0m"
+
+
+def list_sessions():
+    sessions = []
+    for jsonl_file in PROJECTS_DIR.glob("*/*.jsonl"):
+        if "subagents" in jsonl_file.parts:
+            continue
+        mtime = jsonl_file.stat().st_mtime
+        session_id = jsonl_file.stem
+        project_dir = jsonl_file.parent.name
+        project = re.sub(r"^-Users-[^-]+-", "", project_dir).replace("-", "/")
+
+        timestamp = "unknown"
+        try:
+            with open(jsonl_file) as f:
+                first_line = f.readline()
+                if first_line:
+                    timestamp = json.loads(first_line).get("timestamp", "unknown")
+        except (json.JSONDecodeError, OSError):
+            pass
+
+        sessions.append((mtime, session_id, timestamp, project))
+
+    sessions.sort(key=lambda x: x[0], reverse=True)
+
+    print(f"{'SESSION ID':<38}  {'TIMESTAMP':<30}  {'PROJECT'}")
+    print(f"{'----------':<38}  {'---------':<30}  {'-------'}")
+    for _, session_id, timestamp, project in sessions:
+        print(f"{session_id:<38}  {timestamp:<30}  {project}")
+
+
+def find_session_file(session_id: str) -> Path | None:
+    for jsonl_file in PROJECTS_DIR.glob(f"*/{session_id}.jsonl"):
+        if "subagents" not in jsonl_file.parts:
+            return jsonl_file
+    return None
+
+
+def print_transcript(filepath: Path):
+    with open(filepath) as f:
+        for line in f:
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            msg_type = entry.get("type")
+            if msg_type not in ("user", "assistant"):
+                continue
+
+            msg = entry.get("message", {})
+            if not isinstance(msg, dict):
+                continue
+
+            role = msg.get("role", msg_type)
+            content = msg.get("content", "")
+
+            if isinstance(content, str):
+                text = content.strip()
+            elif isinstance(content, list):
+                parts = []
+                for block in content:
+                    if isinstance(block, dict):
+                        if block.get("type") == "text":
+                            parts.append(block["text"])
+                        elif block.get("type") == "tool_use":
+                            parts.append(f"[tool: {block.get('name', '?')}]")
+                        elif block.get("type") == "tool_result":
+                            continue
+                    elif isinstance(block, str):
+                        parts.append(block)
+                text = "\n".join(parts).strip()
+            else:
+                continue
+
+            if not text:
+                continue
+
+            if role == "user":
+                header = f"{BLUE_BOLD}## User{RESET}"
+            else:
+                header = f"{GREEN_BOLD}## Assistant{RESET}"
+            print(header)
+            print(text)
+            print()
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h"):
+        print(__doc__.strip())
+        sys.exit(0)
+
+    arg = sys.argv[1]
+
+    if arg in ("--list", "-l"):
+        list_sessions()
+
+    elif arg == "--last":
+        sessions = []
+        for jsonl_file in PROJECTS_DIR.glob("*/*.jsonl"):
+            if "subagents" not in jsonl_file.parts:
+                sessions.append((jsonl_file.stat().st_mtime, jsonl_file))
+
+        if not sessions:
+            print("No sessions found.", file=sys.stderr)
+            sys.exit(1)
+
+        sessions.sort(key=lambda x: x[0], reverse=True)
+        latest = sessions[0][1]
+        print(f"Session: {latest.stem}")
+        print()
+        print_transcript(latest)
+
+    else:
+        session_file = find_session_file(arg)
+        if session_file is None:
+            print(f"Session '{arg}' not found.", file=sys.stderr)
+            sys.exit(1)
+        print_transcript(session_file)
+
+
+if __name__ == "__main__":
+    main()

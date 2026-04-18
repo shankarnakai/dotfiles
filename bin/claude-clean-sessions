@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# Delete Claude Code sessions by session ID, age, or directory.
+set -euo pipefail
+
+usage() {
+  cat >&2 <<EOF
+Usage: $(basename "$0") [SESSION_ID] [OPTIONS]
+
+Arguments:
+  SESSION_ID   UUID of a specific session to delete (positional, optional)
+
+Options:
+  --days N     Delete sessions older than N days (default: 10)
+  --dir PATH   Directory to scan (default: ~/.claude/projects)
+  -h, --help   Show this help
+
+Examples:
+  $(basename "$0") abc12345-...             # delete one session by ID
+  $(basename "$0")                          # delete sessions older than 10 days
+  $(basename "$0") --days 7
+  $(basename "$0") --dir ~/.claude/projects/some-project
+  $(basename "$0") --days 7 --dir /custom/path
+EOF
+  exit 1
+}
+
+UUID_RE='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+
+DAYS=10
+CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude/projects}"
+SESSION_ID=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --days)
+      DAYS="$2"; shift 2 ;;
+    --dir)
+      CLAUDE_DIR="$2"; shift 2 ;;
+    -h|--help)
+      usage ;;
+    -*)
+      echo "Unknown option: $1" >&2; usage ;;
+    *)
+      if [[ "$1" =~ $UUID_RE ]]; then
+        SESSION_ID="$1"
+      elif [[ "$1" =~ ^[0-9]+$ ]]; then
+        DAYS="$1"
+      else
+        CLAUDE_DIR="$1"
+      fi
+      shift ;;
+  esac
+done
+
+if [[ ! -d "$CLAUDE_DIR" ]]; then
+  echo "Error: directory not found: $CLAUDE_DIR" >&2
+  exit 1
+fi
+
+# Auto-detect if dir is a project dir (contains .jsonl directly) or the projects root
+if ls "$CLAUDE_DIR"/*.jsonl &>/dev/null 2>&1; then
+  FIND_MINDEPTH=1; FIND_MAXDEPTH=1  # pointed at a single project dir
+else
+  FIND_MINDEPTH=2; FIND_MAXDEPTH=2  # pointed at the projects root
+fi
+
+deleted_files=0
+deleted_dirs=0
+freed=0
+
+delete_item() {
+  local item="$1"
+  local size
+  size=$(du -sk "$item" 2>/dev/null | awk '{print $1}')
+  freed=$((freed + size))
+  if [[ -f "$item" ]]; then
+    rm "$item"
+    ((deleted_files++)) || true
+  elif [[ -d "$item" ]]; then
+    rm -rf "$item"
+    ((deleted_dirs++)) || true
+  fi
+}
+
+if [[ -n "$SESSION_ID" ]]; then
+  echo "Deleting session $SESSION_ID from $CLAUDE_DIR..."
+  found=0
+  while IFS= read -r -d '' item; do
+    delete_item "$item"
+    found=1
+  done < <(find "$CLAUDE_DIR" -mindepth 2 -maxdepth 2 \
+    -mindepth $FIND_MINDEPTH -maxdepth $FIND_MAXDEPTH \
+    \( -name "${SESSION_ID}.jsonl" -o \( -type d -name "$SESSION_ID" \) \) -print0)
+  if [[ $found -eq 0 ]]; then
+    echo "Session not found: $SESSION_ID" >&2
+    exit 1
+  fi
+else
+  if ! [[ "$DAYS" =~ ^[0-9]+$ ]]; then
+    echo "Error: --days must be a positive integer, got: $DAYS" >&2
+    usage
+  fi
+  echo "Scanning $CLAUDE_DIR for sessions older than $DAYS days..."
+  while IFS= read -r -d '' item; do
+    delete_item "$item"
+  done < <(find "$CLAUDE_DIR" -mindepth 2 -maxdepth 2 \
+    -mindepth $FIND_MINDEPTH -maxdepth $FIND_MAXDEPTH \
+    \( -name "*.jsonl" -o -type d \) -mtime +"$DAYS" -print0)
+fi
+
+freed_mb=$(echo "scale=1; $freed / 1024" | bc)
+echo "Done. Removed $deleted_files session files and $deleted_dirs session dirs (freed ~${freed_mb} MB)."

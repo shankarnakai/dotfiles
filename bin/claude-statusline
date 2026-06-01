@@ -1,7 +1,11 @@
 #!/bin/bash
 # Claude Code Status Line — Powerline-style session dashboard
 #
-# Segments (left to right):
+# Line 1 (navigation context):
+#   7. Folder     — Current working directory (basename only)
+#   8. Branch     — Git branch name (hidden outside git repos)
+#
+# Line 2 (session metrics):
 #   1. Model      — Active Claude model name (e.g. "Opus 4.6 (1M context)")
 #   2. Cost       — Session cost in USD. Color escalates: green <$10, cyan <$25,
 #                   yellow <$50, bright yellow <$100, bright red <$200, magenta ≥$200
@@ -23,11 +27,25 @@ IN_TOKENS=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
 OUT_TOKENS=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
 CACHE_READ=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
 QUOTA_5H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+QUOTA_RESET=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+SESSION_ID=$(echo "$input" | jq -r '.session_id // ""')
+SESSION_NAME=$(echo "$input" | jq -r '.session_name // ""')
+DIR=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // ""')
+REPO_NAME=$(echo "$input" | jq -r '.workspace.repo.name // ""')
+FOLDER="${REPO_NAME:-${DIR##*/}}"
+BRANCH=$(git -C "${DIR:-.}" branch --show-current 2>/dev/null || echo "")
 
 COST_FMT=$(printf '$%.2f' "$COST")
 DURATION_SEC=$((DURATION_MS / 1000))
-MINS=$((DURATION_SEC / 60))
-SECS=$((DURATION_SEC % 60))
+if [ "$DURATION_SEC" -ge 3600 ]; then
+  HOURS=$((DURATION_SEC / 3600))
+  MINS=$(((DURATION_SEC % 3600) / 60))
+  TIME_FMT="${HOURS}h ${MINS}m"
+else
+  MINS=$((DURATION_SEC / 60))
+  SECS=$((DURATION_SEC % 60))
+  TIME_FMT="${MINS}m ${SECS}s"
+fi
 
 # Format token counts (e.g. 1234567 -> 1.2M, 12345 -> 12.3k)
 fmt_tokens() {
@@ -54,26 +72,11 @@ mk_bar() {
   local empty=$((width - filled))
   local bar=""
   for ((i=0; i<filled; i++)); do bar+="█"; done
-  for ((i=0; i<empty; i++)); do bar+="─"; done
+  for ((i=0; i<empty; i++)); do bar+="░"; done
   echo "$bar"
 }
 
-CTX_BAR=$(mk_bar "$PCT" 10)
-
-# Quota bar (if available)
-QUOTA_SEG=""
-if [ -n "$QUOTA_5H" ]; then
-  QUOTA_INT=$(printf '%.0f' "$QUOTA_5H")
-  QUOTA_BAR=$(mk_bar "$QUOTA_INT" 10)
-
-  if [ "$QUOTA_INT" -lt 50 ]; then
-    S6_FG="\033[30m"; S6_BG="\033[102m"; S6_TRAIL="\033[92m"  # black on bright green
-  elif [ "$QUOTA_INT" -lt 80 ]; then
-    S6_FG="\033[30m"; S6_BG="\033[103m"; S6_TRAIL="\033[93m"  # black on bright yellow
-  else
-    S6_FG="\033[97m"; S6_BG="\033[101m"; S6_TRAIL="\033[91m"  # white on bright red
-  fi
-fi
+CTX_BAR=$(mk_bar "$PCT" 6)
 
 # Powerline separator (UTF-8 bytes for U+E0B0)
 SEP=$(printf '\xee\x82\xb0')
@@ -84,51 +87,113 @@ BOLD="\033[1m"
 # Segment 1 — Model: black on bright magenta
 S1_FG="\033[30m"; S1_BG="\033[105m"; S1_TRAIL="\033[95m"
 
-# Segment 2 — Cost: escalates across 6 tiers
+# Segment 2 — Cost: dark-variant scale keeps it visually distinct from ctx/quota's bright variants
 COST_INT=$(printf '%.0f' "$(echo "$COST * 100" | bc)")
 if [ "$COST_INT" -lt 1000 ]; then
-  S2_FG="\033[30m"; S2_BG="\033[102m"; S2_TRAIL="\033[92m"  # black on bright green  (<$10)
+  S2_FG="\033[30m"; S2_BG="\033[47m"; S2_TRAIL="\033[37m"   # black on white         (<$10)
 elif [ "$COST_INT" -lt 2500 ]; then
-  S2_FG="\033[30m"; S2_BG="\033[46m"; S2_TRAIL="\033[36m"   # black on cyan          (<$25)
+  S2_FG="\033[97m"; S2_BG="\033[42m"; S2_TRAIL="\033[32m"   # white on dark green    (<$25)
 elif [ "$COST_INT" -lt 5000 ]; then
-  S2_FG="\033[30m"; S2_BG="\033[43m"; S2_TRAIL="\033[33m"   # black on yellow        (<$50)
+  S2_FG="\033[30m"; S2_BG="\033[43m"; S2_TRAIL="\033[33m"   # black on dark yellow   (<$50)
 elif [ "$COST_INT" -lt 10000 ]; then
-  S2_FG="\033[30m"; S2_BG="\033[103m"; S2_TRAIL="\033[93m"  # black on bright yellow (<$100)
+  S2_FG="\033[97m"; S2_BG="\033[41m"; S2_TRAIL="\033[31m"   # white on dark red      (<$100)
 elif [ "$COST_INT" -lt 20000 ]; then
-  S2_FG="\033[30m"; S2_BG="\033[101m"; S2_TRAIL="\033[91m"  # black on bright red    (<$200)
+  S2_FG="\033[97m"; S2_BG="\033[101m"; S2_TRAIL="\033[91m"  # white on bright red    (<$200)
 else
   S2_FG="\033[30m"; S2_BG="\033[105m"; S2_TRAIL="\033[95m"  # black on bright magenta (≥$200)
 fi
 
-# Segment 3 — Tokens: white on dark gray
-S3_FG="\033[97m"; S3_BG="\033[100m"; S3_TRAIL="\033[90m"
+# Segment 3 — Tokens: black on dark cyan (better contrast)
+S3_FG="\033[30m"; S3_BG="\033[46m"; S3_TRAIL="\033[36m"
 
-# Segment 4 — Context: escalates green → yellow → red
+# Segment 4 — Context: bright escalation for better contrast
 if [ "$PCT" -lt 40 ]; then
-  S4_FG="\033[30m"; S4_BG="\033[42m"; S4_TRAIL="\033[32m"
+  S4_FG="\033[30m"; S4_BG="\033[102m"; S4_TRAIL="\033[92m"  # black on bright green
 elif [ "$PCT" -lt 70 ]; then
-  S4_FG="\033[30m"; S4_BG="\033[43m"; S4_TRAIL="\033[33m"
+  S4_FG="\033[30m"; S4_BG="\033[103m"; S4_TRAIL="\033[93m"  # black on bright yellow
 else
-  S4_FG="\033[97m"; S4_BG="\033[41m"; S4_TRAIL="\033[31m"
+  S4_FG="\033[97m"; S4_BG="\033[101m"; S4_TRAIL="\033[91m"  # white on bright red
 fi
 
 # Segment 5 — Time: black on bright blue
 S5_FG="\033[30m"; S5_BG="\033[104m"; S5_TRAIL="\033[94m"
 
-# Build output
-OUT=""
-OUT+="${S1_BG}${S1_FG}${BOLD} ${MODEL} ${R}${S1_TRAIL}${S2_BG}${SEP}${R}"
-OUT+="${S2_BG}${S2_FG}${BOLD} ${COST_FMT} ${R}${S2_TRAIL}${S3_BG}${SEP}${R}"
-OUT+="${S3_BG}${S3_FG}${BOLD} ↑${IN_FMT} ↓${OUT_FMT} ⚡${CACHE_FMT} ${R}${S3_TRAIL}${S4_BG}${SEP}${R}"
-OUT+="${S4_BG}${S4_FG}${BOLD} ctx ${CTX_BAR} ${PCT}% ${R}${S4_TRAIL}${S5_BG}${SEP}${R}"
-OUT+="${S5_BG}${S5_FG}${BOLD} ${MINS}m ${SECS}s ${R}"
-
-# Append quota segment if available
+# Segment 6 — Quota: same bright green → yellow → red scale as ctx
 if [ -n "$QUOTA_5H" ]; then
-  OUT+="${S5_TRAIL}${S6_BG}${SEP}${R}"
-  OUT+="${S6_BG}${S6_FG}${BOLD} quota ${QUOTA_BAR} ${QUOTA_INT}% ${R}${S6_TRAIL}${SEP}${R}"
-else
-  OUT+="${S5_TRAIL}${SEP}${R}"
+  QUOTA_INT=$(printf '%.0f' "$QUOTA_5H")
+  QUOTA_BAR=$(mk_bar "$QUOTA_INT" 6)
+  if [ "$QUOTA_INT" -lt 40 ]; then
+    S6_FG="\033[30m"; S6_BG="\033[102m"; S6_TRAIL="\033[92m"  # black on bright green
+  elif [ "$QUOTA_INT" -lt 70 ]; then
+    S6_FG="\033[30m"; S6_BG="\033[103m"; S6_TRAIL="\033[93m"  # black on bright yellow
+  else
+    S6_FG="\033[97m"; S6_BG="\033[101m"; S6_TRAIL="\033[91m"  # white on bright red
+  fi
+
+  RESET_FMT=""
+  if [ -n "$QUOTA_RESET" ]; then
+    NOW=$(date +%s)
+    REMAINING=$((QUOTA_RESET - NOW))
+    if [ "$REMAINING" -le 0 ]; then
+      RESET_FMT=" · now"
+    elif [ "$REMAINING" -ge 3600 ]; then
+      RH=$((REMAINING / 3600))
+      RM=$(((REMAINING % 3600) / 60))
+      RESET_FMT=" · ${RH}h ${RM}m"
+    else
+      RM=$((REMAINING / 60))
+      RESET_FMT=" · ${RM}m"
+    fi
+  fi
 fi
 
-printf "%b\n" "$OUT"
+# Segment 7 — Folder: black on bright green (readable, distinct from cyan/magenta/white)
+S7_FG="\033[30m"; S7_BG="\033[102m"; S7_TRAIL="\033[92m"
+
+# Segment 8 — Branch: black on bright cyan
+S8_FG="\033[30m"; S8_BG="\033[106m"; S8_TRAIL="\033[96m"
+
+# Segment 9 — Session name: black on bright white (distinct from model's magenta)
+S9_FG="\033[30m"; S9_BG="\033[107m"; S9_TRAIL="\033[97m"
+
+# Segment 10 — Session ID: white on dark gray (secondary technical info)
+S10_FG="\033[97m"; S10_BG="\033[100m"; S10_TRAIL="\033[90m"
+
+# Line 1 — [branch >] folder > model > [session name]
+LINE1=""
+if [ -n "$BRANCH" ]; then
+  LINE1+="${S8_BG}${S8_FG}${BOLD} 🌿 ${BRANCH} ${R}"
+  LINE1+="${S8_TRAIL}${S7_BG}${SEP}${R}"
+fi
+LINE1+="${S7_BG}${S7_FG}${BOLD} 📁 ${FOLDER} ${R}"
+LINE1+="${S7_TRAIL}${S1_BG}${SEP}${R}"
+LINE1+="${S1_BG}${S1_FG}${BOLD} ${MODEL} ${R}"
+if [ -n "$SESSION_NAME" ]; then
+  LINE1+="${S1_TRAIL}${S9_BG}${SEP}${R}"
+  LINE1+="${S9_BG}${S9_FG}${BOLD} ${SESSION_NAME} ${R}"
+  LINE1+="${S9_TRAIL}${SEP}${R}"
+else
+  LINE1+="${S1_TRAIL}${SEP}${R}"
+fi
+
+# Line 2 — session id > tokens > cost > ctx [> quota] > time
+LINE2=""
+LINE2+="${S10_BG}${S10_FG}${BOLD} ${SESSION_ID} ${R}"
+LINE2+="${S10_TRAIL}${S3_BG}${SEP}${R}"
+LINE2+="${S3_BG}${S3_FG}${BOLD} ↑${IN_FMT} ↓${OUT_FMT} ⚡${CACHE_FMT} ${R}"
+LINE2+="${S3_TRAIL}${S2_BG}${SEP}${R}"
+LINE2+="${S2_BG}${S2_FG}${BOLD} ${COST_FMT} ${R}"
+LINE2+="${S2_TRAIL}${S4_BG}${SEP}${R}"
+LINE2+="${S4_BG}${S4_FG}${BOLD} ctx ${CTX_BAR} ${PCT}% ${R}"
+if [ -n "$QUOTA_5H" ]; then
+  LINE2+="${S4_TRAIL}${S6_BG}${SEP}${R}"
+  LINE2+="${S6_BG}${S6_FG}${BOLD} quota ${QUOTA_BAR} ${QUOTA_INT}%${RESET_FMT} ${R}"
+  LINE2+="${S6_TRAIL}${S5_BG}${SEP}${R}"
+else
+  LINE2+="${S4_TRAIL}${S5_BG}${SEP}${R}"
+fi
+LINE2+="${S5_BG}${S5_FG}${BOLD} ${TIME_FMT} ${R}"
+LINE2+="${S5_TRAIL}${SEP}${R}"
+
+printf "%b\n" "$LINE1"
+printf "%b\n" "$LINE2"

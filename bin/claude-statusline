@@ -13,6 +13,7 @@
 #   4. Context    — ctx bar showing context window usage %. Green <40%, yellow <70%, red ≥70%
 #   5. Time       — Wall-clock time elapsed since session started
 #   6. Quota      — 5-hour rate limit usage % (only shown after first API call)
+#   7. Time reset — Countdown until 5-hour quota resets (only shown with quota)
 #
 # Requires: jq, bc, a Nerd Font / powerline-patched font
 # Config:   ~/.claude/settings.json → statusLine.command → this file
@@ -130,19 +131,19 @@ if [ -n "$QUOTA_5H" ]; then
     S6_FG="\033[97m"; S6_BG="\033[101m"; S6_TRAIL="\033[91m"  # white on bright red
   fi
 
-  RESET_FMT=""
+  RESET_LABEL=""
   if [ -n "$QUOTA_RESET" ]; then
     NOW=$(date +%s)
     REMAINING=$((QUOTA_RESET - NOW))
     if [ "$REMAINING" -le 0 ]; then
-      RESET_FMT=" · now"
+      RESET_LABEL="now"
     elif [ "$REMAINING" -ge 3600 ]; then
       RH=$((REMAINING / 3600))
       RM=$(((REMAINING % 3600) / 60))
-      RESET_FMT=" · ${RH}h ${RM}m"
+      RESET_LABEL="${RH}h ${RM}m"
     else
       RM=$((REMAINING / 60))
-      RESET_FMT=" · ${RM}m"
+      RESET_LABEL="${RM}m"
     fi
   fi
 fi
@@ -158,6 +159,9 @@ S9_FG="\033[30m"; S9_BG="\033[107m"; S9_TRAIL="\033[97m"
 
 # Segment 10 — Session ID: white on dark gray (secondary technical info)
 S10_FG="\033[97m"; S10_BG="\033[100m"; S10_TRAIL="\033[90m"
+
+# Segment RT — Quota reset countdown: black on bright blue (matches time segment)
+S_RT_FG="\033[30m"; S_RT_BG="\033[104m"; S_RT_TRAIL="\033[94m"
 
 # Line 1 — [branch >] folder > model > [session name]
 LINE1=""
@@ -176,7 +180,7 @@ else
   LINE1+="${S1_TRAIL}${SEP}${R}"
 fi
 
-# Line 2 — session id > tokens > cost > ctx [> quota] > time
+# Line 2 — session id > tokens > cost > ctx > time [> quota [> time reset]]
 LINE2=""
 LINE2+="${S10_BG}${S10_FG}${BOLD} ${SESSION_ID} ${R}"
 LINE2+="${S10_TRAIL}${S3_BG}${SEP}${R}"
@@ -185,15 +189,21 @@ LINE2+="${S3_TRAIL}${S2_BG}${SEP}${R}"
 LINE2+="${S2_BG}${S2_FG}${BOLD} ${COST_FMT} ${R}"
 LINE2+="${S2_TRAIL}${S4_BG}${SEP}${R}"
 LINE2+="${S4_BG}${S4_FG}${BOLD} ctx ${CTX_BAR} ${PCT}% ${R}"
-if [ -n "$QUOTA_5H" ]; then
-  LINE2+="${S4_TRAIL}${S6_BG}${SEP}${R}"
-  LINE2+="${S6_BG}${S6_FG}${BOLD} quota ${QUOTA_BAR} ${QUOTA_INT}%${RESET_FMT} ${R}"
-  LINE2+="${S6_TRAIL}${S5_BG}${SEP}${R}"
-else
-  LINE2+="${S4_TRAIL}${S5_BG}${SEP}${R}"
-fi
+LINE2+="${S4_TRAIL}${S5_BG}${SEP}${R}"
 LINE2+="${S5_BG}${S5_FG}${BOLD} ${TIME_FMT} ${R}"
-LINE2+="${S5_TRAIL}${SEP}${R}"
+if [ -n "$QUOTA_5H" ]; then
+  LINE2+="${S5_TRAIL}${S6_BG}${SEP}${R}"
+  LINE2+="${S6_BG}${S6_FG}${BOLD} quota ${QUOTA_BAR} ${QUOTA_INT}% ${R}"
+  if [ -n "$RESET_LABEL" ]; then
+    LINE2+="${S6_TRAIL}${S_RT_BG}${SEP}${R}"
+    LINE2+="${S_RT_BG}${S_RT_FG}${BOLD} ↺ ${RESET_LABEL} ${R}"
+    LINE2+="${S_RT_TRAIL}${SEP}${R}"
+  else
+    LINE2+="${S6_TRAIL}${SEP}${R}"
+  fi
+else
+  LINE2+="${S5_TRAIL}${SEP}${R}"
+fi
 
 printf "%b\n" "$LINE1"
 printf "%b\n" "$LINE2"

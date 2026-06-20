@@ -40,18 +40,14 @@
         h = log --graph --decorate --oneline --abbrev-commit
 
         #issues = !hub browse -- issues
-        url = "!f() { git remote get-url origin | sed 's/.*@\\([^:/]*\\)[:/]\\(.*\\)\\.git/https:\\/\\/\\1\\/\\2/'; }; f"
-        repo = "!f() {  universal_open $(git url); }; f"
-
-        ## Bitbucket
-        # TODO: Make this portable for github
-        pr = "!f() { universal_open \"$(git url)/pull-requests/\"; }; f"
-        create-pr = "!f() { universal_open \"$(git url)/pull-requests/new\"; }; f"
-        commitlink = "!f() { universal_open \"$(git url)/commits/$1\"; }; f"
-
-        # TODO: make it use the local branch or pass the branch where to lookup
-        # TODO: Use the correct path independently from how deep it is in the repo folder 
-        file-link = "!f() { echo \"$(git url)/src/$1\"; }; f"
+        # Forge-aware web URLs via myrepoctl (~/.dotfiles/bin), works for
+        # GitHub, Bitbucket, and GitLab. Prints by default; -o opens the browser.
+        url = "!myrepoctl url"
+        browse = "!myrepoctl repo -o"
+        pr = "!myrepoctl pr -o"
+        create-pr = "!myrepoctl create-pr -o"
+        commitlink = "!f() { myrepoctl commit \"$1\" -o; }; f"
+        file-link = "!f() { myrepoctl file \"$1\"; }; f"
 
         # Copy current branch name to clipboard (macOS only)
         cb = "!git rev-parse --abbrev-ref HEAD | tr -d '\n' | pbcopy"

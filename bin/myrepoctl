@@ -1,0 +1,209 @@
+#!/usr/bin/env python3.12
+"""myrepoctl — forge-aware git web URL helper.
+
+Turns the current repo's `origin` remote into web URLs that work across
+GitHub, Bitbucket, and GitLab. Prints the URL by default; pass -o/--open to
+launch it in the default browser.
+
+Usage:
+  myrepoctl url                     Repo home page URL
+  myrepoctl repo                    Alias of `url` (typically used with -o)
+  myrepoctl pr                      Pull/merge request list
+  myrepoctl create-pr               Open a new pull/merge request
+  myrepoctl commit <sha>            A specific commit
+  myrepoctl file <path> [-b BR]     A file (defaults to the current branch)
+
+Options:
+  -o, --open          Open the URL in the default browser instead of printing
+  -r, --remote NAME   Git remote to read (default: origin)
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+import webbrowser
+
+# Known SSH host aliases (see ~/.ssh/config) → their canonical web host.
+HOST_ALIASES = {
+    "github-work": "github.com",
+}
+
+# Per-forge path suffixes appended to the repo base URL (https://host/org/repo).
+# Add a new forge by adding one entry here and one keyword to detect_forge().
+FORGES = {
+    "github": {
+        "pr": "/pulls",
+        "create-pr": "/compare",
+        "commit": "/commit/{sha}",
+        "file": "/blob/{branch}/{path}",
+    },
+    "bitbucket": {
+        "pr": "/pull-requests/",
+        "create-pr": "/pull-requests/new",
+        "commit": "/commits/{sha}",
+        "file": "/src/{branch}/{path}",
+    },
+    "gitlab": {
+        "pr": "/-/merge_requests",
+        "create-pr": "/-/merge_requests/new",
+        "commit": "/-/commit/{sha}",
+        "file": "/-/blob/{branch}/{path}",
+    },
+}
+
+
+# --- pure functions (unit-tested) -------------------------------------------
+
+def normalize_host(host):
+    """Resolve SSH host aliases to their canonical web host."""
+    return HOST_ALIASES.get(host, host)
+
+
+def parse_remote(url):
+    """Parse a git remote URL into (host, "org/repo").
+
+    Handles scheme URLs (https://, ssh://, git://), scp-like syntax
+    (git@host:org/repo), optional user and port, and a trailing `.git`.
+    """
+    url = url.strip()
+    if url.endswith(".git"):
+        url = url[:-4]
+
+    # scheme://[user@]host[:port]/org/repo
+    m = re.match(r"^[a-z]+://(?:[^@/]+@)?([^:/]+)(?::\d+)?/(.+)$", url)
+    if m:
+        return m.group(1), m.group(2).strip("/")
+
+    # [user@]host:org/repo  (scp-like)
+    m = re.match(r"^(?:[^@/]+@)?([^:/]+):(.+)$", url)
+    if m:
+        return m.group(1), m.group(2).strip("/")
+
+    raise ValueError(f"cannot parse remote URL: {url!r}")
+
+
+def detect_forge(host):
+    """Map a web host to a forge key."""
+    h = host.lower()
+    if "github" in h:
+        return "github"
+    if "bitbucket" in h:
+        return "bitbucket"
+    if "gitlab" in h:
+        return "gitlab"
+    raise ValueError(f"unknown forge for host: {host}")
+
+
+def build_url(remote_url, kind, sha=None, branch=None, path=None):
+    """Build a web URL for the given remote and action `kind`."""
+    host, repo_path = parse_remote(remote_url)
+    host = normalize_host(host)
+    forge = detect_forge(host)
+    base = f"https://{host}/{repo_path}"
+
+    if kind in ("url", "repo"):
+        return base
+
+    suffix = FORGES[forge][kind].format(sha=sha, branch=branch, path=path)
+    return base + suffix
+
+
+# --- git side-effects -------------------------------------------------------
+
+def _git(*args):
+    out = subprocess.run(
+        ["git", *args], capture_output=True, text=True, check=True
+    )
+    return out.stdout.strip()
+
+
+def get_remote_url(remote):
+    return _git("remote", "get-url", remote)
+
+
+def current_branch():
+    return _git("rev-parse", "--abbrev-ref", "HEAD")
+
+
+def repo_relative_path(path):
+    """Resolve `path` (relative to cwd or absolute) to a repo-root-relative path.
+
+    Git runs `!`-aliases from the repo root and exposes the caller's original
+    subdirectory in $GIT_PREFIX, so a relative path must be anchored there
+    rather than against the (rewritten) cwd.
+    """
+    toplevel = _git("rev-parse", "--show-toplevel")
+    if not os.path.isabs(path):
+        path = os.path.join(os.environ.get("GIT_PREFIX", ""), path)
+    return os.path.relpath(os.path.abspath(path), toplevel)
+
+
+# --- CLI --------------------------------------------------------------------
+
+def emit(url, open_in_browser):
+    if open_in_browser:
+        if not webbrowser.open(url):
+            sys.exit(f"myrepoctl: could not open a browser; URL was: {url}")
+    else:
+        print(url)
+
+
+def build_parser():
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "-o", "--open", action="store_true",
+        help="open the URL in the default browser instead of printing",
+    )
+    common.add_argument(
+        "-r", "--remote", default="origin",
+        help="git remote to read (default: origin)",
+    )
+
+    parser = argparse.ArgumentParser(
+        prog="myrepoctl",
+        description="Forge-aware git web URL helper (GitHub, Bitbucket, GitLab).",
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("url", parents=[common], help="repo home page URL")
+    sub.add_parser("repo", parents=[common], help="alias of url (use with -o)")
+    sub.add_parser("pr", parents=[common], help="pull/merge request list")
+    sub.add_parser("create-pr", parents=[common], help="open a new pull/merge request")
+
+    p_commit = sub.add_parser("commit", parents=[common], help="a specific commit")
+    p_commit.add_argument("sha", help="commit SHA")
+
+    p_file = sub.add_parser("file", parents=[common], help="a file at a branch")
+    p_file.add_argument("path", help="file path (relative to cwd, or absolute)")
+    p_file.add_argument(
+        "-b", "--branch", help="branch (default: current branch)",
+    )
+
+    return parser
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+
+    try:
+        remote_url = get_remote_url(args.remote)
+        kwargs = {}
+        if args.command == "commit":
+            kwargs["sha"] = args.sha
+        elif args.command == "file":
+            kwargs["branch"] = args.branch or current_branch()
+            kwargs["path"] = repo_relative_path(args.path)
+
+        url = build_url(remote_url, args.command, **kwargs)
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"myrepoctl: git error: {e.stderr.strip() or e}")
+    except ValueError as e:
+        sys.exit(f"myrepoctl: {e}")
+
+    emit(url, args.open)
+
+
+if __name__ == "__main__":
+    main()

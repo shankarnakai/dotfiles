@@ -44,3 +44,13 @@ t.py
 
 ## VS code
 .vscode
+
+**/.claude/settings.local.json
+
+.claire/
+.claude/worktrees/
+graphify-out/
+
+## TEMPORARY IGNORED
+.agents/
+qa-evidence/

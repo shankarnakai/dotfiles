@@ -54,3 +54,5 @@ graphify-out/
 ## TEMPORARY IGNORED
 .agents/
 qa-evidence/
+
+**/.claude/.cc-writes/

@@ -17,6 +17,13 @@
     state: link
     force: yes
 
+- name: Symlink tmux theme
+  file:
+    src: "{{ dotfiles_home }}/roles/tmux/files/theme.conf"
+    dest: "{{ dotfiles_user_home }}/.tmux/theme.conf"
+    state: link
+    force: yes
+
 - name: Install tmux plugins via TPM
   command: "{{ dotfiles_user_home }}/.tmux/plugins/tpm/bin/install_plugins"
   changed_when: false
